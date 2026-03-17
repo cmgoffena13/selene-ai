@@ -57,10 +57,13 @@ def create_new_engine():
     return create_engine(db_url)
 
 
-engine = create_new_engine()
+ENGINE = create_new_engine()
 
 
 def create_base_db():
+    """
+    Create the base schema database.
+    """
     data_dir = Path(__file__).parent.parent / "data"
     base_engine = create_engine(f"sqlite:///{data_dir}/selene_ai_base.db")
     SQLModel.metadata.drop_all(base_engine)
