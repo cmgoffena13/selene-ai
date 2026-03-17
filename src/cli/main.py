@@ -4,11 +4,10 @@ from pathlib import Path
 
 import structlog
 import typer
-from rich.logging import RichHandler
+from thoughtflow import MEMORY
 from typer import Exit, Option, echo
 
 from src.cli.ollama import model_app
-from src.internal.llm.ollama import get_ollama_llm
 from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
 from src.settings import config
@@ -22,12 +21,9 @@ app.add_typer(model_app, name="model")
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)
 def main_menu(
-    ctx: typer.Context,
     version: bool = Option(False, "--version", help="Show CLI version and exit"),
     info: bool = Option(False, "--info", help="Show general CLI info and exit"),
 ) -> None:
-    llm = get_ollama_llm(config.OLLAMA_MODEL)
-    ctx.obj = {"llm": llm}
     if version:
         echo(f"Selene AI - Version: {get_version()}")
         raise Exit(code=0)
@@ -41,14 +37,20 @@ def main_menu(
 
 @app.command("ask")
 def ask(
-    ctx: typer.Context,
     prompt: str = typer.Argument(..., help="What to ask the model"),
 ) -> None:
-    """Send a prompt. E.g. selene ask \"Who won the war in Underworld? Vampires or werewolves?\"."""
-    llm = ctx.obj["llm"]
-    choices = llm.call([{"role": "user", "content": prompt}], {})
-    if choices:
-        echo(choices[0])
+    from src.internal.agent import selene_agent
+
+    memory = MEMORY()
+    memory.add_msg(role="user", content=prompt, mode="text", channel="cli")
+    memory = selene_agent(memory)
+    # Prefer the final assistant message; fall back to full render for debugging.
+    asst = memory.last_asst_msg(content_only=True)
+    if asst:
+        echo(asst)
+    else:
+        echo(memory.render())
+    raise Exit(code=0)
 
 
 # Top-level subcommands; if first arg isn't one of these and isn't an option, treat as prompt (Cobra-style)
@@ -57,19 +59,13 @@ _KNOWN_COMMANDS = ("model", "ask")
 
 def main():
     setup_logging()
-    root_logger = logging.getLogger("src")
-    for handler in root_logger.handlers:
-        if isinstance(handler, RichHandler):
-            # handler.console = console
-            handler.show_time = False
-            handler.show_path = False
-            handler.highlighter = None
 
     # NOTE: Cobra-style: selene "prompt" or selene word word → selene ask "<prompt>"
     if len(sys.argv) >= 2:
         first = sys.argv[1]
         if not first.startswith("-") and first not in _KNOWN_COMMANDS:
             sys.argv = [sys.argv[0], "ask", " ".join(sys.argv[1:])]
+
     app()
 
 
