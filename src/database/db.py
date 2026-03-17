@@ -6,7 +6,7 @@ from pathlib import Path
 import pendulum
 import structlog
 from pydantic_extra_types.pendulum_dt import Date, DateTime
-from sqlmodel import create_engine
+from sqlmodel import SQLModel, create_engine
 
 logger = structlog.getLogger(__name__)
 
@@ -58,3 +58,11 @@ def create_new_engine():
 
 
 engine = create_new_engine()
+
+
+def create_base_db():
+    data_dir = Path(__file__).parent.parent / "data"
+    base_engine = create_engine(f"sqlite:///{data_dir}/selene_ai_base.db")
+    SQLModel.metadata.drop_all(base_engine)
+    SQLModel.metadata.create_all(base_engine)
+    logger.info("Base database created successfully")

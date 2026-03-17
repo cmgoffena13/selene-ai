@@ -13,3 +13,6 @@ install:
 
 upgrade:
 	uv sync --upgrade --all-extras
+
+create-base-db:
+	uv run -- python -m src.database.db create_base_db
