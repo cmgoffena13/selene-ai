@@ -3,12 +3,11 @@ from pathlib import Path
 
 import structlog
 import typer
-from thoughtflow import MEMORY, THOUGHT
+from thoughtflow import MEMORY
 from typer import Exit, Option, echo
 
 from src.cli.ollama import model_app
 from src.internal.agent import selene_agent
-from src.internal.llm.ollama import get_ollama_llm
 from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
 from src.settings import config
