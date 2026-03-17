@@ -14,6 +14,7 @@ class BaseConfig(BaseSettings):
 
 class GlobalConfig(BaseConfig):
     LOG_LEVEL: LogLevel = "INFO"
+    OLLAMA_MODEL: str = "llama3.2"
 
 
 class DevConfig(GlobalConfig):
