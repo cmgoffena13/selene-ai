@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Run the CLI without installing the package Ex. ./cli --help
+uv run -- python -m src.cli.main "$@"

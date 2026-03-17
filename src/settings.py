@@ -7,7 +7,7 @@ LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 class BaseConfig(BaseSettings):
-    ENV_STATE: Optional[str] = None
+    ENV_STATE: Optional[str] = "PROD"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -23,13 +23,13 @@ class DevConfig(GlobalConfig):
 
 
 class TestConfig(GlobalConfig):
-    LOG_LEVEL: LogLevel = "DEBUG"
+    LOG_LEVEL: LogLevel = "WARNING"
 
     model_config = SettingsConfigDict(env_prefix="TEST_")
 
 
 class ProdConfig(GlobalConfig):
-    LOG_LEVEL: LogLevel = "WARNING"
+    LOG_LEVEL: LogLevel = "ERROR"
 
     model_config = SettingsConfigDict(env_prefix="PROD_")
 
