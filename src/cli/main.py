@@ -7,6 +7,7 @@ from thoughtflow import MEMORY, THOUGHT
 from typer import Exit, Option, echo
 
 from src.cli.ollama import model_app
+from src.internal.agent import selene_agent
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
@@ -39,10 +40,9 @@ def main_menu(
 def ask(
     prompt: str = typer.Argument(..., help="What to ask the model"),
 ) -> None:
-    llm = get_ollama_llm(config.OLLAMA_MODEL)
     memory = MEMORY()
-    thought = THOUGHT(name="response", llm=llm, prompt=prompt)
-    memory = thought(memory)
+    memory.add_msg(role="user", content=prompt, mode="text", channel="cli")
+    memory = selene_agent(memory)
     echo(memory.render())
     raise Exit(code=0)
 
