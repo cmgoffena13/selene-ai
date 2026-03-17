@@ -7,13 +7,15 @@ import typer
 from rich.logging import RichHandler
 from typer import Exit, Option, echo
 
-from src.database.db import get_db_path
+from src.cli.ollama import model_app
+from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
 from src.utils import get_version
 
-app = typer.Typer(help="Selene AI - Local AI Assistant")
-
 logger = structlog.getLogger(__name__)
+
+app = typer.Typer(help="Selene AI - Local AI Assistant")
+app.add_typer(model_app, name="model")
 
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)
@@ -22,12 +24,12 @@ def main_menu(
     info: bool = Option(False, "--info", help="Show general CLI info and exit"),
 ) -> None:
     if version:
-        echo(f"Networker version: {get_version()}")
+        echo(f"Selene version: {get_version()}")
         raise Exit(code=0)
     if info:
         cli_path = Path(sys.argv[0]).resolve()
         echo(f"CLI Path: {cli_path}")
-        echo(f"Database Path: {get_db_path()}")
+        echo(f"Memory directory: {get_memory_dir()}")
         raise Exit(code=0)
 
 
