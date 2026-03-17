@@ -1,4 +1,5 @@
 import typer
+from ollama import Client, RequestError, ResponseError
 from typer import Exit, Option, echo
 
 model_app = typer.Typer(help="Manage Ollama models (pull, list).")
@@ -10,8 +11,6 @@ def model_list(
 ) -> None:
     """List Ollama models available locally."""
     try:
-        from ollama import Client, RequestError, ResponseError
-
         client = Client(host=host)
         resp = client.list()
     except (RequestError, ResponseError) as e:
@@ -34,8 +33,6 @@ def model_pull(
 ) -> None:
     """Pull an Ollama model so you can use it with Selene."""
     try:
-        from ollama import Client, RequestError, ResponseError
-
         client = Client(host=host)
         echo(f"Pulling {name}...")
         resp = client.pull(name, stream=False)

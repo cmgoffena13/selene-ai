@@ -1,13 +1,13 @@
-import logging
 import sys
 from pathlib import Path
 
 import structlog
 import typer
-from thoughtflow import MEMORY
+from thoughtflow import MEMORY, THOUGHT
 from typer import Exit, Option, echo
 
 from src.cli.ollama import model_app
+from src.internal.llm.ollama import get_ollama_llm
 from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
 from src.settings import config
@@ -39,21 +39,15 @@ def main_menu(
 def ask(
     prompt: str = typer.Argument(..., help="What to ask the model"),
 ) -> None:
-    from src.internal.agent import selene_agent
-
+    llm = get_ollama_llm(config.OLLAMA_MODEL)
     memory = MEMORY()
-    memory.add_msg(role="user", content=prompt, mode="text", channel="cli")
-    memory = selene_agent(memory)
-    # Prefer the final assistant message; fall back to full render for debugging.
-    asst = memory.last_asst_msg(content_only=True)
-    if asst:
-        echo(asst)
-    else:
-        echo(memory.render())
+    thought = THOUGHT(name="response", llm=llm, prompt=prompt)
+    memory = thought(memory)
+    echo(memory.render())
     raise Exit(code=0)
 
 
-# Top-level subcommands; if first arg isn't one of these and isn't an option, treat as prompt (Cobra-style)
+# Top-level subcommands;
 _KNOWN_COMMANDS = ("model", "ask")
 
 
