@@ -5,3 +5,37 @@ CommandPrompt {
     min-width: 50;
     padding: 1;
 }
+
+#chat_root {
+    height: 1fr;
+}
+
+#transcript {
+    height: 1fr;
+    padding: 1;
+}
+
+.bubble {
+    margin: 1 2;
+    padding: 1 2;
+    width: 100%;
+    background: $surface;
+    border: tall $panel;
+}
+
+.bubble.user {
+    background: $boost;
+}
+
+.bubble.assistant {
+    background: $panel;
+}
+
+.bubble.thinking {
+    color: $text-muted;
+}
+
+.bubble.error {
+    background: $error;
+    color: $text;
+}
