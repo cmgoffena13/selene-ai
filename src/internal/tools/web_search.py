@@ -39,13 +39,13 @@ def _tavily_search(**kwargs):
     raw = response.get("results", []) if isinstance(response, dict) else []
     results = [
         {
-            "title": r.get("title", ""),
-            "url": r.get("url", ""),
-            "snippet": r.get("content", ""),
-            "rank": i + 1,
-            "source": (r.get("url") or "")[:100],
+            "title": row.get("title", ""),
+            "url": row.get("url", ""),
+            "snippet": row.get("content", ""),
+            "rank": index + 1,
+            "source": (row.get("url") or "")[:100],
         }
-        for i, r in enumerate(raw)
+        for index, row in enumerate(raw)
     ]
     return {
         "query": response.get("query", query) if isinstance(response, dict) else query,
