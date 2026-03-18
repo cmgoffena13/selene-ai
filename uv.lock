@@ -1211,16 +1211,16 @@ wheels = [
 
 [[package]]
 name = "llama-index-workflows"
-version = "2.16.1"
+version = "2.17.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "llama-index-instrumentation" },
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3b/9a/2fae9bfb0e5fd12d323cb2c37450435c8e593f3b51cae297c55623eb1105/llama_index_workflows-2.16.1.tar.gz", hash = "sha256:2f6be223af407084eef064bcbec8f60ae4dd011d9a04631887ce986258fac58a", size = 83897, upload-time = "2026-03-12T15:16:20.579Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/50/7dc3affce3ac34dbcdeac7794fa5bde74081e2a366e4f9ea976928a59503/llama_index_workflows-2.17.0.tar.gz", hash = "sha256:fa1566926825d17ca33164224883c085fae0b4c5a038d5e3258a54ef3840e597", size = 86167, upload-time = "2026-03-17T23:56:58.301Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/22/ef/143ae98980144c95a647b04f6f914687f6b1ebc1743f741aec28b9ff42c4/llama_index_workflows-2.16.1-py3-none-any.whl", hash = "sha256:d58c74f59df3ae37765b7c214928639b8dc2596a68f03adb80b4981329dc4914", size = 107036, upload-time = "2026-03-12T15:16:18.088Z" },
+    { url = "https://files.pythonhosted.org/packages/28/15/7fca72c10314bdbc1fc0c3469266a130f97008c74e715a29179880368e1e/llama_index_workflows-2.17.0-py3-none-any.whl", hash = "sha256:6f4d9f7140a3a34ea7730feaeb827c29cd41051ccd0e9ddb0080e224faf8c91f", size = 109819, upload-time = "2026-03-17T23:56:57.325Z" },
 ]
 
 [[package]]
@@ -1644,9 +1644,9 @@ wheels = [
 
 [[package]]
 name = "nuitka"
-version = "4.0.5"
+version = "4.0.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f8/40/f73e578922084f9e465b30abdb9963aadcc087b5a9399033472d9ef641ab/nuitka-4.0.5.tar.gz", hash = "sha256:45e7d90266e76fe64eeb8d196c17666d7cd7cffbf68d6a24f233c3c03b6feaa8", size = 4420878, upload-time = "2026-03-12T10:03:39.562Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/4b/4923ebb606657c26d53969e1d864c89f2f4a8eca7b6ab45bed66060c9cae/nuitka-4.0.6.tar.gz", hash = "sha256:9c14827058faf27414b6d28f5a27ef709fd6aa9b5f04af20e01b42889ac25b5c", size = 4421620, upload-time = "2026-03-18T14:29:00.275Z" }
 
 [[package]]
 name = "numpy"
@@ -1880,7 +1880,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "2.28.0"
+version = "2.29.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1892,9 +1892,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/56/87/eb0abb4ef88ddb95b3c13149384c4c288f584f3be17d6a4f63f8c3e3c226/openai-2.28.0.tar.gz", hash = "sha256:bb7fdff384d2a787fa82e8822d1dd3c02e8cf901d60f1df523b7da03cbb6d48d", size = 670334, upload-time = "2026-03-13T19:56:27.306Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b4/15/203d537e58986b5673e7f232453a2a2f110f22757b15921cbdeea392e520/openai-2.29.0.tar.gz", hash = "sha256:32d09eb2f661b38d3edd7d7e1a2943d1633f572596febe64c0cd370c86d52bec", size = 671128, upload-time = "2026-03-17T17:53:49.599Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/5a/df122348638885526e53140e9c6b0d844af7312682b3bde9587eebc28b47/openai-2.28.0-py3-none-any.whl", hash = "sha256:79aa5c45dba7fef84085701c235cf13ba88485e1ef4f8dfcedc44fc2a698fc1d", size = 1141218, upload-time = "2026-03-13T19:56:25.46Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/b1/35b6f9c8cf9318e3dbb7146cc82dab4cf61182a8d5406fc9b50864362895/openai-2.29.0-py3-none-any.whl", hash = "sha256:b7c5de513c3286d17c5e29b92c4c98ceaf0d775244ac8159aeb1bddf840eb42a", size = 1141533, upload-time = "2026-03-17T17:53:47.348Z" },
 ]
 
 [[package]]
@@ -2364,11 +2364,11 @@ wheels = [
 
 [[package]]
 name = "pypdf"
-version = "6.9.0"
+version = "6.9.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f5/c8/1f40699576c70a6c90d4bf47705a12a0bed1b02964a6bee039016279e126/pypdf-6.9.0.tar.gz", hash = "sha256:a59257869fc575ba2ccc10100a36be0a47cd1bc1fb00f2950abf1d219fa94c01", size = 5311107, upload-time = "2026-03-15T15:28:26.402Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/fb/dc2e8cb006e80b0020ed20d8649106fe4274e82d8e756ad3e24ade19c0df/pypdf-6.9.1.tar.gz", hash = "sha256:ae052407d33d34de0c86c5c729be6d51010bf36e03035a8f23ab449bca52377d", size = 5311551, upload-time = "2026-03-17T10:46:07.876Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/64/ac6159cfbeabab3cf54873bbf7314b29183c7ff547c9776596d63170d7c0/pypdf-6.9.0-py3-none-any.whl", hash = "sha256:85805ad7457ca878c4cfd1bc026c4b3dcae359b4a80f889fa7e8c5a1c1a83e51", size = 333408, upload-time = "2026-03-15T15:28:24.667Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/f4/75543fa802b86e72f87e9395440fe1a89a6d149887e3e55745715c3352ac/pypdf-6.9.1-py3-none-any.whl", hash = "sha256:f35a6a022348fae47e092a908339a8f3dc993510c026bb39a96718fc7185e89f", size = 333661, upload-time = "2026-03-17T10:46:06.286Z" },
 ]
 
 [[package]]
@@ -3208,11 +3208,11 @@ wheels = [
 
 [[package]]
 name = "thoughtflow"
-version = "0.0.8"
+version = "0.0.9"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1f/b1/1b577d086a377479feb24fdc3787b9c743597ae0a4eb1137d11de4bd9f74/thoughtflow-0.0.8.tar.gz", hash = "sha256:67caf31ea0553a1337ce7090316d228671731765557dc2c601bfa10c4765b972", size = 240280, upload-time = "2026-03-13T08:25:38.89Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/3b/3e02ead6e9fea712c5e4a254fe65cf1a95dccb9fe706ef7cc8071f9396ea/thoughtflow-0.0.9.tar.gz", hash = "sha256:ba380cf5849a875436c05cda85ba75a9d44d206941760c929c938fb7044d1cd3", size = 243843, upload-time = "2026-03-18T04:08:40.026Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/86/a3/c69d8aa6751de469fa02836d6ce5de68f74d59ccb8c1463c4670ec9829e5/thoughtflow-0.0.8-py3-none-any.whl", hash = "sha256:b2316c52571a93a59625cd62505b5033cda6bc4ab2be29c6fb046225ae2cc63f", size = 179482, upload-time = "2026-03-13T08:25:37.519Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/b7/3449773af92846715c19d20d7525e6fd9cef38a872f3547afddd545bf78d/thoughtflow-0.0.9-py3-none-any.whl", hash = "sha256:4a22b45425ae687a447df4fdd624da57699ed2dbfe64c1eebfdae4e9310e0f9f", size = 180912, upload-time = "2026-03-18T04:08:38.492Z" },
 ]
 
 [[package]]
