@@ -1,3 +1,5 @@
+from typing import Optional
+
 import structlog
 from textual.app import App, ComposeResult
 from textual.containers import Vertical, VerticalScroll
@@ -8,6 +10,15 @@ from thoughtflow import CHAT, MEMORY
 from src.internal.agent import selene_agent
 
 logger = structlog.getLogger(__name__)
+
+THINKING_PHRASES = [
+    "Asking the Elders…",
+    "Searching the Archives…",
+    "Hunting the Lycans…",
+    "Loading the Silver Nitrate…",
+    "Sustaining my Thirst…",
+]
+THINKING_INTERVAL = 2.0
 
 
 class MessageBubble(Static):
@@ -25,7 +36,7 @@ class CommandPrompt(Input):
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle the submit event (Enter key)."""
         text = (event.value or "").strip()
-        if not text and text != "":
+        if not text or text == "":
             return
         self.value = ""
         self.app.submit_user_text(text)
@@ -39,7 +50,9 @@ class ChatApp(App):
     def on_mount(self) -> None:
         self.memory = MEMORY()
         self.chat = CHAT(agent=selene_agent, memory=self.memory, channel="webapp")
-        self._thinking: MessageBubble | None = None
+        self._thinking: Optional[MessageBubble] = None
+        self._thinking_timer = None
+        self._thinking_index = 0
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -55,14 +68,31 @@ class ChatApp(App):
         transcript.scroll_end(animate=False)
         return bubble
 
+    def _cycle_thinking_phrase(self) -> None:
+        """Update the thinking bubble to the next phrase (called by timer)."""
+        if self._thinking is None:
+            return
+        phrase = THINKING_PHRASES[self._thinking_index % len(THINKING_PHRASES)]
+        self._thinking_index += 1
+        self._thinking.update(phrase)
+
     def submit_user_text(self, text: str) -> None:
         self._append(text, "user")
+        if self._thinking_timer is not None:
+            self._thinking_timer.stop()
+            self._thinking_timer = None
         if self._thinking is not None:
             try:
                 self._thinking.remove()
             except Exception:
                 pass
-        self._thinking = self._append("…", "thinking")
+        self._thinking_index = 0
+        self._thinking = self._append(THINKING_PHRASES[0], "thinking")
+        self._thinking_timer = self.set_interval(
+            THINKING_INTERVAL,
+            self._cycle_thinking_phrase,
+            name="thinking_phrase_cycle",
+        )
 
         self.run_worker(
             lambda: self.chat.turn(text),
@@ -77,6 +107,10 @@ class ChatApp(App):
         worker = event.worker
         if getattr(worker, "name", "") != "agent_turn":
             return
+
+        if self._thinking_timer is not None:
+            self._thinking_timer.stop()
+            self._thinking_timer = None
 
         if worker.state == WorkerState.SUCCESS:
             response = worker.result or "(no response)"
