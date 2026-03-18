@@ -1,0 +1,11 @@
+ - implement textualize
+    - Figure out style (start with Cyan)
+ - implement Interactive Chats, saved contextual converstaions
+    - Name chats and visualize past chats
+    - View Chat Files
+ - implement commands to vectorize directories with LEANN
+ - implement vector search tool into Agent
+ - implement CI/CD to build binaries
+ - Figure out how to best have Agent analyze piped files
+ - Figure out best way to handle config (config file probably, .env isn't best here)
+ - Store prompts in .md files, that are copied to users prompt folder
