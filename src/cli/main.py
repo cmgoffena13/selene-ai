@@ -6,6 +6,7 @@ import typer
 from thoughtflow import MEMORY
 from typer import Exit, Option, echo
 
+from src.cli.chat import chat_app
 from src.cli.ollama import model_app
 from src.internal.agent import selene_agent
 from src.internal.memory_utils import get_memory_dir
@@ -17,6 +18,7 @@ logger = structlog.getLogger(__name__)
 
 app = typer.Typer(help="Selene AI - Local Death Dealer Assistant")
 app.add_typer(model_app, name="model")
+app.add_typer(chat_app, name="chat")
 
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)
@@ -35,7 +37,7 @@ def main_menu(
         raise Exit(code=0)
 
 
-@app.command("ask")
+@app.command("ask", help="Ask Selene a question")
 def ask(
     prompt: str = typer.Argument(..., help="What to ask the model"),
 ) -> None:
@@ -47,7 +49,7 @@ def ask(
 
 
 # Top-level subcommands;
-_KNOWN_COMMANDS = ("model", "ask")
+_KNOWN_COMMANDS = ("model", "ask", "chat")
 
 
 def main():
