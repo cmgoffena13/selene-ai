@@ -22,7 +22,8 @@ def model_list(
         return
     for m in resp.models:
         name = m.model or "(no name)"
-        size = f"  {m.size}" if getattr(m, "size", None) else ""
+        raw = getattr(m, "size", None)
+        size = f"  {raw / (1024**3):.1f} GB" if raw is not None else ""
         echo(f"  {name}{size}")
 
 
