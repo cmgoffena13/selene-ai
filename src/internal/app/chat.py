@@ -36,7 +36,7 @@ class CommandPrompt(Input):
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle the submit event (Enter key)."""
         text = (event.value or "").strip()
-        if not text or text == "":
+        if text == "":
             return
         self.value = ""
         self.app.submit_user_text(text)
