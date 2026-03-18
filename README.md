@@ -8,8 +8,8 @@
 |____/ \___|_|\___|_| |_|\___|
 ```
 
-linesofcode
-license
+![linesofcode](https://aschey.tech/tokei/github/cmgoffena13/watcher?category=code)
+![license](https://img.shields.io/badge/license-MIT-informational?style=flat)
 
 > *"The war itself, had become more of a memory than a reality. Pity, because I lived for it"*
 

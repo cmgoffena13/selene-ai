@@ -18,10 +18,13 @@ $ selene [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `ask`
+* `ask`: Ask Selene a question
 * `model`: Manage Ollama models (pull, list).
+* `chat`: Open an interactive chat with Selene.
 
 ## `selene ask`
+
+Ask Selene a question
 
 **Usage**:
 
@@ -88,4 +91,18 @@ $ selene model pull [OPTIONS] NAME
 **Options**:
 
 * `-H, --host TEXT`: Ollama host  [default: http://localhost:11434]
+* `--help`: Show this message and exit.
+
+## `selene chat`
+
+Open an interactive chat with Selene.
+
+**Usage**:
+
+```console
+$ selene chat [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
 * `--help`: Show this message and exit.
