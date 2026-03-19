@@ -22,9 +22,11 @@ def model_list(
         return
     for m in resp.models:
         name = m.model or "(no name)"
-        raw = getattr(m, "size", None)
-        size = f"  {raw / (1024**3):.1f} GB" if raw is not None else ""
-        echo(f"  {name}{size}")
+        size_bytes = getattr(m, "size", None)
+        size_display = (
+            f"  {size_bytes / (1024**3):.1f} GB" if size_bytes is not None else ""
+        )
+        echo(f"  {name}{size_display}")
 
 
 @model_app.command("pull")

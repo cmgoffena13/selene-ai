@@ -8,6 +8,7 @@ from typer import Exit, Option, echo
 
 from src.cli.chat import chat_app
 from src.cli.ollama import model_app
+from src.cli.rag import rag_app
 from src.internal.agent import selene_agent
 from src.internal.memory_utils import get_memory_dir
 from src.logging_conf import setup_logging
@@ -19,6 +20,7 @@ logger = structlog.getLogger(__name__)
 app = typer.Typer(help="Selene AI - Local Death Dealer Assistant")
 app.add_typer(model_app, name="model")
 app.add_typer(chat_app, name="chat")
+app.add_typer(rag_app, name="rag")
 
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)
@@ -49,7 +51,7 @@ def ask(
 
 
 # Top-level subcommands;
-_KNOWN_COMMANDS = ("model", "ask", "chat")
+_KNOWN_COMMANDS = ("model", "ask", "chat", "rag")
 
 
 def main():
