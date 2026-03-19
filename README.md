@@ -13,7 +13,9 @@
 
 > *"The war itself, had become more of a memory than a reality. Pity, because I lived for it"*
 
-Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main), [LEANN](https://github.com/yichuan-w/LEANN), and [Textual](https://github.com/Textualize/textual).
+Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main), and [LEANN](https://github.com/yichuan-w/LEANN) 
+
+CLI and GUI powered by [Typer](https://github.com/fastapi/typer) and [Textual](https://github.com/Textualize/textual)
 
 See [CLI Documentation](docs/cli.md) for detailed command usage.
 
@@ -21,20 +23,17 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 
 - [Ollama](https://ollama.ai) installed and running
 
-## Web Search
- - Selene can perform web searches utilizing [Tavily](https://www.tavily.com)
-
-## RAG
-
- - Index local files utilizing [LEANN](https://github.com/yichuan-w/LEANN)
- - Selene can perform local searches on any indexes to help in her responses
+## Features
+ - Manage Ollama Models
+    - Install ollama models through Selene
+ - Utilize [LEANN](https://github.com/yichuan-w/LEANN) to index local files
+    - Create / Update / Manage / Delete local vector indexes
+ - AI Tools
+   - Web Search utilizing [Tavily](https://www.tavily.com)
+   - Local Search utilizing [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
 
 ## Interactive Chat
 
-Interact with Selene in a conversation.
+Interact with Selene in a remembered conversation.
 
 ![Chat Window](static/textualize.png)
-
-
-
-
