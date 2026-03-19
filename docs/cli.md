@@ -19,7 +19,7 @@ $ selene [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `ask`: Ask Selene a question
-* `model`: Manage Ollama models (pull, list).
+* `model`: Manage Ollama models (pull, list, remove).
 * `chat`: Open an interactive chat with Selene.
 * `rag`: Build and manage RAG indexes (stored in...
 
@@ -39,11 +39,12 @@ $ selene ask [OPTIONS] PROMPT
 
 **Options**:
 
+* `-f, --file TEXT`: Attach a file to analyze.
 * `--help`: Show this message and exit.
 
 ## `selene model`
 
-Manage Ollama models (pull, list).
+Manage Ollama models (pull, list, remove).
 
 **Usage**:
 
@@ -59,6 +60,7 @@ $ selene model [OPTIONS] COMMAND [ARGS]...
 
 * `list`: List Ollama models available locally.
 * `pull`: Pull an Ollama model so you can use it...
+* `delete`: Remove a local Ollama model.
 
 ### `selene model list`
 
@@ -88,6 +90,25 @@ $ selene model pull [OPTIONS] NAME
 **Arguments**:
 
 * `NAME`: Model name (e.g. llama3.2, mistral)  [required]
+
+**Options**:
+
+* `-H, --host TEXT`: Ollama host  [default: http://localhost:11434]
+* `--help`: Show this message and exit.
+
+### `selene model delete`
+
+Remove a local Ollama model.
+
+**Usage**:
+
+```console
+$ selene model delete [OPTIONS] NAME
+```
+
+**Arguments**:
+
+* `NAME`: Model name to remove (e.g. llama3.2)  [required]
 
 **Options**:
 

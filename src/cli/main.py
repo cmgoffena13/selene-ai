@@ -12,6 +12,7 @@ from src.cli.ollama import model_app
 from src.cli.rag import rag_app
 from src.internal.agent import selene_agent
 from src.internal.memory_utils import get_memory_dir
+from src.internal.prompt_utils import append_file_to_prompt
 from src.logging_conf import setup_logging
 from src.settings import config
 from src.utils import get_version
@@ -43,9 +44,23 @@ def main_menu(
 @app.command("ask", help="Ask Selene a question")
 def ask(
     prompt: str = typer.Argument(..., help="What to ask the model"),
+    file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
 ) -> None:
+    user_prompt = prompt
+    if file:
+        file_path = Path(file).expanduser().resolve()
+        if not file_path.exists() or not file_path.is_file():
+            echo(f"Error: file not found: {file_path}", err=True)
+            raise Exit(code=1)
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            echo(f"Error reading file: {e}", err=True)
+            raise Exit(code=1)
+        user_prompt = append_file_to_prompt(prompt, file_path, content)
+
     memory = MEMORY()
-    memory.add_msg(role="user", content=prompt, mode="text", channel="cli")
+    memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
     memory = selene_agent(memory)
     echo(memory.last_asst_msg().get("content", ""))
     raise Exit(code=0)
