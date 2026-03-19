@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Optional
+from urllib.parse import unquote, urlparse
 
 import structlog
 from textual.app import App, ComposeResult
@@ -17,6 +18,7 @@ from src.internal.memory_utils import (
     resolve_chat_session_path,
     upsert_chat_session_index,
 )
+from src.internal.prompt_utils import append_file_to_prompt
 from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)
@@ -24,9 +26,8 @@ logger = structlog.getLogger(__name__)
 THINKING_PHRASES = [
     "Asking the Elders…",
     "Searching the Archives…",
-    "Sustaining my Thirst…",
     "Hunting the Lycans…",
-    "Loading the Silver Nitrate…",
+    "Reloading silver Nitrate…",
     "Feeding my Hunger…",
 ]
 
@@ -76,6 +77,11 @@ class MessageRow(Horizontal):
 class CommandPrompt(Input):
     """A text window for entering chat prompts."""
 
+    def on_input_changed(self, event: Input.Changed) -> None:
+        """Detect dropped/pasted file path and attach it."""
+        if self.app.maybe_attach_file_from_input(event.value):
+            self.value = ""
+
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle the submit event (Enter key)."""
         text = (event.value or "").strip()
@@ -110,6 +116,7 @@ class ChatApp(App):
         self.memory = MEMORY()
         self.chat = CHAT(agent=selene_agent, memory=self.memory, channel="webapp")
         self._current_session_path: Path = new_chat_session_path()
+        self._attached_file_path: Optional[Path] = None
         self._thinking: Optional[MessageBubble] = None
         self._thinking_index = -1
         self._refresh_session_dropdown()
@@ -132,7 +139,57 @@ class ChatApp(App):
         transcript.scroll_end(animate=False)
         return bubble
 
+    def _update_prompt_placeholder(self) -> None:
+        prompt = self.query_one("#prompt", CommandPrompt)
+        if self._attached_file_path is None:
+            prompt.placeholder = "Ask Selene…"
+        else:
+            prompt.placeholder = (
+                f'Attached "{self._attached_file_path.name}". Ask Selene…'
+            )
+
+    def _extract_file_path(self, raw: str) -> Optional[Path]:
+        text = (raw or "").strip()
+        if not text:
+            return None
+        if (text.startswith('"') and text.endswith('"')) or (
+            text.startswith("'") and text.endswith("'")
+        ):
+            text = text[1:-1]
+        if text.startswith("file://"):
+            parsed = urlparse(text)
+            text = unquote(parsed.path or "")
+        path = Path(text).expanduser()
+        if path.exists() and path.is_file():
+            return path.resolve()
+        return None
+
+    def maybe_attach_file_from_input(self, raw: str) -> bool:
+        path = self._extract_file_path(raw)
+        if path is None:
+            return False
+        self._attached_file_path = path
+        self._update_prompt_placeholder()
+        return True
+
     def submit_user_text(self, text: str) -> None:
+        model_prompt = text
+        if self._attached_file_path is not None:
+            try:
+                content = self._attached_file_path.read_text(
+                    encoding="utf-8", errors="replace"
+                )
+            except Exception as e:
+                self._append(f"Attachment read error: {e}", "error")
+                self._attached_file_path = None
+                self._update_prompt_placeholder()
+                return
+            model_prompt = append_file_to_prompt(
+                text, self._attached_file_path, content
+            )
+            self._attached_file_path = None
+            self._update_prompt_placeholder()
+
         self._append(text, "user")
         if self._thinking is not None:
             try:
@@ -145,7 +202,7 @@ class ChatApp(App):
         )
 
         self.run_worker(
-            lambda: self.chat.turn(text),
+            lambda: self.chat.turn(model_prompt),
             name="agent_turn",
             group="agent",
             exclusive=True,
@@ -208,9 +265,16 @@ class ChatApp(App):
             if not selected:
                 return
             filename = str(selected)
+            deleting_current = self._current_session_path.name == filename
             delete_chat_session(filename)
-            if self._current_session_path.name == filename:
+            if deleting_current:
+                self.memory = MEMORY()
+                self.chat.memory = self.memory
                 self._current_session_path = new_chat_session_path()
+                self._thinking = None
+                self._attached_file_path = None
+                self._update_prompt_placeholder()
+                self._clear_transcript()
             self._refresh_session_dropdown()
             return
 

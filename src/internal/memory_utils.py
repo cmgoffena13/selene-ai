@@ -116,7 +116,7 @@ def upsert_chat_session_index(filename: str, first_prompt: str = "") -> None:
             "first_prompt": normalized_prompt,
         }
     else:
-        if normalized_prompt:
+        if not existing.get("first_prompt") and normalized_prompt:
             existing["first_prompt"] = normalized_prompt
 
     merged = list(by_filename.values())
