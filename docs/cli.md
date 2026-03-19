@@ -1,6 +1,6 @@
 # `selene`
 
-Selene AI - Local Death Dealer Assistant
+Selene AI - Death Dealer, Elder Slayer, Silent Watcher
 
 **Usage**:
 

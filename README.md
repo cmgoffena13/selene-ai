@@ -28,13 +28,17 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 ---
 
 ## Features
- - Manage Ollama Models
-    - Install ollama models through Selene
+ - Utilize [Ollama](https://ollama.com) to manage models / transformers
+   - Pull / List / Delete Ollama models
  - Utilize [LEANN](https://github.com/yichuan-w/LEANN) to index local files
     - Create / Update / Manage / Delete local vector indexes
+ - Attach Files to Prompts
  - AI Tools
    - Web Search utilizing [Tavily](https://www.tavily.com)
    - Local Search utilizing [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
+ - Interactive Chat
+   - Auto-Save Conversations
+   - Load / Delete Conversations
 
 ## Interactive Chat
 
