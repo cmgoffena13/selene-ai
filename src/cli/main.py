@@ -51,19 +51,8 @@ def ask(
     raise Exit(code=0)
 
 
-# Top-level subcommands;
-_KNOWN_COMMANDS = ("model", "ask", "chat", "rag")
-
-
 def main():
     setup_logging()
-
-    # NOTE: Cobra-style: selene "prompt" or selene word word → selene ask "<prompt>"
-    if len(sys.argv) >= 2:
-        first = sys.argv[1]
-        if not first.startswith("-") and first not in _KNOWN_COMMANDS:
-            sys.argv = [sys.argv[0], "ask", " ".join(sys.argv[1:])]
-
     app()
 
 
