@@ -40,8 +40,32 @@ def model_pull(
     try:
         client = Client(host=host)
         echo(f"Pulling {name}...")
-        resp = client.pull(name, stream=False)
-        echo(f"Done. {resp.status or 'Ready'}.")
+        stream = client.pull(name, stream=True)
+        last_status = ""
+
+        for chunk in stream:
+            status = getattr(chunk, "status", None)
+            completed = getattr(chunk, "completed", None)
+            total = getattr(chunk, "total", None)
+
+            if isinstance(chunk, dict):
+                status = chunk.get("status", status)
+                completed = chunk.get("completed", completed)
+                total = chunk.get("total", total)
+
+            if status and status != last_status:
+                if (
+                    isinstance(completed, (int, float))
+                    and isinstance(total, (int, float))
+                    and total > 0
+                ):
+                    pct = (completed / total) * 100
+                    echo(f"{status} ({pct:.0f}%)")
+                else:
+                    echo(status)
+                last_status = status
+
+        echo(f"Done. {last_status or 'Ready'}.")
     except (RequestError, ResponseError) as e:
         echo(f"Ollama error: {e}", err=True)
         echo("Is Ollama running? Start it with: ollama serve", err=True)
