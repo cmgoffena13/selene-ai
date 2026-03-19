@@ -22,7 +22,6 @@ CommandPrompt {
     width: 100%;
     padding: 0 2;
     height: auto;
-    margin: 1 0;
 }
 
 .spacer {
@@ -30,28 +29,22 @@ CommandPrompt {
 }
 
 .bubble {
-    margin: 0;
-    padding: 0;
+    margin: 1 0;
+    padding: 1 2;
     width: 80%;
     height: auto;
     box-sizing: border-box;
-    background: $background;
+    background: $surface;
     border: round $accent;
 }
 
-.bubble_content {
-    width: 100%;
-    height: auto;
-    box-sizing: border-box;
-    padding: 1 2;
-    background: $surface;
-}
-
 .bubble.user {
+    background: $surface;
     border: round $primary;
 }
 
 .bubble.assistant {
+    background: $surface;
 }
 
 .bubble.thinking {
@@ -59,10 +52,6 @@ CommandPrompt {
 }
 
 .bubble.error {
-    border: round $error;
-}
-
-.bubble.error .bubble_content {
     background: $error;
     color: $text;
 }

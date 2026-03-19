@@ -89,7 +89,7 @@ class CommandPrompt(Input):
 class ChatApp(App):
     """A Textual app to manage chats."""
 
-    TITLE = "Selene"
+    TITLE = "Interactive Chat"
     CSS_PATH = "chat_app.tcss"
 
     def on_mount(self) -> None:
