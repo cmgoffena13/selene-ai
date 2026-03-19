@@ -21,6 +21,7 @@ $ selene [OPTIONS] COMMAND [ARGS]...
 * `ask`: Ask Selene a question
 * `model`: Manage Ollama models (pull, list).
 * `chat`: Open an interactive chat with Selene.
+* `rag`: Build and manage RAG indexes (stored in...
 
 ## `selene ask`
 
@@ -102,6 +103,96 @@ Open an interactive chat with Selene.
 ```console
 $ selene chat [OPTIONS] COMMAND [ARGS]...
 ```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `selene rag`
+
+Build and manage RAG indexes (stored in ~/.config/selene_ai).
+
+**Usage**:
+
+```console
+$ selene rag [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+**Commands**:
+
+* `index`: Create a RAG index from a directory.
+* `update`: Update an existing RAG index with new...
+* `list`: List RAG indexes with size (GB) and docs...
+* `delete`: Delete a stored RAG index by name.
+
+### `selene rag index`
+
+Create a RAG index from a directory. Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.
+
+**Usage**:
+
+```console
+$ selene rag index [OPTIONS] NAME
+```
+
+**Arguments**:
+
+* `NAME`: Index name (e.g. my-docs). Used to look up the index later.  [required]
+
+**Options**:
+
+* `-d, --docs TEXT`: Directory path of files to index (recursive). Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.  [required]
+* `--help`: Show this message and exit.
+
+### `selene rag update`
+
+Update an existing RAG index with new files from its stored docs directory (add-only for HNSW).
+
+**Usage**:
+
+```console
+$ selene rag update [OPTIONS] NAME
+```
+
+**Arguments**:
+
+* `NAME`: Index name to update.  [required]
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+### `selene rag list`
+
+List RAG indexes with size (GB) and docs directory.
+
+**Usage**:
+
+```console
+$ selene rag list [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+### `selene rag delete`
+
+Delete a stored RAG index by name.
+
+**Usage**:
+
+```console
+$ selene rag delete [OPTIONS] NAME
+```
+
+**Arguments**:
+
+* `NAME`: Index name to delete (e.g. thoughtflow).  [required]
 
 **Options**:
 
