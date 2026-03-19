@@ -10,6 +10,27 @@ CommandPrompt {
     height: 1fr;
 }
 
+#session_controls {
+    height: auto;
+    padding: 0 0;
+    margin: 0 1 0 1;
+}
+
+#session_select {
+    width: 1fr;
+    margin-right: 0;
+}
+
+#load_session {
+    min-width: 8;
+    margin-right: 1;
+}
+
+#delete_session {
+    min-width: 8;
+    margin-right: 0;
+}
+
 #transcript {
     height: 1fr;
     padding: 1;

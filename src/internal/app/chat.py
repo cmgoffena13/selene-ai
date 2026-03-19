@@ -1,14 +1,22 @@
+from pathlib import Path
 from typing import Optional
 
 import structlog
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.theme import Theme
-from textual.widgets import Footer, Header, Input, Static
+from textual.widgets import Button, Footer, Header, Input, Select, Static
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
 from src.internal.agent import selene_agent
+from src.internal.memory_utils import (
+    delete_chat_session,
+    list_chat_sessions_index,
+    new_chat_session_path,
+    resolve_chat_session_path,
+    upsert_chat_session_index,
+)
 from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)
@@ -21,6 +29,8 @@ THINKING_PHRASES = [
     "Loading the Silver Nitrate…",
     "Feeding my Hunger…",
 ]
+
+FIRST_PROMPT_PREVIEW_LEN = 50
 
 
 class MessageBubble(Vertical):
@@ -99,12 +109,18 @@ class ChatApp(App):
 
         self.memory = MEMORY()
         self.chat = CHAT(agent=selene_agent, memory=self.memory, channel="webapp")
+        self._current_session_path: Path = new_chat_session_path()
         self._thinking: Optional[MessageBubble] = None
         self._thinking_index = -1
+        self._refresh_session_dropdown()
 
     def compose(self) -> ComposeResult:
         yield Header()
         with Vertical(id="chat_root"):
+            with Horizontal(id="session_controls"):
+                yield Select([], prompt="Session", id="session_select")
+                yield Button("Load", id="load_session")
+                yield Button("Delete", id="delete_session")
             yield VerticalScroll(id="transcript")
             yield CommandPrompt(placeholder="Ask Selene…", id="prompt")
         yield Footer()
@@ -137,6 +153,84 @@ class ChatApp(App):
             exit_on_error=False,
         )
 
+    def _clear_transcript(self) -> None:
+        transcript = self.query_one("#transcript", VerticalScroll)
+        transcript.remove_children()
+
+    def _rebuild_transcript_from_memory(self) -> None:
+        self._clear_transcript()
+        self._thinking = None
+        for msg in self.chat.memory.get_msgs(include=["user", "assistant"]):
+            role = msg.get("role")
+            content = msg.get("content", "")
+            if role in {"user", "assistant"}:
+                self._append(content, role)
+
+    def _autosave_current_session(self) -> None:
+        self.chat.memory.save(str(self._current_session_path))
+        first_user = self.chat.memory.last_user_msg(content_only=True)
+        upsert_chat_session_index(self._current_session_path.name, first_user)
+        self._refresh_session_dropdown()
+
+    def _refresh_session_dropdown(self) -> None:
+        select = self.query_one("#session_select", Select)
+        sessions = list_chat_sessions_index()
+        options = []
+        for session in sessions:
+            filename = session["filename"]
+            display_name = filename[:-4] if filename.endswith(".pkl") else filename
+            first_prompt = (session.get("first_prompt") or "").strip()
+            if len(first_prompt) > FIRST_PROMPT_PREVIEW_LEN:
+                prompt_preview = f"{first_prompt[:FIRST_PROMPT_PREVIEW_LEN]}..."
+            else:
+                prompt_preview = first_prompt
+            label = (
+                f'{display_name} - "{prompt_preview}"'
+                if prompt_preview
+                else display_name
+            )
+            options.append((label, filename))
+        select.set_options(options)
+        if sessions:
+            current_name = self._current_session_path.name
+            available_names = {session["filename"] for session in sessions}
+            if current_name in available_names:
+                select.value = current_name
+            else:
+                newest = sessions[0]["filename"]
+                select.value = newest
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+        selected = self.query_one("#session_select", Select).value
+
+        if button_id == "delete_session":
+            if not selected:
+                return
+            filename = str(selected)
+            delete_chat_session(filename)
+            if self._current_session_path.name == filename:
+                self._current_session_path = new_chat_session_path()
+            self._refresh_session_dropdown()
+            return
+
+        if button_id == "load_session":
+            if not selected:
+                return
+            load_path = resolve_chat_session_path(str(selected))
+            if not load_path.exists():
+                return
+
+            loaded = MEMORY()
+            loaded.load(str(load_path))
+            self.memory = loaded
+            self.chat.memory = self.memory
+            self._current_session_path = load_path
+            self._rebuild_transcript_from_memory()
+            self.query_one("#transcript", VerticalScroll).scroll_end(animate=False)
+            self._refresh_session_dropdown()
+            return
+
     def on_worker_state_changed(self, event) -> None:
         worker = event.worker
         if getattr(worker, "name", "") != "agent_turn":
@@ -152,6 +246,7 @@ class ChatApp(App):
             else:
                 self._append(response, "assistant")
             self.query_one("#transcript", VerticalScroll).scroll_end(animate=True)
+            self._autosave_current_session()
             return
 
         if worker.state in {WorkerState.ERROR, WorkerState.CANCELLED}:
@@ -168,3 +263,4 @@ class ChatApp(App):
             else:
                 self._append(msg, "error")
             self.query_one("#transcript", VerticalScroll).scroll_end(animate=True)
+            self._autosave_current_session()
