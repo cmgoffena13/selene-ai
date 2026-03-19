@@ -106,6 +106,7 @@ $ selene chat [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
+* `-w, --web`: Serve chat UI in a web browser.
 * `--help`: Show this message and exit.
 
 ## `selene rag`
