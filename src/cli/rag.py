@@ -2,7 +2,7 @@ import typer
 from typer import Argument, Exit, Option, echo
 
 from src.internal.rag.builder import build_rag_index
-from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
+from src.internal.rag.rag_utils import delete_rag_index, list_rag_indexes_with_sizes
 from src.internal.rag.updater import update_rag_index
 
 rag_app = typer.Typer(
@@ -76,3 +76,14 @@ def rag_list() -> None:
     for name, _path, size_bytes, docs_dir in indexes:
         size_gb = size_bytes / (1024**3)
         echo(f"  {name}  {size_gb:.2f} GB  {docs_dir}")
+
+
+@rag_app.command("delete", help="Delete a stored RAG index by name.")
+def rag_delete(
+    name: str = Argument(..., help="Index name to delete (e.g. thoughtflow)."),
+) -> None:
+    deleted = delete_rag_index(name)
+    if deleted:
+        echo(f"Index '{name}' deleted.")
+    else:
+        echo(f"Index '{name}' not found.")

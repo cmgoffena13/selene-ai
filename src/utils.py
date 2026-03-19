@@ -49,3 +49,19 @@ def get_version() -> str:
     with open(pyproject_path, "rb") as f:
         pyproject = tomllib.load(f)
     return pyproject["project"]["version"]
+
+
+def ensure_dir(path: Path) -> Path:
+    """Create directory (and parents) if missing; return the same path."""
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def get_selene_ai_config_dir(*parts: str) -> Path:
+    """
+    Base directory for Selene local config/data: ~/.config/selene_ai
+
+    If `parts` are provided, returns ~/.config/selene_ai/<parts...> and creates it.
+    """
+    base = Path.home() / ".config" / "selene_ai"
+    return ensure_dir(base.joinpath(*parts))

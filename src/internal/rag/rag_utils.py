@@ -1,32 +1,23 @@
 import json
+import shutil
 from pathlib import Path
 
-# Chunking for LEANN index build/update.
+from src.utils import get_selene_ai_config_dir
+
 CHUNK_SIZE = 256
 CHUNK_OVERLAP = 128
-
-# Embedding and sync.
 OLLAMA_EMBEDDING_MODEL = "nomic-embed-text"
 SYNC_SNAPSHOT_FILENAME = "sync_context.pickle"
 
 
-def get_rag_config_dir() -> Path:
-    """Base directory for RAG config and index data (~/.config/selene_ai)."""
-    base = Path.home() / ".config" / "selene_ai"
-    base.mkdir(parents=True, exist_ok=True)
-    return base
-
-
 def get_rag_indexes_dir() -> Path:
     """Directory where index files are stored (~/.config/selene_ai/indexes)."""
-    d = get_rag_config_dir() / "indexes"
-    d.mkdir(parents=True, exist_ok=True)
-    return d
+    return get_selene_ai_config_dir("indexes")
 
 
 def get_rag_registry_path() -> Path:
     """Path to the JSON file mapping index name -> absolute index path."""
-    return get_rag_config_dir() / "rag_indexes.json"
+    return get_selene_ai_config_dir() / "rag_indexes.json"
 
 
 def load_rag_registry() -> dict[str, dict]:
@@ -106,3 +97,29 @@ def list_rag_indexes_with_sizes() -> list[tuple[str, Path, int, str]]:
         size_bytes = _dir_size_bytes(index_dir)
         out.append((name, p, size_bytes, entry["docs_dir"]))
     return out
+
+
+def delete_rag_index(name: str) -> bool:
+    """
+    Delete a stored RAG index by name.
+
+    Deletes only the index directory under `indexes/<name>` and removes the
+    entry from `rag_indexes.json`. Does NOT touch the original `docs_dir`.
+
+    Returns:
+        True if the index directory and/or registry entry existed and were removed.
+    """
+    deleted_any = False
+
+    index_dir = get_rag_indexes_dir() / name
+    if index_dir.exists():
+        shutil.rmtree(index_dir)
+        deleted_any = True
+
+    reg = load_rag_registry()
+    if name in reg:
+        reg.pop(name, None)
+        save_rag_registry(reg)
+        deleted_any = True
+
+    return deleted_any

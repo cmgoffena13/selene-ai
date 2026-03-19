@@ -16,6 +16,8 @@ class GlobalConfig(BaseConfig):
     LOG_LEVEL: LogLevel = "INFO"
     OLLAMA_MODEL: str = "llama3.2"
     TAVILY_API_KEY: Optional[str] = None
+    LEANN_LOG_LEVEL: LogLevel = "WARNING"
+    LEANN_SUPPRESS_OUTPUT: bool = True
 
 
 class DevConfig(GlobalConfig):

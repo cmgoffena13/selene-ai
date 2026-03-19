@@ -4,6 +4,7 @@ from pathlib import Path
 
 from leann import LeannBuilder
 from leann.chunking_utils import create_traditional_chunks
+from leann.cli import suppress_cpp_output
 from leann.sync import FileSynchronizer
 from llama_index.core import SimpleDirectoryReader
 
@@ -14,6 +15,7 @@ from src.internal.rag.rag_utils import (
     get_rag_index_docs_dir,
     get_rag_index_path,
 )
+from src.settings import config
 
 
 def update_rag_index(index_name: str) -> str:
@@ -118,6 +120,7 @@ def update_rag_index(index_name: str) -> str:
     for c in chunks:
         builder.add_text(c["text"], metadata=c.get("metadata", {}))
 
-    builder.update_index(index_path)
+    with suppress_cpp_output(suppress=config.LEANN_SUPPRESS_OUTPUT):
+        builder.update_index(index_path)
     fs.commit()
     return index_path
