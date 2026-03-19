@@ -9,16 +9,6 @@ from thoughtflow import TOOL
 from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
 from src.settings import config
 
-LOCAL_SEARCH_TOOL_PROMPT = """
-### "local_search"
-  - Use local_search to answer questions about local files on the user'scomputer.
-  - Query ALL local vector indexes and return the best matches.
-  - Optionally set use_grep=true to do an exact grep-style match over indexed text instead of vector similarity.
-  - After you receive local_search results, you MUST reply with a short summary for the user in plain text.
-  - Never leave your final response empty.
-""".strip()
-
-
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
     "type": "object",
     "properties": {

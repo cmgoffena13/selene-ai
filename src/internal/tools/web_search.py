@@ -3,12 +3,6 @@ from thoughtflow import TOOL
 
 from src.settings import config
 
-WEB_SEARCH_TOOL_PROMPT = """
-### "web_search"
-  - You may use web_search ONCE for a generic search query. And then only ONE more time for a specific search query if needed.
-  - After you receive web_search results, you MUST reply with a short summary for the user in plain text. Never leave your final response empty.
-""".strip()
-
 WEB_SEARCH_PARAMETERS = {
     "type": "object",
     "properties": {
