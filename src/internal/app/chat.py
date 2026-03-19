@@ -125,7 +125,7 @@ class ChatApp(App):
         yield Header()
         with Vertical(id="chat_root"):
             with Horizontal(id="session_controls"):
-                yield Select([], prompt="Session", id="session_select")
+                yield Select([], prompt="Sessions", id="session_select")
                 yield Button("Load", id="load_session")
                 yield Button("Delete", id="delete_session")
             yield VerticalScroll(id="transcript")
@@ -259,8 +259,10 @@ class ChatApp(App):
             if current_name in available_names:
                 select.value = current_name
             else:
-                newest = sessions[0]["filename"]
-                select.value = newest
+                # New / unsaved session (e.g. before first turn autosave): show prompt only.
+                select.clear()
+        else:
+            select.clear()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id

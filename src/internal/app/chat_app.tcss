@@ -37,6 +37,15 @@ CommandPrompt {
     margin-right: 0;
 }
 
+/* Match default button label color for the "Sessions" placeholder (Select defaults to 50% foreground). */
+#session_select SelectCurrent Static#label {
+    color: $button-foreground;
+}
+
+#session_select SelectCurrent.-has-value Static#label {
+    color: $foreground;
+}
+
 #load_session {
     min-width: 8;
     margin-right: 1;
