@@ -30,28 +30,56 @@ CommandPrompt {
 
 .bubble {
     margin: 1 0;
-    padding: 1 2;
+    padding: 0;
     width: 80%;
     height: auto;
     box-sizing: border-box;
-    background: $surface;
+    background: $background;
     border: round $accent;
 }
 
-.bubble.user {
+.bubble_content {
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    padding: 1 2;
     background: $surface;
+}
+
+.bubble_label {
+    text-style: bold;
+    color: $text;
+    margin-bottom: 1;
+    color: $primary;
+}
+
+.bubble_body {
+    color: $primary;
+}
+
+.bubble.user {
     border: round $primary;
 }
 
 .bubble.assistant {
-    background: $surface;
 }
 
 .bubble.thinking {
+}
+
+.bubble.thinking .bubble_body {
     color: $text-muted;
 }
 
 .bubble.error {
+    border: round $error;
+}
+
+.bubble.error .bubble_content {
     background: $error;
+}
+
+.bubble.error .bubble_label,
+.bubble.error .bubble_body {
     color: $text;
 }

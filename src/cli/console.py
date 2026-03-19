@@ -12,7 +12,6 @@ def _make_console(*, stderr: bool) -> Console:
 
     theme = Theme(
         {
-            # Allows `[text]...[/]` markup if any code opts in.
             "text": palette["main"],
         }
     )

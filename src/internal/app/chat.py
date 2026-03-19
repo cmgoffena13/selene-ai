@@ -30,22 +30,17 @@ class MessageBubble(Vertical):
         self.role = role
         self.speaker = "Selene" if role in {"assistant", "thinking", "error"} else "You"
         super().__init__()
-        self._content = Static(
-            self._format(text),
-            markup=True,
-            classes="bubble_content",
-        )
+        self._label = Static(self.speaker, classes="bubble_label")
+        self._body = Static(text, classes="bubble_body")
+        self._content = Vertical(self._label, self._body, classes="bubble_content")
         self.add_class("bubble")
         self.add_class(role)
 
     def compose(self) -> ComposeResult:
         yield self._content
 
-    def _format(self, text: str) -> str:
-        return f"[b]{self.speaker}[/b]\n\n{text}"
-
     def set_text(self, text: str) -> None:
-        self._content.update(self._format(text))
+        self._body.update(text)
 
 
 class MessageRow(Horizontal):
@@ -175,6 +170,7 @@ class ChatApp(App):
                 self._thinking = None
             else:
                 self._append(response, "assistant")
+            self.query_one("#transcript", VerticalScroll).scroll_end(animate=False)
             return
 
         if worker.state in {WorkerState.ERROR, WorkerState.CANCELLED}:
@@ -190,3 +186,4 @@ class ChatApp(App):
                 self._thinking = None
             else:
                 self._append(msg, "error")
+            self.query_one("#transcript", VerticalScroll).scroll_end(animate=False)
