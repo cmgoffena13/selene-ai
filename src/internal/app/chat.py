@@ -29,21 +29,29 @@ THINKING_PHRASES = [
 THINKING_INTERVAL = 2.0
 
 
-class MessageBubble(Static):
-    """A single chat message bubble."""
+class MessageBubble(Vertical):
+    """A single chat message bubble (rounded border + inner fill)."""
 
     def __init__(self, text: str, *, role: str) -> None:
         self.role = role
         self.speaker = "Selene" if role in {"assistant", "thinking", "error"} else "You"
-        super().__init__(self._format(text), markup=True)
+        super().__init__()
+        self._content = Static(
+            self._format(text),
+            markup=True,
+            classes="bubble_content",
+        )
         self.add_class("bubble")
         self.add_class(role)
+
+    def compose(self) -> ComposeResult:
+        yield self._content
 
     def _format(self, text: str) -> str:
         return f"[b]{self.speaker}[/b]\n\n{text}"
 
     def set_text(self, text: str) -> None:
-        self.update(self._format(text))
+        self._content.update(self._format(text))
 
 
 class MessageRow(Horizontal):
@@ -81,7 +89,7 @@ class CommandPrompt(Input):
 class ChatApp(App):
     """A Textual app to manage chats."""
 
-    TITLE = "Interactive Chat"
+    TITLE = "Selene"
     CSS_PATH = "chat_app.tcss"
 
     def on_mount(self) -> None:
