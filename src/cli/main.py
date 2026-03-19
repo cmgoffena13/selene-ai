@@ -4,9 +4,10 @@ from pathlib import Path
 import structlog
 import typer
 from thoughtflow import MEMORY
-from typer import Exit, Option, echo
+from typer import Exit, Option
 
 from src.cli.chat import chat_app
+from src.cli.console import echo
 from src.cli.ollama import model_app
 from src.cli.rag import rag_app
 from src.internal.agent import selene_agent

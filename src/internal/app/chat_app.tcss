@@ -1,5 +1,5 @@
 CommandPrompt {
-    background: $boost;
+    background: $surface;
     height: 5;
     margin: 1;
     min-width: 50;
@@ -13,22 +13,45 @@ CommandPrompt {
 #transcript {
     height: 1fr;
     padding: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+}
+
+.row {
+    width: 100%;
+    padding: 0 2;
+    height: auto;
+    margin: 1 0;
+}
+
+.spacer {
+    width: 1fr;
 }
 
 .bubble {
-    margin: 1 2;
-    padding: 1 2;
+    margin: 0;
+    padding: 0;
+    width: 80%;
+    height: auto;
+    box-sizing: border-box;
+    background: $background;
+    border: round $accent;
+}
+
+.bubble_content {
     width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    padding: 1 2;
     background: $surface;
-    border: tall $panel;
 }
 
 .bubble.user {
-    background: $boost;
+    border: round $primary;
 }
 
 .bubble.assistant {
-    background: $panel;
 }
 
 .bubble.thinking {
@@ -36,6 +59,10 @@ CommandPrompt {
 }
 
 .bubble.error {
+    border: round $error;
+}
+
+.bubble.error .bubble_content {
     background: $error;
     color: $text;
 }

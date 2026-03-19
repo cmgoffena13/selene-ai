@@ -2,12 +2,20 @@ from typing import Optional
 
 import structlog
 from textual.app import App, ComposeResult
-from textual.containers import Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.theme import Theme
 from textual.widgets import Footer, Header, Input, Static
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
 from src.internal.agent import selene_agent
+from src.internal.ui.theme import (
+    BACKGROUND_COLOR,
+    BORDER_COLOR,
+    MAIN_COLOR,
+    PANEL_COLOR,
+    SURFACE_COLOR,
+)
 
 logger = structlog.getLogger(__name__)
 
@@ -25,9 +33,37 @@ class MessageBubble(Static):
     """A single chat message bubble."""
 
     def __init__(self, text: str, *, role: str) -> None:
-        super().__init__(text)
+        self.role = role
+        self.speaker = "Selene" if role in {"assistant", "thinking", "error"} else "You"
+        super().__init__(self._format(text), markup=True)
         self.add_class("bubble")
         self.add_class(role)
+
+    def _format(self, text: str) -> str:
+        return f"[b]{self.speaker}[/b]\n\n{text}"
+
+    def set_text(self, text: str) -> None:
+        self.update(self._format(text))
+
+
+class MessageRow(Horizontal):
+    """A row that aligns user left / assistant right."""
+
+    def __init__(self, bubble: MessageBubble, *, role: str) -> None:
+        super().__init__()
+        self.bubble = bubble
+        self.role = role
+        self.add_class("row")
+        self.add_class(role)
+
+    def compose(self) -> ComposeResult:
+        spacer = Static("", classes="spacer")
+        if self.role == "user":
+            yield self.bubble
+            yield spacer
+        else:
+            yield spacer
+            yield self.bubble
 
 
 class CommandPrompt(Input):
@@ -45,9 +81,24 @@ class CommandPrompt(Input):
 class ChatApp(App):
     """A Textual app to manage chats."""
 
+    TITLE = "Interactive Chat"
     CSS_PATH = "chat_app.tcss"
 
     def on_mount(self) -> None:
+        app_theme = Theme(
+            name="selene-cyan-dark",
+            primary=MAIN_COLOR,
+            secondary=PANEL_COLOR,
+            accent=BORDER_COLOR,
+            foreground=MAIN_COLOR,
+            background=BACKGROUND_COLOR,
+            surface=SURFACE_COLOR,
+            panel=PANEL_COLOR,
+            dark=True,
+        )
+        self.register_theme(app_theme)
+        self.theme = app_theme.name
+
         self.memory = MEMORY()
         self.chat = CHAT(agent=selene_agent, memory=self.memory, channel="webapp")
         self._thinking: Optional[MessageBubble] = None
@@ -64,7 +115,7 @@ class ChatApp(App):
     def _append(self, text: str, role: str) -> MessageBubble:
         transcript = self.query_one("#transcript", VerticalScroll)
         bubble = MessageBubble(text, role=role)
-        transcript.mount(bubble)
+        transcript.mount(MessageRow(bubble, role=role))
         transcript.scroll_end(animate=False)
         return bubble
 
@@ -74,7 +125,7 @@ class ChatApp(App):
             return
         phrase = THINKING_PHRASES[self._thinking_index % len(THINKING_PHRASES)]
         self._thinking_index += 1
-        self._thinking.update(phrase)
+        self._thinking.set_text(phrase)
 
     def submit_user_text(self, text: str) -> None:
         self._append(text, "user")
@@ -115,7 +166,7 @@ class ChatApp(App):
         if worker.state == WorkerState.SUCCESS:
             response = worker.result or "(no response)"
             if self._thinking is not None:
-                self._thinking.update(response)
+                self._thinking.set_text(response)
                 self._thinking.remove_class("thinking")
                 self._thinking.add_class("assistant")
                 self._thinking = None
@@ -130,7 +181,7 @@ class ChatApp(App):
                 else "Cancelled."
             )
             if self._thinking is not None:
-                self._thinking.update(msg)
+                self._thinking.set_text(msg)
                 self._thinking.remove_class("thinking")
                 self._thinking.add_class("error")
                 self._thinking = None

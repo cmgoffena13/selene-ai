@@ -1,6 +1,8 @@
 import typer
 from ollama import Client, RequestError, ResponseError
-from typer import Exit, Option, echo
+from typer import Exit, Option
+
+from src.cli.console import echo
 
 model_app = typer.Typer(help="Manage Ollama models (pull, list).")
 

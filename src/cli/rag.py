@@ -1,6 +1,7 @@
 import typer
-from typer import Argument, Exit, Option, echo
+from typer import Argument, Exit, Option
 
+from src.cli.console import echo
 from src.internal.rag.builder import build_rag_index
 from src.internal.rag.rag_utils import delete_rag_index, list_rag_indexes_with_sizes
 from src.internal.rag.updater import update_rag_index
