@@ -9,13 +9,7 @@ from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
 from src.internal.agent import selene_agent
-from src.internal.ui.theme import (
-    BACKGROUND_COLOR,
-    BORDER_COLOR,
-    MAIN_COLOR,
-    PANEL_COLOR,
-    SURFACE_COLOR,
-)
+from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)
 
@@ -93,15 +87,16 @@ class ChatApp(App):
     CSS_PATH = "chat_app.tcss"
 
     def on_mount(self) -> None:
+        palette = textual_palette(getattr(self.console, "color_system", None))
         app_theme = Theme(
-            name="selene-cyan-dark",
-            primary=MAIN_COLOR,
-            secondary=PANEL_COLOR,
-            accent=BORDER_COLOR,
-            foreground=MAIN_COLOR,
-            background=BACKGROUND_COLOR,
-            surface=SURFACE_COLOR,
-            panel=PANEL_COLOR,
+            name="selene-dark",
+            primary=palette["main"],
+            secondary=palette["panel"],
+            accent=palette["border"],
+            foreground=palette["main"],
+            background=palette["background"],
+            surface=palette["surface"],
+            panel=palette["panel"],
             dark=True,
         )
         self.register_theme(app_theme)

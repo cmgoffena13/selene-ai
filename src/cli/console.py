@@ -3,31 +3,31 @@ from __future__ import annotations
 from rich.console import Console
 from rich.theme import Theme
 
-from src.internal.ui.theme import BACKGROUND_COLOR, MAIN_COLOR
+from src.internal.ui.theme import rich_palette
 
-_theme = Theme(
-    {
-        # Allows `[text]...[/]` markup if any code opts in.
-        "text": MAIN_COLOR,
-    }
-)
 
-# NOTE: `markup=False` keeps output consistent with `typer.echo` (no Rich markup parsing).
-console = Console(
-    theme=_theme,
-    color_system="truecolor",
-    # Set both foreground + background so the terminal is consistent.
-    style=f"{MAIN_COLOR} on {BACKGROUND_COLOR}",
-    markup=False,
-)
+def _make_console(*, stderr: bool) -> Console:
+    probe = Console(color_system="auto", stderr=stderr, markup=False)
+    palette = rich_palette(getattr(probe, "color_system", None))
 
-console_err = Console(
-    theme=_theme,
-    color_system="truecolor",
-    style=f"{MAIN_COLOR} on {BACKGROUND_COLOR}",
-    markup=False,
-    stderr=True,
-)
+    theme = Theme(
+        {
+            # Allows `[text]...[/]` markup if any code opts in.
+            "text": palette["main"],
+        }
+    )
+
+    return Console(
+        theme=theme,
+        color_system="auto",
+        style=f"{palette['main']} on {palette['background']}",
+        markup=False,
+        stderr=stderr,
+    )
+
+
+console = _make_console(stderr=False)
+console_err = _make_console(stderr=True)
 
 
 def echo(message: object = "", *, err: bool = False) -> None:
