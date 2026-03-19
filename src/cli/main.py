@@ -62,7 +62,7 @@ def ask(
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
     memory = selene_agent(memory)
-    echo(memory.last_asst_msg().get("content", ""))
+    echo(memory.last_asst_msg().get("content", "").lstrip())
     raise Exit(code=0)
 
 

@@ -129,7 +129,9 @@ class ChatApp(App):
                 yield Button("Load", id="load_session")
                 yield Button("Delete", id="delete_session")
             yield VerticalScroll(id="transcript")
-            yield CommandPrompt(placeholder="Ask Selene…", id="prompt")
+            with Horizontal(id="prompt_row"):
+                yield CommandPrompt(placeholder="Ask Selene…", id="prompt")
+                yield Static("", id="attach_icon")
         yield Footer()
 
     def _append(self, text: str, role: str) -> MessageBubble:
@@ -141,12 +143,15 @@ class ChatApp(App):
 
     def _update_prompt_placeholder(self) -> None:
         prompt = self.query_one("#prompt", CommandPrompt)
+        attach_icon = self.query_one("#attach_icon", Static)
         if self._attached_file_path is None:
             prompt.placeholder = "Ask Selene…"
+            attach_icon.update("")
         else:
             prompt.placeholder = (
                 f'Attached "{self._attached_file_path.name}". Ask Selene…'
             )
+            attach_icon.update("📄")
 
     def _extract_file_path(self, raw: str) -> Optional[Path]:
         text = (raw or "").strip()
@@ -301,7 +306,7 @@ class ChatApp(App):
             return
 
         if worker.state == WorkerState.SUCCESS:
-            response = worker.result or "(no response)"
+            response = (worker.result or "(no response)").lstrip()
             if self._thinking is not None:
                 self._thinking.set_text(response)
                 self._thinking.remove_class("thinking")

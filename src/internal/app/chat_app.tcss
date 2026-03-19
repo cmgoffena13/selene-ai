@@ -1,9 +1,25 @@
 CommandPrompt {
     background: $surface;
     height: 5;
-    margin: 1;
+    margin: 1 0 1 1;
     min-width: 50;
     padding: 1;
+    width: 1fr;
+}
+
+#prompt_row {
+    height: auto;
+    width: 100%;
+}
+
+#attach_icon {
+    width: 4;
+    height: 5;
+    content-align: center middle;
+    margin: 1 1 1 0;
+    text-align: center;
+    color: $primary;
+    background: $surface;
 }
 
 #chat_root {
