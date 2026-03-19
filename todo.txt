@@ -1,5 +1,3 @@
- - implement textualize
-    - Figure out style (start with Cyan)
  - implement Interactive Chats, saved contextual converstaions
     - Name chats and visualize past chats
     - View Chat Files

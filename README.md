@@ -15,13 +15,26 @@
 
 Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main), [LEANN](https://github.com/yichuan-w/LEANN), and [Textual](https://github.com/Textualize/textual).
 
-See [CLI Documentation](docs/[cli.md](http://cli.md)) for detailed command usage.
+See [CLI Documentation](docs/cli.md) for detailed command usage.
 
-
-
-## Prerequisites
+### Prerequisites
 
 - [Ollama](https://ollama.ai) installed and running
+
+## Web Search
+ - Selene can perform web searches utilizing [Tavily](https://www.tavily.com)
+
+## RAG
+
+ - Index local files
+ - Selene can perform local searches on any indexes to help in her responses
+
+## Interactive Chat
+
+Interact with Selene in a conversation.
+
+![Chat Window](static/textualize.png)
+
 
 
 
