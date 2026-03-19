@@ -1,10 +1,7 @@
-import typer
 from ollama import Client, RequestError, ResponseError
-from typer import Exit, Option
+from typer import Argument, Exit, Option, Typer
 
-from src.cli.console import echo
-
-model_app = typer.Typer(help="Manage Ollama models (pull, list, remove).")
+model_app = Typer(help="Manage Ollama models (pull, list, remove).")
 
 
 @model_app.command("list")
@@ -12,6 +9,9 @@ def model_list(
     host: str = Option("http://localhost:11434", "--host", "-H", help="Ollama host"),
 ) -> None:
     """List Ollama models available locally."""
+
+    from src.cli.console import echo
+
     try:
         client = Client(host=host)
         resp = client.list()
@@ -33,10 +33,13 @@ def model_list(
 
 @model_app.command("pull")
 def model_pull(
-    name: str = typer.Argument(..., help="Model name (e.g. llama3.2, mistral)"),
+    name: str = Argument(..., help="Model name (e.g. llama3.2, mistral)"),
     host: str = Option("http://localhost:11434", "--host", "-H", help="Ollama host"),
 ) -> None:
     """Pull an Ollama model so you can use it with Selene."""
+
+    from src.cli.console import echo
+
     try:
         client = Client(host=host)
         echo(f"Pulling {name}...")
@@ -74,7 +77,7 @@ def model_pull(
 
 @model_app.command("delete")
 def model_remove(
-    name: str = typer.Argument(..., help="Model name to remove (e.g. llama3.2)"),
+    name: str = Argument(..., help="Model name to remove (e.g. llama3.2)"),
     host: str = Option("http://localhost:11434", "--host", "-H", help="Ollama host"),
 ) -> None:
     """Remove a local Ollama model."""

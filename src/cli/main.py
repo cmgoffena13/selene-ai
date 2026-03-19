@@ -2,12 +2,10 @@ import sys
 from pathlib import Path
 
 import structlog
-import typer
 from thoughtflow import MEMORY
-from typer import Exit, Option
+from typer import Argument, Exit, Option, Typer
 
 from src.cli.chat import chat_app
-from src.cli.console import echo
 from src.cli.ollama import model_app
 from src.cli.rag import rag_app
 from src.internal.agent import selene_agent
@@ -19,7 +17,7 @@ from src.utils import get_version
 
 logger = structlog.getLogger(__name__)
 
-app = typer.Typer(help="Selene AI - Local Death Dealer Assistant")
+app = Typer(help="Selene AI - Death Dealer, Elder Slayer, Silent Watcher")
 app.add_typer(model_app, name="model")
 app.add_typer(chat_app, name="chat")
 app.add_typer(rag_app, name="rag")
@@ -30,6 +28,8 @@ def main_menu(
     version: bool = Option(False, "--version", help="Show CLI version and exit"),
     info: bool = Option(False, "--info", help="Show general CLI info and exit"),
 ) -> None:
+    from src.cli.console import echo
+
     if version:
         echo(f"Selene AI - Version: {get_version()}")
         raise Exit(code=0)
@@ -43,9 +43,11 @@ def main_menu(
 
 @app.command("ask", help="Ask Selene a question")
 def ask(
-    prompt: str = typer.Argument(..., help="What to ask the model"),
+    prompt: str = Argument(..., help="What to ask the model"),
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
 ) -> None:
+    from src.cli.console import echo
+
     user_prompt = prompt
     if file:
         file_path = Path(file).expanduser().resolve()

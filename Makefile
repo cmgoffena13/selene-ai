@@ -21,6 +21,7 @@ docs:
 
 compile:
 	uv run -- nuitka --onefile src/cli/main.py \
+		--lto=yes \
 		--output-filename=selene \
 		--python-flag=no_warnings \
 		--include-data-files=pyproject.toml=pyproject.toml \

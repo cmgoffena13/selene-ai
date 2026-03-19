@@ -1,11 +1,8 @@
 import sys
 
-import typer
-from typer import Option
+from typer import Option, Typer
 
-from src.internal.app.chat import ChatApp
-
-chat_app = typer.Typer(help="Open an interactive chat with Selene.")
+chat_app = Typer(help="Open an interactive chat with Selene.")
 
 
 @chat_app.callback(invoke_without_command=True)
@@ -19,6 +16,8 @@ def chat_new(
         command = f'{sys.executable} -c "from src.internal.app.chat import ChatApp; ChatApp().run()"'
         Server(command).serve(debug=False)
         return
+
+    from src.internal.app.chat import ChatApp
 
     app = ChatApp(watch_css=True)
     app.run()
