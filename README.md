@@ -26,7 +26,7 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 
 ## RAG
 
- - Index local files
+ - Index local files utilizing [LEANN](https://github.com/yichuan-w/LEANN)
  - Selene can perform local searches on any indexes to help in her responses
 
 ## Interactive Chat
