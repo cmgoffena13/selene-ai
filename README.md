@@ -25,6 +25,8 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 
 - [Ollama](https://ollama.ai) installed and running
 
+---
+
 ## Features
  - Manage Ollama Models
     - Install ollama models through Selene
