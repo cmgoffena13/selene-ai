@@ -17,6 +17,8 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
 
 CLI and GUI powered by [Typer](https://github.com/fastapi/typer) and [Textual](https://github.com/Textualize/textual)
 
+---
+
 See [CLI Documentation](docs/cli.md) for detailed command usage.
 
 ### Prerequisites
