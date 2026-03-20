@@ -17,7 +17,6 @@ SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(_SYSTEM_PROMPT_TEMPLATE
 llm = get_ollama_llm(config.OLLAMA_MODEL)
 tools = get_tool_list()
 
-
 selene_agent = AGENT(
     llm=llm,
     tools=tools,

@@ -80,6 +80,8 @@ def model_remove(
     name: str = Argument(..., help="Model name to remove (e.g. llama3.2)"),
     host: str = Option("http://localhost:11434", "--host", "-H", help="Ollama host"),
 ) -> None:
+    from src.cli.console import echo
+
     """Remove a local Ollama model."""
     try:
         client = Client(host=host)

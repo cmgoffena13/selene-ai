@@ -87,6 +87,7 @@ def _tavily_search(**kwargs):
         for index, row in enumerate(raw)
     ]
     payload = {
+        "query": query,
         "provider": "tavily",
         "topic": topic,
         "time_range": time_range,
@@ -98,6 +99,7 @@ def _tavily_search(**kwargs):
         payload["query"],
         payload,
     )
+    logger.debug("Web search result", result=result)
     return result
 
 

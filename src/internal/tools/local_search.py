@@ -117,6 +117,7 @@ def _local_search(**kwargs: Any) -> dict[str, Any]:
         "errors": errors,
     }
     result = format_tool_result("local_search", query, payload)
+    logger.debug("Local search result", result=result)
     return result
 
 
