@@ -48,59 +48,63 @@ WEB_SEARCH_PARAMETERS = {
 def _tavily_search(**kwargs):
     """Call Tavily search API."""
     logger.debug("Tavily search kwargs", kwargs=kwargs)
-    query = (kwargs.get("query") or "").strip()
-    if not query:
-        return {"query": "", "results": [], "total_found": 0}
     try:
-        max_results = max(0, min(20, int(kwargs.get("max_results", 5))))
-    except (TypeError, ValueError):
-        max_results = 5
+        query = (kwargs.get("query") or "").strip()
+        if not query:
+            return {"query": "", "results": [], "total_found": 0}
+        try:
+            max_results = max(0, min(20, int(kwargs.get("max_results", 5))))
+        except (TypeError, ValueError):
+            max_results = 5
 
-    topic = kwargs.get("topic") or "general"
-    if topic not in _VALID_TOPICS:
-        topic = "general"
+        topic = kwargs.get("topic") or "general"
+        if topic not in _VALID_TOPICS:
+            topic = "general"
 
-    time_range = kwargs.get("time_range")
-    if time_range is not None and time_range not in _VALID_TIME_RANGES:
-        time_range = None
-    if time_range is None:
-        time_range = DEFAULT_TIME_RANGE
+        time_range = kwargs.get("time_range")
+        if time_range is not None and time_range not in _VALID_TIME_RANGES:
+            time_range = None
+        if time_range is None:
+            time_range = DEFAULT_TIME_RANGE
 
-    search_kwargs: dict = {
-        "query": query,
-        "max_results": max_results,
-        "topic": topic,
-        "time_range": time_range,
-    }
-
-    response = TavilyClient(api_key=config.TAVILY_API_KEY).search(**search_kwargs)
-    raw = response.get("results", []) if isinstance(response, dict) else []
-    results = [
-        {
-            "title": row.get("title", ""),
-            "url": row.get("url", ""),
-            "snippet": row.get("content", ""),
-            "published_date": row.get("published_date", ""),
-            "rank": index + 1,
-            "source": (row.get("url") or "")[:100],
+        search_kwargs: dict = {
+            "query": query,
+            "max_results": max_results,
+            "topic": topic,
+            "time_range": time_range,
         }
-        for index, row in enumerate(raw)
-    ]
-    payload = {
-        "query": query,
-        "provider": "tavily",
-        "topic": topic,
-        "time_range": time_range,
-        "results": results,
-        "total_found": len(results),
-    }
-    result = format_tool_result(
-        "web_search",
-        payload["query"],
-        payload,
-    )
-    logger.debug("Web search result", result=result)
-    return result
+
+        response = TavilyClient(api_key=config.TAVILY_API_KEY).search(**search_kwargs)
+        raw = response.get("results", []) if isinstance(response, dict) else []
+        results = [
+            {
+                "title": row.get("title", ""),
+                "url": row.get("url", ""),
+                "snippet": row.get("content", ""),
+                "published_date": row.get("published_date", ""),
+                "rank": index + 1,
+                "source": (row.get("url") or "")[:100],
+            }
+            for index, row in enumerate(raw)
+        ]
+        payload = {
+            "query": query,
+            "provider": "tavily",
+            "topic": topic,
+            "time_range": time_range,
+            "results": results,
+            "total_found": len(results),
+        }
+        result = format_tool_result(
+            "web_search",
+            payload["query"],
+            payload,
+        )
+        logger.debug("Web search result", result=result)
+        return result
+    except Exception as e:
+        logger.error("Web search error", error=e)
+        raise e
 
 
 def get_web_search_tool() -> TOOL:
@@ -111,8 +115,8 @@ def get_web_search_tool() -> TOOL:
             name="web_search",
             description=(
                 "Search the web for current or factual information. For breaking news, "
-                "sports, or politics use topic='news'. time_range defaults to one year "
-                "of recency; use 'day' or 'week' for stricter freshness."
+                "sports, or politics use topic='news' and 'day' or 'week' for time_range. "
+                "time_range defaults to one year when omitted. "
             ),
             parameters=WEB_SEARCH_PARAMETERS,
             fn=_tavily_search,
