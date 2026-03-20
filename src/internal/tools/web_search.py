@@ -1,7 +1,13 @@
 from tavily import TavilyClient
 from thoughtflow import TOOL
 
+from src.internal.prompt_utils import format_tool_result
 from src.settings import config
+
+# https://docs.tavily.com/documentation/api-reference/endpoint/search
+_VALID_TOPICS = frozenset({"general", "news", "finance"})
+_VALID_TIME_RANGES = frozenset({"day", "week", "month", "year", "d", "w", "m", "y"})
+DEFAULT_TIME_RANGE = "year"
 
 WEB_SEARCH_PARAMETERS = {
     "type": "object",
@@ -12,13 +18,32 @@ WEB_SEARCH_PARAMETERS = {
             "description": "Max results (default 5)",
             "default": 5,
         },
+        "topic": {
+            "type": "string",
+            "description": (
+                "Tavily search category: 'general' (default), 'news' for real-time "
+                "and current-events coverage, 'finance' for markets and business."
+            ),
+            "enum": ["general", "news", "finance"],
+            "default": "general",
+        },
+        "time_range": {
+            "type": "string",
+            "description": (
+                "Only return pages published or updated within this window before today "
+                "(by source date). Defaults to 'year' when omitted. Use 'day' or 'week' "
+                "when you need very recent results."
+            ),
+            "enum": ["day", "week", "month", "year"],
+            "default": "year",
+        },
     },
     "required": ["query"],
 }
 
 
 def _tavily_search(**kwargs):
-    """Call Tavily search API. Expects query and optional max_results (int)."""
+    """Call Tavily search API."""
     query = (kwargs.get("query") or "").strip()
     if not query:
         return {"query": "", "results": [], "total_found": 0}
@@ -27,26 +52,49 @@ def _tavily_search(**kwargs):
     except (TypeError, ValueError):
         max_results = 5
 
-    response = TavilyClient(api_key=config.TAVILY_API_KEY).search(
-        query=query, max_results=max_results
-    )
+    topic = kwargs.get("topic") or "general"
+    if topic not in _VALID_TOPICS:
+        topic = "general"
+
+    time_range = kwargs.get("time_range")
+    if time_range is not None and time_range not in _VALID_TIME_RANGES:
+        time_range = None
+    if time_range is None:
+        time_range = DEFAULT_TIME_RANGE
+
+    search_kwargs: dict = {
+        "query": query,
+        "max_results": max_results,
+        "topic": topic,
+        "time_range": time_range,
+    }
+
+    response = TavilyClient(api_key=config.TAVILY_API_KEY).search(**search_kwargs)
     raw = response.get("results", []) if isinstance(response, dict) else []
     results = [
         {
             "title": row.get("title", ""),
             "url": row.get("url", ""),
             "snippet": row.get("content", ""),
+            "published_date": row.get("published_date", ""),
             "rank": index + 1,
             "source": (row.get("url") or "")[:100],
         }
         for index, row in enumerate(raw)
     ]
-    return {
-        "query": response.get("query", query) if isinstance(response, dict) else query,
+    payload = {
         "provider": "tavily",
+        "topic": topic,
+        "time_range": time_range,
         "results": results,
         "total_found": len(results),
     }
+    result = format_tool_result(
+        "web_search",
+        payload["query"],
+        payload,
+    )
+    return result
 
 
 def get_web_search_tool() -> TOOL:
@@ -55,7 +103,11 @@ def get_web_search_tool() -> TOOL:
     else:
         return TOOL(
             name="web_search",
-            description="Search the web for current or factual information. Use when you need up-to-date or real-world facts.",
+            description=(
+                "Search the web for current or factual information. For breaking news, "
+                "sports, or politics use topic='news'. time_range defaults to one year "
+                "of recency; use 'day' or 'week' for stricter freshness."
+            ),
             parameters=WEB_SEARCH_PARAMETERS,
             fn=_tavily_search,
         )

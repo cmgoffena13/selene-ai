@@ -1,5 +1,7 @@
 import datetime
+import json
 from pathlib import Path
+from typing import Any
 
 
 def inject_system_prompt_placeholders(template: str) -> str:
@@ -10,6 +12,23 @@ def inject_system_prompt_placeholders(template: str) -> str:
     """
     current_date = datetime.datetime.today().strftime("%A, %B %d, %Y")
     return template.format(current_date=current_date)
+
+
+def format_tool_result(tool_name: str, query: str, result: Any) -> str:
+    """Format one tool result block for prompt context."""
+    if isinstance(result, str):
+        result_content = result
+    else:
+        result_content = json.dumps(result, ensure_ascii=False, indent=2)
+
+    return (
+        f"Tool: {tool_name}\n"
+        f"Tool Query: {query}\n"
+        "TOOL RESULT:\n"
+        "----- BEGIN TOOL RESULT -----\n"
+        f"{result_content}\n"
+        "----- END TOOL RESULT -----"
+    )
 
 
 def format_file_attachment(filename: str, content: str) -> str:

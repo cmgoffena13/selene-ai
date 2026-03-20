@@ -6,6 +6,7 @@ from leann import LeannSearcher
 from leann.cli import suppress_cpp_output
 from thoughtflow import TOOL
 
+from src.internal.prompt_utils import format_tool_result
 from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
 from src.settings import config
 
@@ -108,12 +109,13 @@ def _local_search(**kwargs: Any) -> dict[str, Any]:
 
     # If some indexes errored, include their errors too (but don’t let them break ranking).
     errors = [r for r in aggregated if "error" in r]
-    return {
-        "query": query,
+    payload = {
         "indexes_searched": len(indexes),
         "results": final,
         "errors": errors,
     }
+    result = format_tool_result("local_search", query, payload)
+    return result
 
 
 def get_local_search_tool() -> Optional[TOOL]:
