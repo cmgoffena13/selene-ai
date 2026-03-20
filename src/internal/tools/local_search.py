@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from typing import Any, Optional
 
+import structlog
 from leann import LeannSearcher
 from leann.cli import suppress_cpp_output
 from thoughtflow import TOOL
@@ -9,6 +8,8 @@ from thoughtflow import TOOL
 from src.internal.prompt_utils import format_tool_result
 from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
 from src.settings import config
+
+logger = structlog.getLogger(__name__)
 
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
     "type": "object",
@@ -40,6 +41,7 @@ LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
 
 
 def _local_search(**kwargs: Any) -> dict[str, Any]:
+    logger.debug("Local search kwargs", kwargs=kwargs)
     query = (kwargs.get("query") or "").strip()
     if not query:
         return {"query": "", "indexes_searched": 0, "results": []}

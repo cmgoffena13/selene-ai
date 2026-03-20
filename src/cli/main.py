@@ -15,7 +15,7 @@ from src.logging_conf import setup_logging
 from src.settings import config
 from src.utils import get_version
 
-logger = structlog.getLogger(__name__)
+logger = structlog.getLogger("src.cli.main")
 
 app = Typer(help="Selene AI - Death Dealer, Elder Slayer, Silent Watcher")
 app.add_typer(model_app, name="model")
@@ -64,6 +64,7 @@ def ask(
 
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
+    logger.info("Asking Selene a question", user_prompt=user_prompt)
     memory = selene_agent(memory)
     if verbose:
         echo(memory.render())

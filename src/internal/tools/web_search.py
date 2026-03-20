@@ -1,8 +1,11 @@
+import structlog
 from tavily import TavilyClient
 from thoughtflow import TOOL
 
 from src.internal.prompt_utils import format_tool_result
 from src.settings import config
+
+logger = structlog.getLogger(__name__)
 
 # https://docs.tavily.com/documentation/api-reference/endpoint/search
 _VALID_TOPICS = frozenset({"general", "news", "finance"})
@@ -44,6 +47,7 @@ WEB_SEARCH_PARAMETERS = {
 
 def _tavily_search(**kwargs):
     """Call Tavily search API."""
+    logger.debug("Tavily search kwargs", kwargs=kwargs)
     query = (kwargs.get("query") or "").strip()
     if not query:
         return {"query": "", "results": [], "total_found": 0}
