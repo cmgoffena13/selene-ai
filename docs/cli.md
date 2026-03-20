@@ -40,6 +40,7 @@ $ selene ask [OPTIONS] PROMPT
 **Options**:
 
 * `-f, --file TEXT`: Attach a file to analyze.
+* `-v, --verbose`: Show verbose output.
 * `--help`: Show this message and exit.
 
 ## `selene model`

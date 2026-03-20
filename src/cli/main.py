@@ -45,6 +45,7 @@ def main_menu(
 def ask(
     prompt: str = Argument(..., help="What to ask the model"),
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
+    verbose: bool = Option(False, "--verbose", "-v", help="Show verbose output."),
 ) -> None:
     from src.cli.console import echo
 
@@ -64,7 +65,10 @@ def ask(
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
     memory = selene_agent(memory)
-    echo(memory.last_asst_msg().get("content", "").lstrip())
+    if verbose:
+        echo(memory.render())
+    else:
+        echo(memory.last_asst_msg().get("content", "").lstrip())
     raise Exit(code=0)
 
 

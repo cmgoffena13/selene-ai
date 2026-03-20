@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 from pathlib import Path
 
 
@@ -8,7 +8,7 @@ def inject_system_prompt_placeholders(template: str) -> str:
 
     The date is computed when this runs (typically at process / agent init).
     """
-    current_date = date.today().isoformat()
+    current_date = datetime.datetime.today().strftime("%A, %B %d, %Y")
     return template.format(current_date=current_date)
 
 
