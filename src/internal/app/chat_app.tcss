@@ -46,6 +46,11 @@ CommandPrompt {
     color: $foreground;
 }
 
+#new_session {
+    min-width: 8;
+    margin-right: 1;
+}
+
 #load_session {
     min-width: 8;
     margin-right: 1;

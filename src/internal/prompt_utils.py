@@ -1,4 +1,15 @@
+from datetime import date
 from pathlib import Path
+
+
+def inject_system_prompt_placeholders(template: str) -> str:
+    """
+    Replace placeholders in the system prompt template (e.g. {current_date}).
+
+    The date is computed when this runs (typically at process / agent init).
+    """
+    current_date = date.today().isoformat()
+    return template.format(current_date=current_date)
 
 
 def format_file_attachment(filename: str, content: str) -> str:

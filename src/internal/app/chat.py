@@ -126,6 +126,7 @@ class ChatApp(App):
         with Vertical(id="chat_root"):
             with Horizontal(id="session_controls"):
                 yield Select([], prompt="Sessions", id="session_select")
+                yield Button("New", id="new_session")
                 yield Button("Load", id="load_session")
                 yield Button("Delete", id="delete_session")
             yield VerticalScroll(id="transcript")
@@ -219,6 +220,19 @@ class ChatApp(App):
         transcript = self.query_one("#transcript", VerticalScroll)
         transcript.remove_children()
 
+    def _reset_to_new_session(self) -> None:
+        """Fresh memory, new session path, clear UI; next autosave uses the new path."""
+        self.memory = MEMORY()
+        self.chat.memory = self.memory
+        self._current_session_path = new_chat_session_path()
+        self._thinking = None
+        self._attached_file_path = None
+        self._update_prompt_placeholder()
+        self._clear_transcript()
+        prompt = self.query_one("#prompt", CommandPrompt)
+        prompt.value = ""
+        self._refresh_session_dropdown()
+
     def _rebuild_transcript_from_memory(self) -> None:
         self._clear_transcript()
         self._thinking = None
@@ -268,6 +282,11 @@ class ChatApp(App):
         button_id = event.button.id
         selected = self.query_one("#session_select", Select).value
 
+        if button_id == "new_session":
+            self.workers.cancel_group(self, "agent")
+            self._reset_to_new_session()
+            return
+
         if button_id == "delete_session":
             if not selected:
                 return
@@ -275,14 +294,10 @@ class ChatApp(App):
             deleting_current = self._current_session_path.name == filename
             delete_chat_session(filename)
             if deleting_current:
-                self.memory = MEMORY()
-                self.chat.memory = self.memory
-                self._current_session_path = new_chat_session_path()
-                self._thinking = None
-                self._attached_file_path = None
-                self._update_prompt_placeholder()
-                self._clear_transcript()
-            self._refresh_session_dropdown()
+                self.workers.cancel_group(self, "agent")
+                self._reset_to_new_session()
+            else:
+                self._refresh_session_dropdown()
             return
 
         if button_id == "load_session":
