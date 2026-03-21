@@ -1,6 +1,6 @@
 # Standards
 
-This doc holds the format and structure of specific pieces used throughout Selene.
+This doc holds the format and structure of specific prompt formats & structure throughout Selene.
 
 ## File Content
 
@@ -22,3 +22,9 @@ Tool Result:
 [tool result content]
 ----- END TOOL RESULT -----
 ```
+
+## System Prompt Sections
+- Identity & Personality
+    - Critical Thinking & Engagement Principles
+- Tool Usage
+- File Handling
