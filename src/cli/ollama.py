@@ -8,7 +8,7 @@ model_app = Typer(help="Manage Ollama models (pull, list, remove).")
 
 @model_app.command("list")
 def model_list(
-    host: str = Option(config.OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
 ) -> None:
     """List Ollama models available locally."""
 
@@ -36,7 +36,7 @@ def model_list(
 @model_app.command("pull")
 def model_pull(
     name: str = Argument(..., help="Model name (e.g. llama3.2, mistral)"),
-    host: str = Option(config.OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
 ) -> None:
     """Pull an Ollama model so you can use it with Selene."""
 
@@ -80,7 +80,7 @@ def model_pull(
 @model_app.command("delete")
 def model_remove(
     name: str = Argument(..., help="Model name to remove (e.g. llama3.2)"),
-    host: str = Option(config.OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
 ) -> None:
     from src.cli.console import echo
 

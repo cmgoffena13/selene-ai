@@ -14,7 +14,7 @@ _SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "syst
 _SYSTEM_PROMPT_TEMPLATE = _SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(_SYSTEM_PROMPT_TEMPLATE)
 
-llm = get_ollama_llm(config.OLLAMA_MODEL)
+llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
 tools = get_tool_list()
 
 selene_agent = AGENT(

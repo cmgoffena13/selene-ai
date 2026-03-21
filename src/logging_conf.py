@@ -7,7 +7,7 @@ def setup_logging():
     handlers = {
         "default": {
             "class": "logging.StreamHandler",
-            "level": config.LOG_LEVEL,
+            "level": config.SELENE_LOG_LEVEL,
             "formatter": "console",
         },
     }
@@ -22,7 +22,7 @@ def setup_logging():
 
     loggers = {
         "src": {
-            "level": config.LOG_LEVEL,
+            "level": config.SELENE_LOG_LEVEL,
             "handlers": list(handlers.keys()),
             "propagate": False,
         }

@@ -76,7 +76,7 @@ def ask(
 
 def main():
     setup_logging()
-    warn_if_ollama_unreachable(config.OLLAMA_HOST)
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     app()
 
 

@@ -108,7 +108,7 @@ def _tavily_search(**kwargs):
 
 
 def get_web_search_tool() -> TOOL:
-    if config.TAVILY_API_KEY is None:
+    if config.SELENE_TAVILY_API_KEY is None:
         return None
     else:
         return TOOL(
