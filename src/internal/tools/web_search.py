@@ -2,7 +2,7 @@ import structlog
 from tavily import TavilyClient
 from thoughtflow import TOOL
 
-from src.internal.prompt_utils import format_tool_result
+from src.internal.prompts.prompt_utils import format_tool_result
 from src.settings import config
 
 logger = structlog.getLogger(__name__)

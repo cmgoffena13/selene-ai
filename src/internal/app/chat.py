@@ -18,7 +18,7 @@ from src.internal.memory_utils import (
     resolve_chat_session_path,
     upsert_chat_session_index,
 )
-from src.internal.prompt_utils import append_file_to_prompt
+from src.internal.prompts.prompt_utils import append_file_to_prompt
 from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)

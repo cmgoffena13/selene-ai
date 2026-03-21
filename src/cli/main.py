@@ -11,7 +11,7 @@ from src.cli.rag import rag_app
 from src.internal.agent.general import selene_agent
 from src.internal.llm.ollama_health import warn_if_ollama_unreachable
 from src.internal.memory_utils import get_memory_dir
-from src.internal.prompt_utils import append_file_to_prompt
+from src.internal.prompts.prompt_utils import append_file_to_prompt
 from src.logging_conf import setup_logging
 from src.settings import config
 from src.utils import get_version

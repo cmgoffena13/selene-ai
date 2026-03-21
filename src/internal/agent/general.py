@@ -1,18 +1,18 @@
-from pathlib import Path
-
 import structlog
 from thoughtflow import AGENT
 
 from src.internal.llm.ollama import get_ollama_llm
-from src.internal.prompt_utils import inject_system_prompt_placeholders
+from src.internal.prompts.prompt_utils import (
+    SYSTEM_PROMPT_PATH,
+    inject_system_prompt_placeholders,
+)
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
-_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
-_SYSTEM_PROMPT_TEMPLATE = _SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
-SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(_SYSTEM_PROMPT_TEMPLATE)
+SYSTEM_PROMPT_TEMPLATE = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
+SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(SYSTEM_PROMPT_TEMPLATE)
 
 llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
 tools = get_tool_list()
