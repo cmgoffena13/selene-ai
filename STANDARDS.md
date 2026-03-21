@@ -28,3 +28,11 @@ Tool Result:
     - Critical Thinking & Engagement Principles
 - Tool Usage
 - File Handling
+
+## Notes
+An agent's context typically includes:
+- System instructions — Who the agent is, how it should behave, what rules to follow
+- User instructions — The task description and any clarifications
+- Conversation history — Previous messages and actions in the current session
+- Tool results — Output from searches, file reads, command executions
+- Retrieved documents — Information pulled from RAG systems or knowledge bases
