@@ -38,7 +38,7 @@ def main_menu(
         cli_path = Path(sys.argv[0]).resolve()
         echo(f"CLI Path: {cli_path}")
         echo(f"Memory directory: {get_memory_dir()}")
-        echo(f"Ollama model: {config.OLLAMA_MODEL}")
+        echo(f"Ollama model: {config.SELENE_OLLAMA_MODEL}")
         raise Exit(code=0)
 
 
