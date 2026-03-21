@@ -10,7 +10,7 @@ from textual.widgets import Button, Footer, Header, Input, Select, Static
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
-from src.internal.agent import selene_agent
+from src.internal.agent.general import selene_agent
 from src.internal.memory_utils import (
     delete_chat_session,
     list_chat_sessions_index,
@@ -27,7 +27,6 @@ THINKING_PHRASES = [
     "Asking the Elders…",
     "Searching the Archives…",
     "Hunting the Lycans…",
-    "Reloading silver Nitrate…",
     "Feeding my Hunger…",
 ]
 

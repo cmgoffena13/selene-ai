@@ -24,7 +24,7 @@ def format_tool_result(tool_name: str, query: str, result: Any) -> str:
     return (
         f"Tool: {tool_name}\n"
         f"Tool Query: {query}\n"
-        "TOOL RESULT:\n"
+        "Tool Result:\n"
         "----- BEGIN TOOL RESULT -----\n"
         f"{result_content}\n"
         "----- END TOOL RESULT -----"

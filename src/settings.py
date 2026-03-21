@@ -14,6 +14,7 @@ class BaseConfig(BaseSettings):
 
 class GlobalConfig(BaseConfig):
     LOG_LEVEL: LogLevel = "INFO"
+    OLLAMA_HOST: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "mistral:7b"
     TAVILY_API_KEY: Optional[str] = None
     LEANN_LOG_LEVEL: LogLevel = "WARNING"

@@ -10,7 +10,7 @@ from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
-_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "system.md"
+_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
 _SYSTEM_PROMPT_TEMPLATE = _SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(_SYSTEM_PROMPT_TEMPLATE)
 
