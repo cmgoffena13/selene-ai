@@ -242,7 +242,7 @@ class ChatApp(App):
                 self._append(content, role)
 
     def _autosave_current_session(self) -> None:
-        self.chat.memory.save(str(self._current_session_path))
+        self.chat.memory.to_json(str(self._current_session_path))
         first_user = self.chat.memory.last_user_msg(content_only=True)
         upsert_chat_session_index(self._current_session_path.name, first_user)
         self._refresh_session_dropdown()
@@ -253,7 +253,7 @@ class ChatApp(App):
         options = []
         for session in sessions:
             filename = session["filename"]
-            display_name = filename[:-4] if filename.endswith(".pkl") else filename
+            display_name = Path(filename).stem
             first_prompt = (session.get("first_prompt") or "").strip()
             if len(first_prompt) > FIRST_PROMPT_PREVIEW_LEN:
                 prompt_preview = f"{first_prompt[:FIRST_PROMPT_PREVIEW_LEN]}..."
@@ -306,8 +306,7 @@ class ChatApp(App):
             if not load_path.exists():
                 return
 
-            loaded = MEMORY()
-            loaded.load(str(load_path))
+            loaded = MEMORY.from_json(str(load_path))
             self.memory = loaded
             self.chat.memory = self.memory
             self._current_session_path = load_path
