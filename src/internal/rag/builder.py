@@ -52,7 +52,6 @@ def build_rag_index(
         input_dir=str(docs_path),
         recursive=True,
         filename_as_id=True,
-        exclude_hidden=False,
     ).load_data()
 
     if not documents:

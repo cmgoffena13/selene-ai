@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+import structlog
 from leann import LeannBuilder
 from leann.chunking_utils import create_traditional_chunks
 from leann.cli import suppress_cpp_output
@@ -16,6 +17,8 @@ from src.internal.rag.rag_utils import (
     get_rag_index_path,
 )
 from src.settings import config
+
+logger = structlog.getLogger(__name__)
 
 
 def update_rag_index(index_name: str) -> str:
@@ -64,6 +67,9 @@ def update_rag_index(index_name: str) -> str:
 
     if removed or modified:
         # HNSW cannot remove or update; snapshot will still be committed so we don't re-detect forever.
+        logger.warning(
+            f"Index '{index_name}' has removed or modified files. Rebuild with `selene rag index {index_name} --docs <dir>`."
+        )
         pass  # Warn in CLI
 
     if not added and not removed and not modified:
