@@ -1,18 +1,19 @@
 from logging.config import dictConfig
+from typing import Any
 
 from src.settings import config
 
 
 def setup_logging():
-    handlers = {
+    handlers: dict[str, Any] = {
         "default": {
             "class": "logging.StreamHandler",
-            "level": config.SELENE_LOG_LEVEL,
+            "level": str(config.SELENE_LOG_LEVEL),
             "formatter": "console",
         },
     }
 
-    formatters = {
+    formatters: dict[str, Any] = {
         "console": {
             "class": "logging.Formatter",
             "datefmt": "%Y-%m-%dT%H:%M:%S",
@@ -20,10 +21,10 @@ def setup_logging():
         }
     }
 
-    loggers = {
+    loggers: dict[str, Any] = {
         "src": {
-            "level": config.SELENE_LOG_LEVEL,
-            "handlers": list(handlers.keys()),
+            "level": str(config.SELENE_LOG_LEVEL),
+            "handlers": ["default"],
             "propagate": False,
         }
     }

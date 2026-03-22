@@ -82,6 +82,8 @@ class CommandPrompt(Input):
 
     def on_input_changed(self, event: Input.Changed) -> None:
         """Detect dropped/pasted file path and attach it."""
+
+        assert isinstance(self.app, ChatApp)
         if self.app.maybe_attach_file_from_input(event.value):
             self.value = ""
 
@@ -91,6 +93,8 @@ class CommandPrompt(Input):
         if text == "":
             return
         self.value = ""
+
+        assert isinstance(self.app, ChatApp)
         self.app.submit_user_text(text)
 
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import structlog
 from tavily import TavilyClient
 from thoughtflow import TOOL
@@ -107,7 +109,7 @@ def _tavily_search(**kwargs):
         raise e
 
 
-def get_web_search_tool() -> TOOL:
+def get_web_search_tool() -> Optional[TOOL]:
     if config.SELENE_TAVILY_API_KEY is None:
         return None
     else:

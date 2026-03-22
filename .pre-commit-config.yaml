@@ -20,6 +20,15 @@ repos:
 
   - repo: local
     hooks:
+      - id: ty
+        name: ty
+        entry: uv run -- ty check
+        language: system
+        types: [python]
+        pass_filenames: true
+
+  - repo: local
+    hooks:
       - id: pytest
         name: pytest
         entry: uv run -- pytest -v -n auto

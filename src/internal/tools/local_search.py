@@ -40,12 +40,16 @@ LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
 }
 
 
-def _local_search(**kwargs: Any) -> dict[str, Any]:
+def _local_search(**kwargs: Any) -> str:
     logger.debug("Local search kwargs", kwargs=kwargs)
     try:
         query = (kwargs.get("query") or "").strip()
         if not query:
-            return {"query": "", "indexes_searched": 0, "results": []}
+            return format_tool_result(
+                "local_search",
+                "",
+                {"query": "", "indexes_searched": 0, "results": []},
+            )
 
         use_grep = bool(kwargs.get("use_grep", False))
 
@@ -66,7 +70,11 @@ def _local_search(**kwargs: Any) -> dict[str, Any]:
 
         indexes = list_rag_indexes_with_sizes()
         if not indexes:
-            return {"query": query, "indexes_searched": 0, "results": []}
+            return format_tool_result(
+                "local_search",
+                query,
+                {"query": query, "indexes_searched": 0, "results": []},
+            )
 
         aggregated: list[dict[str, Any]] = []
         for index_name, index_path, _size_bytes, _docs_dir in indexes:

@@ -7,10 +7,12 @@ from src.internal.tools.web_search import get_web_search_tool
 def get_tool_list() -> list[TOOL]:
     tool_list: list[TOOL] = []
 
-    if get_local_search_tool() is not None:
-        tool_list.append(get_local_search_tool())
+    local_search = get_local_search_tool()
+    if local_search is not None:
+        tool_list.append(local_search)
 
-    if get_web_search_tool() is not None:
-        tool_list.append(get_web_search_tool())
+    web_search = get_web_search_tool()
+    if web_search is not None:
+        tool_list.append(web_search)
 
     return tool_list

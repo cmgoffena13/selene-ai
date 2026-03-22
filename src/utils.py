@@ -33,7 +33,10 @@ def retry(attempts: int = 3, delay: float = 0.25, backoff: float = 2.0):
 
 def get_version() -> str:
     if getattr(sys, "frozen", False):
-        base_path = Path(sys._MEIPASS)
+        meipass = getattr(sys, "_MEIPASS", None)
+        if not isinstance(meipass, str):
+            raise RuntimeError("frozen build missing sys._MEIPASS")
+        base_path = Path(meipass)
         pyproject_path = base_path / "pyproject.toml"
         if not pyproject_path.exists():
             exe_path = Path(
