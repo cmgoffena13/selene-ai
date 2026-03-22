@@ -50,6 +50,7 @@ System Prompt Sections?
 - What to do (Task Instruction)
 
 Prompt Research:
+- General: https://www.promptingguide.ai
 - ChatGPT: https://developers.openai.com/api/docs/guides/prompt-engineering
 - Claude: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
 - Gemini: https://cloud.google.com/discover/what-is-prompt-engineering?hl=en
