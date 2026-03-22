@@ -49,7 +49,21 @@ System Prompt Sections?
 - Dos / Donts (enfore rules)
 - What to do (Task Instruction)
 
-Research:
-- https://developers.openai.com/api/docs/guides/prompt-engineering
-- https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
-- https://cloud.google.com/discover/what-is-prompt-engineering?hl=en
+Prompt Research:
+- ChatGPT: https://developers.openai.com/api/docs/guides/prompt-engineering
+- Claude: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+- Gemini: https://cloud.google.com/discover/what-is-prompt-engineering?hl=en
+- Llama: https://www.llama.com/docs/how-to-guides/prompting/
+- Mistral: https://docs.mistral.ai/capabilities/completion/prompting_capabilities
+
+## Tips & Tricks
+- Use precise language (adjectives) -- clear and direct
+- Provide Context/Motivation behind rules to help
+- Provide Example Input/Output
+- Use XML tags (Might just be for Claude)
+- In regards to context, place long-form docs and inputs near the top (first).
+- Tell the model what to do rather than not what to do.
+- Quantify the request when possible.
+- Breakdown down complex tasks into subtasks (1., 2., 3. etc)
+- Test Prompt Variation (keywords, level of detail, prompt length, etc.)
+- Remember the PBJ Assignment, every step matters
