@@ -29,7 +29,7 @@ def main_menu(
     version: bool = Option(False, "--version", help="Show CLI version and exit"),
     info: bool = Option(False, "--info", help="Show general CLI info and exit"),
 ) -> None:
-    from src.cli.console import echo
+    from src.internal.ui.console import echo
 
     if version:
         echo(f"Selene AI - Version: {get_version()}")
@@ -48,7 +48,7 @@ def ask(
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
     verbose: bool = Option(False, "--verbose", "-v", help="Show verbose output."),
 ) -> None:
-    from src.cli.console import echo
+    from src.internal.ui.console import echo
 
     user_prompt = prompt
     if file:

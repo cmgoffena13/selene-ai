@@ -28,7 +28,7 @@ def is_ollama_reachable(host: str) -> bool:
 def warn_if_ollama_unreachable(host: str) -> None:
     if is_ollama_reachable(host):
         return
-    from src.cli.console import echo
+    from src.internal.ui.console import echo
 
     echo(
         f"Warning: Ollama is not reachable at {host}. "

@@ -5,11 +5,12 @@ from typer import Option, Typer
 chat_app = Typer(help="Open an interactive chat with Selene.")
 
 
-@chat_app.callback(invoke_without_command=True)
+@chat_app.callback(
+    invoke_without_command=True, help="Open an interactive chat with Selene."
+)
 def chat_new(
     web: bool = Option(False, "--web", "-w", help="Serve chat UI in a web browser."),
 ) -> None:
-    """Open an interactive chat with Selene."""
     if web:
         from textual_serve.server import Server
 
