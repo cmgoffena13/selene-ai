@@ -28,6 +28,10 @@ THINKING_PHRASES = [
     "Searching the Archives…",
     "Hunting the Lycans…",
     "Feeding my Hunger…",
+    "Protecting the Coven…",
+    "Withholding my Judgement…",
+    "Honoring the Bloodlines…",
+    "Seeking the Truth…",
 ]
 
 FIRST_PROMPT_PREVIEW_LEN = 50
