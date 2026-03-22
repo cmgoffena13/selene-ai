@@ -11,7 +11,7 @@
 ![linesofcode](https://aschey.tech/tokei/github/cmgoffena13/selene-ai?category=code)
 ![license](https://img.shields.io/badge/license-MIT-informational?style=flat)
 
-> *"The war itself, had become more of a memory than a reality. Pity, because I lived for it"*
+> *"Like the weapons of the previous century, we too would become obsolete. Pity, because I lived for it"*
 
 Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main), and [LEANN](https://github.com/yichuan-w/LEANN) 
 
