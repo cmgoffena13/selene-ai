@@ -11,7 +11,7 @@ from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
 from src.internal.agent.general import selene_agent
-from src.internal.memory_utils import (
+from src.internal.agent.memory_utils import (
     delete_chat_session,
     list_chat_sessions_index,
     new_chat_session_path,
