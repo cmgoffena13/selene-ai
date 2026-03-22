@@ -1,5 +1,7 @@
-import os
+import pytest
+from typer.testing import CliRunner
 
-# Needs to happen before local imports
-os.environ["ENV_STATE"] = "test"
-from src.settings import config
+
+@pytest.fixture
+def runner() -> CliRunner:
+    return CliRunner()
