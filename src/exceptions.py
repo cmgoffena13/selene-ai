@@ -12,3 +12,11 @@ class DuplicateIndexError(CustomException):
     """
 
     pass
+
+
+class AgentDoesNotExistError(CustomException):
+    """
+    Exception raised when an agent does not exist.
+    """
+
+    pass

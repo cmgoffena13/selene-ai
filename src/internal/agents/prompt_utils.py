@@ -3,9 +3,23 @@ import json
 from pathlib import Path
 from typing import Any
 
-SYSTEM_PROMPT_PATH = (
-    Path(__file__).resolve().parent / "general" / "prompts" / "system.md"
-)
+from src.exceptions import AgentDoesNotExistError
+
+
+def agent_prompts_dir(agent_name: str) -> Path:
+    """Resolve ``src/internal/agents/<agent_name>/prompts``."""
+    return Path(__file__).resolve().parent / agent_name / "prompts"
+
+
+def list_agent_prompt_files(agent_name: str) -> list[Path]:
+    """All files under that agent's ``prompts`` directory (recursive), sorted."""
+    root = agent_prompts_dir(agent_name)
+    if not root.is_dir():
+        raise AgentDoesNotExistError(f"Agent {agent_name} does not exist.")
+    return sorted(p for p in root.rglob("*") if p.is_file())
+
+
+SYSTEM_PROMPT_PATH = agent_prompts_dir("general") / "system.md"
 
 
 def inject_system_prompt_placeholders(template: str) -> str:
