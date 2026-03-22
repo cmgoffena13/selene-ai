@@ -10,7 +10,7 @@ from textual.widgets import Button, Footer, Header, Input, Select, Static
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
-from src.internal.agents.general import selene_agent
+from src.internal.agents.general.agent import selene_agent
 from src.internal.agents.memory_utils import (
     delete_chat_session,
     list_chat_sessions_index,
@@ -99,8 +99,6 @@ class CommandPrompt(Input):
 
 
 class ChatApp(App):
-    """A Textual app to manage chats."""
-
     TITLE = "Interactive Chat"
     CSS_PATH = "chat_app.tcss"
 
@@ -228,7 +226,6 @@ class ChatApp(App):
         transcript.remove_children()
 
     def _reset_to_new_session(self) -> None:
-        """Fresh memory, new session path, clear UI; next autosave uses the new path."""
         self.memory = MEMORY()
         self.chat.memory = self.memory
         self._current_session_path = new_chat_session_path()
