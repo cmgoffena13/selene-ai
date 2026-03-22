@@ -6,6 +6,7 @@ from leann.cli import suppress_cpp_output
 from leann.sync import FileSynchronizer
 from llama_index.core import SimpleDirectoryReader
 
+from src.exceptions import DuplicateIndexError
 from src.internal.rag.rag_utils import (
     CHUNK_OVERLAP,
     CHUNK_SIZE,
@@ -27,7 +28,7 @@ def build_rag_index(
     Args:
         index_name: Name of the index (used for lookup later).
         docs_dir: Directory path to load documents from (recursive).
-        backend: LEANN backend name ("hnsw" or "diskann").
+        backend: LEANN backend name ("hnsw", "diskann", or "ivf").
 
     Returns:
         Absolute path to the built index (same path stored in config).
@@ -36,7 +37,7 @@ def build_rag_index(
         ValueError: If an index with this name already exists.
     """
     if get_rag_index_path(index_name) is not None:
-        raise ValueError(
+        raise DuplicateIndexError(
             f"Index '{index_name}' already exists. Use a different name or remove it first."
         )
 

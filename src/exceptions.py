@@ -4,3 +4,11 @@ class CustomException(Exception):
     """
 
     pass
+
+
+class DuplicateIndexError(CustomException):
+    """
+    Exception raised when a duplicate index is found.
+    """
+
+    pass
