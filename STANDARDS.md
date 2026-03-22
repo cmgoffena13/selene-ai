@@ -36,3 +36,15 @@ An agent's context typically includes:
 - Conversation history — Previous messages and actions in the current session
 - Tool results — Output from searches, file reads, command executions
 - Retrieved documents — Information pulled from RAG systems or knowledge bases
+
+System Prompt Sections?
+- Who the AI is
+- How they speak / interact
+- Set the Knowledge Base (ex. Current Date)
+- Dos / Donts (enfore rules)
+- What to do (Task Instruction)
+
+Research:
+- https://developers.openai.com/api/docs/guides/prompt-engineering
+- https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+- https://cloud.google.com/discover/what-is-prompt-engineering?hl=en
