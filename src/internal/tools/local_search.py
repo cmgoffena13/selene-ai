@@ -5,7 +5,7 @@ from leann import LeannSearcher
 from leann.cli import suppress_cpp_output
 from thoughtflow import TOOL
 
-from src.internal.prompts.prompt_utils import format_tool_result
+from src.internal.agent.prompt_utils import format_tool_result
 from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
 from src.settings import config
 

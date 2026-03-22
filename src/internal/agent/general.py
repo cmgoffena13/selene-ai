@@ -1,11 +1,11 @@
 import structlog
 from thoughtflow import AGENT
 
-from src.internal.llm.ollama import get_ollama_llm
-from src.internal.prompts.prompt_utils import (
+from src.internal.agent.prompt_utils import (
     SYSTEM_PROMPT_PATH,
     inject_system_prompt_placeholders,
 )
+from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
 
