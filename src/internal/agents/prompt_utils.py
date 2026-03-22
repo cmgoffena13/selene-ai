@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
+SYSTEM_PROMPT_PATH = (
+    Path(__file__).resolve().parent / "general" / "prompts" / "system.md"
+)
 
 
 def inject_system_prompt_placeholders(template: str) -> str:
