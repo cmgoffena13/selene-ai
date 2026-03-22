@@ -1,9 +1,21 @@
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+
+def _env_file_paths() -> tuple[str, ...]:
+    paths: list[str] = []
+    repo_root = Path(__file__).resolve().parent.parent
+    # Local for Development
+    if (repo_root / "pyproject.toml").is_file():
+        paths.append(str(repo_root / ".env"))
+    # Global for Production
+    paths.append(str(Path.home() / ".config" / "selene_ai" / ".env"))
+    return tuple(paths)
 
 
 class GlobalConfig(BaseSettings):
@@ -16,7 +28,7 @@ class GlobalConfig(BaseSettings):
     LEANN_LOG_LEVEL: LogLevel = "WARNING"
     LEANN_SUPPRESS_OUTPUT: bool = True
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_env_file_paths(), extra="ignore")
 
 
 @lru_cache()

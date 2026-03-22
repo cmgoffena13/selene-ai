@@ -17,7 +17,7 @@ def get_rag_indexes_dir() -> Path:
 
 def get_rag_registry_path() -> Path:
     """Path to the JSON file mapping index name -> absolute index path."""
-    return get_selene_ai_config_dir() / "rag_indexes.json"
+    return get_rag_indexes_dir() / "rag_indexes.json"
 
 
 def load_rag_registry() -> dict[str, dict]:
@@ -89,6 +89,8 @@ def list_rag_indexes_with_sizes() -> list[tuple[str, Path, int, str]]:
     reg = load_rag_registry()
     out: list[tuple[str, Path, int, str]] = []
     for name, entry in reg.items():
+        if name == "rag_indexes.json":
+            continue
         p = Path(entry["path"])
         meta_path = Path(str(p) + ".meta.json")
         if not meta_path.exists():
