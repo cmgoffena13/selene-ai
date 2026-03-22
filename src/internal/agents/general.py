@@ -1,7 +1,7 @@
 import structlog
 from thoughtflow import AGENT
 
-from src.internal.agent.prompt_utils import (
+from src.internal.agents.prompt_utils import (
     SYSTEM_PROMPT_PATH,
     inject_system_prompt_placeholders,
 )

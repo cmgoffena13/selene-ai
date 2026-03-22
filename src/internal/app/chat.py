@@ -10,15 +10,15 @@ from textual.widgets import Button, Footer, Header, Input, Select, Static
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
-from src.internal.agent.general import selene_agent
-from src.internal.agent.memory_utils import (
+from src.internal.agents.general import selene_agent
+from src.internal.agents.memory_utils import (
     delete_chat_session,
     list_chat_sessions_index,
     new_chat_session_path,
     resolve_chat_session_path,
     upsert_chat_session_index,
 )
-from src.internal.agent.prompt_utils import append_file_to_prompt
+from src.internal.agents.prompt_utils import append_file_to_prompt
 from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)
