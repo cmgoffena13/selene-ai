@@ -29,6 +29,11 @@ Tool Result:
 - Tool Usage
 - File Handling
 
+hmmmm, so maybe this standard (so far):
+- identity.md (only need one of these)
+- tools.md
+- files.md
+
 ## Notes
 An agent's context typically includes:
 - System instructions — Who the agent is, how it should behave, what rules to follow
