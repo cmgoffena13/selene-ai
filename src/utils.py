@@ -36,13 +36,10 @@ def get_version() -> str:
         meipass = getattr(sys, "_MEIPASS", None)
         if not isinstance(meipass, str):
             raise RuntimeError("frozen build missing sys._MEIPASS")
-        base_path = Path(meipass)
-        pyproject_path = base_path / "pyproject.toml"
+        pyproject_path = Path(meipass) / "pyproject.toml"
         if not pyproject_path.exists():
-            exe_path = Path(
-                sys.executable if hasattr(sys, "executable") else sys.argv[0]
-            )
-            pyproject_path = exe_path.parent / "pyproject.toml"
+            exe = Path(getattr(sys, "executable", None) or sys.argv[0])
+            pyproject_path = exe.parent / "pyproject.toml"
     else:
         pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
 
@@ -50,8 +47,7 @@ def get_version() -> str:
         raise FileNotFoundError(f"Could not find pyproject.toml at {pyproject_path}")
 
     with open(pyproject_path, "rb") as f:
-        pyproject = tomllib.load(f)
-    return pyproject["project"]["version"]
+        return tomllib.load(f)["project"]["version"]
 
 
 def ensure_dir(path: Path) -> Path:
