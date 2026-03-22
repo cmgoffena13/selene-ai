@@ -1,4 +1,5 @@
  - implement CI/CD to build binaries
  - Figure out best way to handle config (config file probably, .env isn't best here)
- - Store prompts in .md files, that are copied to users prompt folder
+ - Store prompts in .md files, that are copied to users prompt folder (maybe)
  - Make Index config a pydantic model
+ - Switch LEANN index update to use IVF (once its out?)
