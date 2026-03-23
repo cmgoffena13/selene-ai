@@ -160,20 +160,11 @@ class ChatApp(App):
             attach_icon.update("📄")
 
     def _extract_file_path(self, raw: str) -> Optional[Path]:
-        text = (raw or "").strip()
-        if not text:
-            return None
-        if (text.startswith('"') and text.endswith('"')) or (
-            text.startswith("'") and text.endswith("'")
-        ):
-            text = text[1:-1]
-        if text.startswith("file://"):
-            parsed = urlparse(text)
-            text = unquote(parsed.path or "")
-        path = Path(text).expanduser()
-        if path.exists() and path.is_file():
-            return path.resolve()
-        return None
+        s = raw.strip().strip("'\"")
+        if s.startswith("file://"):
+            s = unquote(urlparse(s).path)
+        p = Path(s).expanduser()
+        return p.resolve() if p.is_file() else None
 
     def maybe_attach_file_from_input(self, raw: str) -> bool:
         path = self._extract_file_path(raw)
