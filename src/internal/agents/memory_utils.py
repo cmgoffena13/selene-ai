@@ -78,7 +78,7 @@ def delete_chat_session(filename: str) -> None:
     try:
         path.unlink(missing_ok=True)
     except Exception:
-        pass
+        raise ValueError(f"Failed to delete session file: {path}")
 
     entries = _read_sessions_index()
     filtered = [entry for entry in entries if entry["filename"] != filename]
