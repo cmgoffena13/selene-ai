@@ -37,9 +37,6 @@ def build_system_prompt(agent_name: str) -> str:
     return "\n\n".join(parts)
 
 
-SYSTEM_PROMPT_PATH = agent_prompts_dir("general") / "system.md"
-
-
 def inject_system_prompt_placeholders(template: str) -> str:
     """
     Replace placeholders in the system prompt template (e.g. {current_date}).

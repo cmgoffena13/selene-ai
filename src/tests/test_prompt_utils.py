@@ -31,10 +31,11 @@ def test_format_tool_result_str() -> None:
     assert "plain" in out
 
 
-def test_list_agent_prompt_files_general_includes_system_md() -> None:
+def test_list_agent_prompt_files_general_includes_mapped_prompts() -> None:
     paths = pu.list_agent_prompt_files("general")
     names = {p.name for p in paths}
-    assert "system.md" in names
+    assert "identity.md" in names
+    assert "tools.md" in names
 
 
 def test_list_agent_prompt_files_missing_agent() -> None:
@@ -43,9 +44,15 @@ def test_list_agent_prompt_files_missing_agent() -> None:
 
 
 def test_build_system_prompt_concatenates_in_mapping_order(
+    monkeypatch: pytest.MonkeyPatch,
     patch_agent_prompts_dir: Callable[[str, Path], None],
     prompt_agents_fixtures_dir: Path,
 ) -> None:
+    monkeypatch.setattr(
+        pu,
+        "PROMPT_MAPPING",
+        {"system.md": 1, "tools.md": 2, "files.md": 3},
+    )
     prompts = prompt_agents_fixtures_dir / "complete" / "prompts"
     patch_agent_prompts_dir("fixture_agent", prompts)
     text = pu.build_system_prompt("fixture_agent")
@@ -56,9 +63,15 @@ def test_build_system_prompt_concatenates_in_mapping_order(
 
 
 def test_build_system_prompt_skips_missing_mapped_files(
+    monkeypatch: pytest.MonkeyPatch,
     patch_agent_prompts_dir: Callable[[str, Path], None],
     tmp_path: Path,
 ) -> None:
+    monkeypatch.setattr(
+        pu,
+        "PROMPT_MAPPING",
+        {"system.md": 1, "tools.md": 2, "files.md": 3},
+    )
     prompts = tmp_path / "prompts"
     prompts.mkdir()
     (prompts / "system.md").write_text("only_system", encoding="utf-8")
@@ -67,9 +80,15 @@ def test_build_system_prompt_skips_missing_mapped_files(
 
 
 def test_build_system_prompt_ignores_unmapped_nested_file(
+    monkeypatch: pytest.MonkeyPatch,
     patch_agent_prompts_dir: Callable[[str, Path], None],
     prompt_agents_fixtures_dir: Path,
 ) -> None:
+    monkeypatch.setattr(
+        pu,
+        "PROMPT_MAPPING",
+        {"system.md": 1, "tools.md": 2, "files.md": 3},
+    )
     prompts = prompt_agents_fixtures_dir / "with_nested" / "prompts"
     patch_agent_prompts_dir("fixture_agent", prompts)
     text = pu.build_system_prompt("fixture_agent")
