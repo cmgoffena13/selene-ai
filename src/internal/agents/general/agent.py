@@ -2,7 +2,7 @@ import structlog
 from thoughtflow import AGENT
 
 from src.internal.agents.prompt_utils import (
-    SYSTEM_PROMPT_PATH,
+    build_system_prompt,
     inject_system_prompt_placeholders,
 )
 from src.internal.llm.ollama import get_ollama_llm
@@ -11,7 +11,7 @@ from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
-SYSTEM_PROMPT_TEMPLATE = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
+SYSTEM_PROMPT_TEMPLATE = build_system_prompt("general")
 SELENE_SYSTEM_PROMPT = inject_system_prompt_placeholders(SYSTEM_PROMPT_TEMPLATE)
 
 llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)

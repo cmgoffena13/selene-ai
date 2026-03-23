@@ -5,6 +5,8 @@ from typing import Any
 
 from src.exceptions import AgentDoesNotExistError
 
+PROMPT_MAPPING = {"system.md": 1, "tools.md": 2, "files.md": 3}
+
 
 def agent_prompts_dir(agent_name: str) -> Path:
     """Resolve ``src/internal/agents/<agent_name>/prompts``."""
@@ -17,6 +19,22 @@ def list_agent_prompt_files(agent_name: str) -> list[Path]:
     if not root.is_dir():
         raise AgentDoesNotExistError(f"Agent {agent_name} does not exist.")
     return sorted(p for p in root.rglob("*") if p.is_file())
+
+
+def build_system_prompt(agent_name: str) -> str:
+    """
+    Concatenate prompt files for ``agent_name`` in :data:`PROMPT_MAPPING` order.
+
+    Only files that exist under that agent's ``prompts/`` tree and whose basenames
+    appear in the mapping are included; missing mapped names are skipped.
+    """
+    all_files = list_agent_prompt_files(agent_name)
+    by_name = {p.name: p for p in all_files if p.name in PROMPT_MAPPING}
+    ordered_names = sorted(PROMPT_MAPPING, key=lambda n: PROMPT_MAPPING[n])
+    parts = [
+        by_name[n].read_text(encoding="utf-8") for n in ordered_names if n in by_name
+    ]
+    return "\n\n".join(parts)
 
 
 SYSTEM_PROMPT_PATH = agent_prompts_dir("general") / "system.md"
