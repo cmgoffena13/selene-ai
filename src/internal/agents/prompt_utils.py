@@ -5,7 +5,7 @@ from typing import Any
 
 from src.exceptions import AgentDoesNotExistError
 
-PROMPT_MAPPING = {"system.md": 1, "tools.md": 2, "files.md": 3}
+PROMPT_MAPPING = {"identity.md": 1, "tools.md": 2, "files.md": 3}
 
 
 def agent_prompts_dir(agent_name: str) -> Path:

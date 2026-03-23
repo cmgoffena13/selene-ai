@@ -76,7 +76,9 @@ def _tavily_search(**kwargs):
             "time_range": time_range,
         }
 
-        response = TavilyClient(api_key=config.TAVILY_API_KEY).search(**search_kwargs)
+        response = TavilyClient(api_key=config.SELENE_TAVILY_API_KEY).search(
+            **search_kwargs
+        )
         raw = response.get("results", []) if isinstance(response, dict) else []
         results = [
             {
