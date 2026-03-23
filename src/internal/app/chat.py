@@ -248,7 +248,7 @@ class ChatApp(App):
 
     def _autosave_current_session(self) -> None:
         self.chat.memory.to_json(str(self._current_session_path))
-        first_user = self.chat.memory.last_user_msg(content_only=True)
+        first_user = self.chat.memory.get_msgs(include=["user"])[0]["content"]
         upsert_chat_session_index(self._current_session_path.name, first_user)
         self._refresh_session_dropdown()
 
@@ -305,7 +305,7 @@ class ChatApp(App):
                 return
             load_path = resolve_chat_session_path(str(selected))
             if not load_path.exists():
-                return
+                raise ValueError(f"Session file not found: {load_path}")
 
             loaded = MEMORY.from_json(str(load_path))
             self.memory = loaded
@@ -318,11 +318,11 @@ class ChatApp(App):
 
     def on_worker_state_changed(self, event) -> None:
         worker = event.worker
-        if getattr(worker, "name", "") != "agent_turn":
+        if getattr(worker, "name") != "agent_turn":
             return
 
         if worker.state == WorkerState.SUCCESS:
-            response = (worker.result or "(no response)").lstrip()
+            response = worker.result.lstrip()
             if self._thinking is not None:
                 self._thinking.set_text(response)
                 self._thinking.remove_class("thinking")

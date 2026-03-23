@@ -62,7 +62,7 @@ def list_chat_sessions_index() -> list[dict[str, str]]:
 
 
 def upsert_chat_session_index(filename: str, first_prompt: str) -> None:
-    """Insert or replace one session index row."""
+    """Insert or replace one session index row (caller passes the first user prompt)."""
     entries = _read_sessions_index()
     by_filename = {entry["filename"]: entry for entry in entries}
     by_filename[filename] = {"filename": filename, "first_prompt": first_prompt}

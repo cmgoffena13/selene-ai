@@ -70,7 +70,7 @@ def ask(
     if verbose:
         echo(memory.render())
     else:
-        echo(memory.last_asst_msg().get("content", "").lstrip())
+        echo(memory.last_asst_msg()["content"].lstrip())
     raise Exit(code=0)
 
 
