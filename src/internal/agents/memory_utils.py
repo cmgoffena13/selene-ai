@@ -2,7 +2,17 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from pydantic import BaseModel, Field, TypeAdapter
+
 from src.utils import get_selene_ai_config_dir
+
+
+class ChatSession(BaseModel):
+    filename: str = Field(description="The filename of the chat session.")
+    first_prompt: str = Field(description="The first prompt of the chat session.")
+
+
+ChatSessionTypeAdapter = TypeAdapter(ChatSession)
 
 
 def get_chat_sessions_dir() -> Path:
@@ -57,9 +67,9 @@ def _read_sessions_index() -> list[dict[str, str]]:
 
     entries: list[dict[str, str]] = []
     for item in data:
-        filename = str(item.get("filename", "")).strip()
-        first_prompt = " ".join(str(item.get("first_prompt", "")).split())
-        entries.append({"filename": filename, "first_prompt": first_prompt})
+        entries.append(
+            ChatSessionTypeAdapter.validate_python(item).model_dump(mode="json")
+        )
     return entries
 
 
@@ -88,16 +98,16 @@ def list_chat_sessions_index() -> list[dict[str, str]]:
 
 def upsert_chat_session_index(filename: str, first_prompt: str = "") -> None:
     """Insert/update one session index entry by filename."""
-    filename = (filename or "").strip()
+    chat_session = ChatSession(filename=filename, first_prompt=first_prompt)
 
     entries = _read_sessions_index()
     by_filename = {entry["filename"]: entry for entry in entries}
 
-    normalized_prompt = " ".join((first_prompt or "").split())
-    existing = by_filename.get(filename)
+    normalized_prompt = " ".join((chat_session.first_prompt or "").split())
+    existing = by_filename.get(chat_session.filename)
     if existing is None:
-        by_filename[filename] = {
-            "filename": filename,
+        by_filename[chat_session.filename] = {
+            "filename": chat_session.filename,
             "first_prompt": normalized_prompt,
         }
     else:
