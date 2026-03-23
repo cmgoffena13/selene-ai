@@ -25,14 +25,6 @@ def new_chat_session_path() -> Path:
     return get_chat_sessions_dir() / new_chat_session_filename()
 
 
-def list_chat_session_files() -> list[Path]:
-    """List saved chat session JSON files, newest first (excludes sessions_index.json)."""
-    d = get_chat_sessions_dir()
-    index_name = get_chat_sessions_index_path().name
-    paths = [p for p in d.glob("*.json") if p.name != index_name]
-    return sorted(paths, key=lambda p: p.stat().st_mtime, reverse=True)
-
-
 def resolve_chat_session_path(filename: str) -> Path:
     """Resolve a session filename to an absolute path in the sessions dir."""
     return get_chat_sessions_dir() / filename
@@ -44,68 +36,39 @@ def _read_sessions_index() -> list[dict[str, str]]:
         _write_sessions_index([])
         return []
 
-    try:
-        with index_path.open("r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception:
-        _write_sessions_index([])
-        return []
-
-    if not isinstance(data, list):
-        _write_sessions_index([])
-        return []
+    with index_path.open("r", encoding="utf-8") as file:
+        data = json.load(file)
 
     entries: list[dict[str, str]] = []
     for item in data:
-        filename = str(item.get("filename", "")).strip()
-        first_prompt = " ".join(str(item.get("first_prompt", "")).split())
+        filename = str(item["filename"]).strip()
+        first_prompt = str(item["first_prompt"]).strip()
         entries.append({"filename": filename, "first_prompt": first_prompt})
     return entries
 
 
 def _write_sessions_index(entries: list[dict[str, str]]) -> None:
     index_path = get_chat_sessions_index_path()
-    with index_path.open("w", encoding="utf-8") as f:
-        json.dump(entries, f, indent=2, ensure_ascii=False)
+    with index_path.open("w", encoding="utf-8") as file:
+        json.dump(entries, file)
 
 
 def list_chat_sessions_index() -> list[dict[str, str]]:
-    """
-    Return tracked sessions from index as:
-    [{ "filename": "...json", "first_prompt": "..." }, ...]
-
-    Also includes session JSON files on disk not yet in the index. Never includes sessions_index.json.
-    """
+    """Sessions from ``sessions_index.json`` only (newest filename first)."""
     index_name = get_chat_sessions_index_path().name
     entries = [e for e in _read_sessions_index() if e.get("filename") != index_name]
-    by_filename = {entry["filename"]: dict(entry) for entry in entries}
-    for path in list_chat_session_files():
-        by_filename.setdefault(path.name, {"filename": path.name, "first_prompt": ""})
-    combined = list(by_filename.values())
-    combined.sort(key=lambda item: item["filename"], reverse=True)
-    return combined
+    entries.sort(key=lambda item: item["filename"], reverse=True)
+    return entries
 
 
-def upsert_chat_session_index(filename: str, first_prompt: str = "") -> None:
-    """Insert/update one session index entry by filename."""
-    filename = (filename or "").strip()
-
+def upsert_chat_session_index(filename: str, first_prompt: str) -> None:
+    """Insert or replace one session index row."""
     entries = _read_sessions_index()
     by_filename = {entry["filename"]: entry for entry in entries}
-
-    normalized_prompt = " ".join((first_prompt or "").split())
-    existing = by_filename.get(filename)
-    if existing is None:
-        by_filename[filename] = {
-            "filename": filename,
-            "first_prompt": normalized_prompt,
-        }
-    else:
-        if not existing.get("first_prompt") and normalized_prompt:
-            existing["first_prompt"] = normalized_prompt
-
-    merged = list(by_filename.values())
-    merged.sort(key=lambda item: item["filename"], reverse=True)
+    by_filename[filename] = {"filename": filename, "first_prompt": first_prompt}
+    merged = sorted(
+        by_filename.values(), key=lambda item: item["filename"], reverse=True
+    )
     _write_sessions_index(merged)
 
 

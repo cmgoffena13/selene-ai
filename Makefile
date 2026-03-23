@@ -5,6 +5,7 @@ format: lint
 
 lint:
 	uv run -- ruff check --fix
+	uv run -- ty check
 
 test:
 	uv run -- pytest -v -n auto

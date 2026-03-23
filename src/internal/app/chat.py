@@ -259,16 +259,12 @@ class ChatApp(App):
         for session in sessions:
             filename = session["filename"]
             display_name = Path(filename).stem
-            first_prompt = (session.get("first_prompt") or "").strip()
+            first_prompt = session["first_prompt"]
             if len(first_prompt) > FIRST_PROMPT_PREVIEW_LEN:
                 prompt_preview = f"{first_prompt[:FIRST_PROMPT_PREVIEW_LEN]}..."
             else:
                 prompt_preview = first_prompt
-            label = (
-                f'{display_name} - "{prompt_preview}"'
-                if prompt_preview
-                else display_name
-            )
+            label = f'{display_name} - "{prompt_preview}"'
             options.append((label, filename))
         select.set_options(options)
         if sessions:
