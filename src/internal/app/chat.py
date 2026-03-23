@@ -1,3 +1,4 @@
+import random
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse
@@ -89,7 +90,7 @@ class CommandPrompt(Input):
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle the submit event (Enter key)."""
-        text = (event.value or "").strip()
+        text = event.value.strip()
         if text == "":
             return
         self.value = ""
@@ -123,7 +124,6 @@ class ChatApp(App):
         self._current_session_path: Path = new_chat_session_path()
         self._attached_file_path: Optional[Path] = None
         self._thinking: Optional[MessageBubble] = None
-        self._thinking_index = -1
         self._refresh_session_dropdown()
 
     def compose(self) -> ComposeResult:
@@ -203,14 +203,9 @@ class ChatApp(App):
 
         self._append(text, "user")
         if self._thinking is not None:
-            try:
-                self._thinking.remove()
-            except Exception:
-                pass
-        self._thinking_index = (self._thinking_index + 1) % len(THINKING_PHRASES)
-        self._thinking = self._append(
-            THINKING_PHRASES[self._thinking_index], "thinking"
-        )
+            self._thinking.remove()
+        phrase = THINKING_PHRASES[random.randrange(len(THINKING_PHRASES))]
+        self._thinking = self._append(phrase, "thinking")
 
         self.run_worker(
             lambda: self.chat.turn(model_prompt),
@@ -242,7 +237,7 @@ class ChatApp(App):
         self._thinking = None
         for msg in self.chat.memory.get_msgs(include=["user", "assistant"]):
             role = msg.get("role")
-            content = msg.get("content", "")
+            content = msg["content"]
             if role in {"user", "assistant"}:
                 self._append(content, role)
 
