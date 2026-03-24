@@ -19,7 +19,7 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
 ---
 
 ## Setup
-- Download the latest Binary
+- Download the latest binary
   - Rename to `selene`
   - Add binary to PATH
 - Have [Ollama](https://ollama.ai) installed and running
@@ -29,8 +29,8 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
   - `SELENE_TAVILY_API_KEY` (Optional)
 
 ## Capabilities
- - **Intelligence on Demand**: Ask questions, Analyze files, etc.
- - **Interactive Chat**: Conversation mode with persistent memory
+ - **Intelligence on Demand**: Ask questions, Analyze files, etc. via [Typer](https://github.com/fastapi/typer)
+ - **Interactive Chat**: Conversation mode with persistent memory via [Textual](https://github.com/Textualize/textual)
  - **Local Search**: Local RAG via [LEANN](https://github.com/yichuan-w/LEANN)
  - **Web Search**: Real-time web search tool via [Tavily](https://www.tavily.com)
 
@@ -46,7 +46,7 @@ selene ask "What does it say about hybrids?" --file ancient.txt
 # Consult Selene's wisdom
 selene chat
 
-# Share resources with Selene
+# Share persistent resources with Selene
 selene rag index my-documents --dir C:/directory/path/
 
 # Real-time observation (Tavily API Key Required)
