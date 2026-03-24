@@ -1,9 +1,6 @@
 import typer
 from typer import Argument, Exit, Option
 
-from src.internal.rag.builder import build_rag_index
-from src.internal.rag.rag_utils import delete_rag_index, list_rag_indexes_with_sizes
-from src.internal.rag.updater import update_rag_index
 from src.internal.ui.console import echo
 
 rag_app = typer.Typer(
@@ -33,6 +30,8 @@ def rag_index(
         help=f"Directory path of files to index (recursive). {RAG_SUPPORTED_EXTENSIONS_HELP}",
     ),
 ) -> None:
+    from src.internal.rag.builder import build_rag_index
+
     try:
         path = build_rag_index(index_name=name, docs_dir=dir)
         echo(f"Index '{name}' built and registered at {path}")
@@ -54,6 +53,8 @@ def rag_index(
 def rag_update(
     name: str = Argument(..., help="Index name to update."),
 ) -> None:
+    from src.internal.rag.updater import update_rag_index
+
     try:
         path = update_rag_index(index_name=name)
         echo(f"Index '{name}' updated at {path}")
@@ -70,6 +71,8 @@ def rag_update(
 
 @rag_app.command("list", help="List RAG indexes with size (GB) and docs directory.")
 def rag_list() -> None:
+    from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
+
     indexes = list_rag_indexes_with_sizes()
     if not indexes:
         echo("No RAG indexes found.")
@@ -83,6 +86,8 @@ def rag_list() -> None:
 def rag_delete(
     name: str = Argument(..., help="Index name to delete (e.g. thoughtflow)."),
 ) -> None:
+    from src.internal.rag.rag_utils import delete_rag_index
+
     deleted = delete_rag_index(name)
     if deleted:
         echo(f"Index '{name}' deleted.")

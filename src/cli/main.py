@@ -8,7 +8,6 @@ from typer import Argument, Exit, Option, Typer
 from src.cli.chat import chat_app
 from src.cli.ollama import model_app
 from src.cli.rag import rag_app
-from src.internal.agents.general.agent import selene_agent
 from src.internal.agents.prompt_utils import append_file_to_prompt
 from src.internal.llm.ollama import warn_if_ollama_unreachable
 from src.logging_conf import setup_logging
@@ -47,6 +46,7 @@ def ask(
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
     verbose: bool = Option(False, "--verbose", "-v", help="Show verbose output."),
 ) -> None:
+    from src.internal.agents.general.agent import selene_agent
     from src.internal.ui.console import echo
 
     user_prompt = prompt
