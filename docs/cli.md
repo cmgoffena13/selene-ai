@@ -61,7 +61,7 @@ $ selene model [OPTIONS] COMMAND [ARGS]...
 
 * `list`: List Ollama models available locally.
 * `pull`: Pull an Ollama model so you can use it...
-* `delete`: Remove a local Ollama model.
+* `delete`
 
 ### `selene model list`
 
@@ -99,8 +99,6 @@ $ selene model pull [OPTIONS] NAME
 
 ### `selene model delete`
 
-Remove a local Ollama model.
-
 **Usage**:
 
 ```console
@@ -129,6 +127,7 @@ $ selene chat [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `-w, --web`: Serve chat UI in a web browser.
+* `-v, --verbose`: Show full ThoughtFlow memory in the transcript (all roles, logs, refs, vars).
 * `--help`: Show this message and exit.
 
 ## `selene rag`

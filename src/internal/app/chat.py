@@ -45,6 +45,20 @@ FIRST_PROMPT_PREVIEW_LEN = 50
 
 _URL_SPLIT = re.compile(r"(https?://\S+)")
 
+_VERBOSE_SPEAKER_LABELS: dict[str, str] = {
+    "system": "System",
+    "user": "You",
+    "assistant": "Selene",
+    "reflection": "Reflection",
+    "action": "Action",
+    "query": "Query",
+    "result": "Result",
+    "logger": "Logger",
+    "log": "Log",
+    "ref": "Reflection",
+    "var": "Var",
+}
+
 
 def _try_copy_to_system_clipboard(text: str) -> bool:
     """Use OS clipboard when available (macOS pbcopy, Wayland, X11)."""
@@ -123,9 +137,14 @@ class BubbleBody(Static):
 class MessageBubble(Vertical):
     """A single chat message bubble (rounded border + inner fill)."""
 
-    def __init__(self, text: str, *, role: str) -> None:
+    def __init__(self, text: str, *, role: str, speaker: str | None = None) -> None:
         self.role = role
-        self.speaker = "Selene" if role in {"assistant", "thinking", "error"} else "You"
+        if speaker is not None:
+            self.speaker = speaker
+        else:
+            self.speaker = (
+                "Selene" if role in {"assistant", "thinking", "error"} else "You"
+            )
         super().__init__()
         self._label = Static(self.speaker, classes="bubble_label")
         self._body = BubbleBody(
@@ -145,18 +164,27 @@ class MessageBubble(Vertical):
 
 
 class MessageRow(Horizontal):
-    """A row that aligns user left / assistant right."""
+    """User bubbles left; all other roles right."""
 
-    def __init__(self, bubble: MessageBubble, *, role: str) -> None:
+    def __init__(
+        self,
+        bubble: MessageBubble,
+        *,
+        role: str,
+        align_left: bool | None = None,
+    ) -> None:
         super().__init__()
         self.bubble = bubble
         self.role = role
+        if align_left is None:
+            align_left = role == "user"
+        self._align_left = align_left
         self.add_class("row")
         self.add_class(role)
 
     def compose(self) -> ComposeResult:
         spacer = Static("", classes="spacer")
-        if self.role == "user":
+        if self._align_left:
             yield self.bubble
             yield spacer
         else:
@@ -188,6 +216,23 @@ class CommandPrompt(Input):
 class ChatApp(App):
     TITLE = "Interactive Chat"
     CSS_PATH = "chat_app.tcss"
+
+    def __init__(
+        self,
+        verbose: bool = False,
+        *,
+        driver_class=None,
+        css_path=None,
+        watch_css: bool = False,
+        ansi_color: bool = False,
+    ) -> None:
+        super().__init__(
+            driver_class=driver_class,
+            css_path=css_path,
+            watch_css=watch_css,
+            ansi_color=ansi_color,
+        )
+        self._verbose = verbose
 
     def on_mount(self) -> None:
         palette = textual_palette(getattr(self.console, "color_system", None))
@@ -225,12 +270,40 @@ class ChatApp(App):
                 yield Static("", id="attach_icon")
         yield Footer()
 
-    def _append(self, text: str, role: str) -> MessageBubble:
+    def _append(
+        self,
+        text: str,
+        role: str,
+        *,
+        speaker: str | None = None,
+        align_left: bool | None = None,
+    ) -> MessageBubble:
         transcript = self.query_one("#transcript", VerticalScroll)
-        bubble = MessageBubble(text, role=role)
-        transcript.mount(MessageRow(bubble, role=role))
+        bubble = MessageBubble(text, role=role, speaker=speaker)
+        transcript.mount(MessageRow(bubble, role=role, align_left=align_left))
         transcript.scroll_end(animate=False)
         return bubble
+
+    def _append_memory_event(self, ev: dict) -> None:
+        """Render one MEMORY event for verbose transcript."""
+        t = ev["type"]
+        if t == "msg":
+            role: str = ev["role"]
+            content = str(ev["content"])
+            if role == "user":
+                self._append(content, "user")
+            elif role == "assistant":
+                self._append(content, "assistant")
+            else:
+                self._append(content, "verbose", speaker=_VERBOSE_SPEAKER_LABELS[role])
+        elif t in ("log", "ref", "var"):
+            self._append(
+                str(ev["content"]), "verbose", speaker=_VERBOSE_SPEAKER_LABELS[t]
+            )
+
+    def _rebuild_transcript_verbose(self) -> None:
+        for ev in self.chat.memory.get_events():
+            self._append_memory_event(ev)
 
     def _update_prompt_placeholder(self) -> None:
         prompt = self.query_one("#prompt", CommandPrompt)
@@ -311,6 +384,9 @@ class ChatApp(App):
     def _rebuild_transcript_from_memory(self) -> None:
         self._clear_transcript()
         self._thinking = None
+        if self._verbose:
+            self._rebuild_transcript_verbose()
+            return
         for msg in self.chat.memory.get_msgs(include=["user", "assistant"]):
             role = msg.get("role")
             content = msg["content"]
@@ -400,14 +476,20 @@ class ChatApp(App):
             return
 
         if worker.state == WorkerState.SUCCESS:
-            response = worker.result.lstrip()
-            if self._thinking is not None:
-                self._thinking.set_text(response)
-                self._thinking.remove_class("thinking")
-                self._thinking.add_class("assistant")
-                self._thinking = None
+            if self._verbose:
+                if self._thinking is not None:
+                    self._thinking.remove()
+                    self._thinking = None
+                self._rebuild_transcript_from_memory()
             else:
-                self._append(response, "assistant")
+                response = worker.result.lstrip()
+                if self._thinking is not None:
+                    self._thinking.set_text(response)
+                    self._thinking.remove_class("thinking")
+                    self._thinking.add_class("assistant")
+                    self._thinking = None
+                else:
+                    self._append(response, "assistant")
             self.query_one("#transcript", VerticalScroll).scroll_end(animate=True)
             self._autosave_current_session()
             return
@@ -418,7 +500,13 @@ class ChatApp(App):
                 if worker.state == WorkerState.ERROR
                 else "Cancelled."
             )
-            if self._thinking is not None:
+            if self._verbose:
+                if self._thinking is not None:
+                    self._thinking.remove()
+                    self._thinking = None
+                self._rebuild_transcript_from_memory()
+                self._append(msg, "error")
+            elif self._thinking is not None:
                 self._thinking.set_text(msg)
                 self._thinking.remove_class("thinking")
                 self._thinking.add_class("error")

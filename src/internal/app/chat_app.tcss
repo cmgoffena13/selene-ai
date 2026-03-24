@@ -119,6 +119,14 @@ CommandPrompt {
     color: $text-muted;
 }
 
+.bubble.verbose {
+    border: round $border;
+}
+
+.bubble.verbose .bubble_body {
+    color: $text-muted;
+}
+
 .bubble.error {
     border: round $error;
 }
