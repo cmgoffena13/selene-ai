@@ -29,7 +29,7 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
   - `SELENE_TAVILY_API_KEY` (Optional)
 
 ## Features
- - Utilize [Ollama](https://ollama.com) to manage models / transformers
+ - Utilize [Ollama](https://ollama.com) to manage models / embedders
    - Pull / List / Delete Ollama models
  - Utilize [LEANN](https://github.com/yichuan-w/LEANN) to index local files
     - Create / Update / Manage / Delete local vector indexes
