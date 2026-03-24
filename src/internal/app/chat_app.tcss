@@ -51,11 +51,6 @@ CommandPrompt {
     margin-right: 1;
 }
 
-#load_session {
-    min-width: 8;
-    margin-right: 1;
-}
-
 #delete_session {
     min-width: 8;
     margin-right: 0;
@@ -106,6 +101,8 @@ CommandPrompt {
 
 .bubble_body {
     color: $primary;
+    link-color: $primary;
+    link-style: underline;
 }
 
 .bubble.user {

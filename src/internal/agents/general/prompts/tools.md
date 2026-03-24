@@ -1,4 +1,6 @@
 ## Tool Use (IMPORTANT):
+Always use tools to supplement your responeses.
+Never ask to use a tool. 
 
 ### When to use "web_search" tool
 You MUST use the "web_search" tool when:

@@ -1,11 +1,17 @@
 import random
+import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse
 
 import structlog
+from textual import events
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.content import Content
+from textual.style import Style
 from textual.theme import Theme
 from textual.widgets import Button, Footer, Header, Input, Select, Static
 from textual.worker import WorkerState
@@ -37,6 +43,62 @@ THINKING_PHRASES = [
 
 FIRST_PROMPT_PREVIEW_LEN = 50
 
+_URL_SPLIT = re.compile(r"(https?://\S+)")
+
+
+def _try_copy_to_system_clipboard(text: str) -> bool:
+    """Use OS clipboard when available (macOS pbcopy, Wayland, X11)."""
+    try:
+        if p := shutil.which("pbcopy"):
+            subprocess.run([p], input=text.encode("utf-8"), check=False)
+            return True
+        if p := shutil.which("wl-copy"):
+            subprocess.run([p], input=text.encode("utf-8"), check=False)
+            return True
+        if p := shutil.which("xclip"):
+            subprocess.run(
+                [p, "-selection", "clipboard"],
+                input=text.encode("utf-8"),
+                check=False,
+            )
+            return True
+    except OSError:
+        pass
+    return False
+
+
+def _message_content_with_links(text: str) -> Content:
+    """Plain text with http(s) spans styled as links (no markup string parsing)."""
+    parts = _URL_SPLIT.split(text)
+    merged: Content | None = None
+    for part in parts:
+        if not part:
+            continue
+        if part.startswith(("http://", "https://")):
+            url = part.rstrip(".,;:!?)")
+            tail = part[len(url) :]
+            chunk = Content.styled(url, Style(link=url)) + Content(tail)
+        else:
+            chunk = Content(part)
+        merged = chunk if merged is None else merged + chunk
+    return merged if merged is not None else Content("")
+
+
+class BubbleBody(Static):
+    """Transcript line with link spans: click copies URL; Ctrl/⌘+click opens browser."""
+
+    def on_click(self, event: events.Click) -> None:
+        link = getattr(event.style, "link", None)
+        if not link:
+            return
+        event.stop()
+        app = self.app
+        if event.ctrl or event.meta:
+            app.open_url(link)
+            return
+        if not _try_copy_to_system_clipboard(link):
+            app.copy_to_clipboard(link)
+
 
 class MessageBubble(Vertical):
     """A single chat message bubble (rounded border + inner fill)."""
@@ -46,7 +108,11 @@ class MessageBubble(Vertical):
         self.speaker = "Selene" if role in {"assistant", "thinking", "error"} else "You"
         super().__init__()
         self._label = Static(self.speaker, classes="bubble_label")
-        self._body = Static(text, classes="bubble_body")
+        self._body = BubbleBody(
+            _message_content_with_links(text),
+            classes="bubble_body",
+            markup=False,
+        )
         self._content = Vertical(self._label, self._body, classes="bubble_content")
         self.add_class("bubble")
         self.add_class(role)
@@ -55,7 +121,7 @@ class MessageBubble(Vertical):
         yield self._content
 
     def set_text(self, text: str) -> None:
-        self._body.update(text)
+        self._body.update(_message_content_with_links(text))
 
 
 class MessageRow(Horizontal):
@@ -132,7 +198,6 @@ class ChatApp(App):
             with Horizontal(id="session_controls"):
                 yield Select([], prompt="Sessions", id="session_select")
                 yield Button("New", id="new_session")
-                yield Button("Load", id="load_session")
                 yield Button("Delete", id="delete_session")
             yield VerticalScroll(id="transcript")
             with Horizontal(id="prompt_row"):
@@ -238,6 +303,29 @@ class ChatApp(App):
         upsert_chat_session_index(self._current_session_path.name, first_user)
         self._refresh_session_dropdown()
 
+    def _load_session_file(self, filename: str) -> None:
+        load_path = resolve_chat_session_path(filename)
+        if not load_path.exists():
+            raise ValueError(f"Session file not found: {load_path}")
+        self.workers.cancel_group(self, "agent")
+        loaded = MEMORY.from_json(str(load_path))
+        self.memory = loaded
+        self.chat.memory = self.memory
+        self._current_session_path = load_path
+        self._rebuild_transcript_from_memory()
+        self.query_one("#transcript", VerticalScroll).scroll_end(animate=False)
+        self._refresh_session_dropdown()
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        if event.select.id != "session_select":
+            return
+        if event.value is Select.NULL:
+            return
+        filename = str(event.value)
+        if filename == self._current_session_path.name:
+            return
+        self._load_session_file(filename)
+
     def _refresh_session_dropdown(self) -> None:
         select = self.query_one("#session_select", Select)
         sessions = list_chat_sessions_index()
@@ -284,22 +372,6 @@ class ChatApp(App):
                 self._reset_to_new_session()
             else:
                 self._refresh_session_dropdown()
-            return
-
-        if button_id == "load_session":
-            if not selected:
-                return
-            load_path = resolve_chat_session_path(str(selected))
-            if not load_path.exists():
-                raise ValueError(f"Session file not found: {load_path}")
-
-            loaded = MEMORY.from_json(str(load_path))
-            self.memory = loaded
-            self.chat.memory = self.memory
-            self._current_session_path = load_path
-            self._rebuild_transcript_from_memory()
-            self.query_one("#transcript", VerticalScroll).scroll_end(animate=False)
-            self._refresh_session_dropdown()
             return
 
     def on_worker_state_changed(self, event) -> None:
