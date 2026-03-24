@@ -18,7 +18,7 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
 
 ---
 
-### Setup
+## Setup
 - Download the latest Binary
   - Rename to `selene`
   - Add binary to PATH
