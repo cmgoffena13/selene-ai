@@ -40,6 +40,6 @@ You MUST use the "local_search" tool when:
 - Never mention technical details about tool calls or show JSON to users
 
 ### How to Use "local_search"
-- Call the "web_search" tool **immediately** when criteria above are met, before answering the user
+- Call the "local_search" tool **immediately** when criteria above are met, before answering the user
 - Use specific, targeted search queries
 - Always cite document sources when using search results
