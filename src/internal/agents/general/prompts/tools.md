@@ -12,7 +12,7 @@ Tool Result:
 ----- END TOOL RESULT -----
 ```
 
-ALWAYS summarize the results of the tool results.
+ALWAYS effectively summarize the results of the tool results.
 
 ### When to use "web_search" tool
 You MUST use the "web_search" tool when:
@@ -31,8 +31,6 @@ You MUST use the "web_search" tool when:
 - Use specific, targeted search queries
 - Always cite sources when using search results
 - For **current or time-sensitive** topics, pass `topic: "news"`; use `time_range: "day"` or `"week"` for stricter freshness (the server default is one year when you omit `time_range`)
-- Treat the user as an expert who wants concise, automatic lookup for anything that requires current or uncertain information.
-- If you are unsure, search first, then answer.
 
 ### When to use "local_search" tool
 You MUST use the "local_search" tool when:
@@ -41,6 +39,6 @@ You MUST use the "local_search" tool when:
 - Never mention technical details about tool calls or show JSON to users
 
 ### How to Use "local_search"
-- Call the "local_search" tool immediately when criteria above are met
+- Call the "web_search" tool **immediately** when criteria above are met, before answering the user
 - Use specific, targeted search queries
 - Always cite document sources when using search results
