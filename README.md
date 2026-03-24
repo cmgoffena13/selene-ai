@@ -25,6 +25,7 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
 - Have [Ollama](https://ollama.ai) installed and running
 - Place a `.env` file in the config directory (utilize `selene --info`)
   - `SELENE_OLLAMA_MODEL` (Required) Recommended: `llama3-groq-tool-use:8b`
+  - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Default: `nomic-embed-text`
   - `SELENE_TAVILY_API_KEY` (Optional)
 
 ## Features
