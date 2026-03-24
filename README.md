@@ -23,23 +23,16 @@ Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [
   - Rename to `selene`
   - Add binary to PATH
 - Have [Ollama](https://ollama.ai) installed and running
-- Place a `.env` file in the config directory (utilize `selene --info`)
+- Place a `.env` file in the config directory (Utilize `selene --info`)
   - `SELENE_OLLAMA_MODEL` (Required) Recommended: `llama3-groq-tool-use:8b`
   - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Default: `nomic-embed-text`
   - `SELENE_TAVILY_API_KEY` (Optional)
 
-## Features
- - Utilize [Ollama](https://ollama.com) to manage models / embedders
-   - Pull / List / Delete Ollama models
- - Utilize [LEANN](https://github.com/yichuan-w/LEANN) to index local files
-    - Create / Update / Manage / Delete local vector indexes
- - Attach Files to Prompts
- - AI Tools
-   - Web Search utilizing [Tavily](https://www.tavily.com)
-   - Local Search utilizing [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
- - Interactive Chat
-   - Auto-Save Conversations
-   - Load / Delete Conversations
+## Capabilities
+ - **Intelligence on Demand**: Ask questions, Analyze files, etc.
+ - **Interactive Chat**: Conversation mode with persistent memory
+ - **Local Search**: Local RAG via [LEANN](https://github.com/yichuan-w/LEANN)
+ - **Web Search**: Real-time web search tool via [Tavily](https://www.tavily.com)
 
 ## Usage Examples
 
