@@ -55,6 +55,9 @@ selene chat
 
 # Share resources with Selene
 selene rag index my-documents --dir C:/directory/path/
+
+# Real-time observation (Tavily API Key Required)
+selene ask "What is the status on the development of Silver Nitrate?"
 ```
 
 ## Interactive Chat
