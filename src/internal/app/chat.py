@@ -13,7 +13,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.content import Content
 from textual.style import Style
 from textual.theme import Theme
-from textual.widgets import Button, Footer, Header, Input, Select, Static
+from textual.widgets import Button, Footer, Header, Select, Static, TextArea
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
@@ -42,6 +42,9 @@ THINKING_PHRASES = [
 ]
 
 FIRST_PROMPT_PREVIEW_LEN = 50
+
+# Long pasted text must not be probed with stat() (ENAMETOOLONG on macOS, etc.).
+_MAX_PROMPT_AS_PATH_CHARS = 4096
 
 _URL_SPLIT = re.compile(r"(https?://\S+)")
 
@@ -192,25 +195,48 @@ class MessageRow(Horizontal):
             yield self.bubble
 
 
-class CommandPrompt(Input):
-    """A text window for entering chat prompts."""
+class CommandPrompt(TextArea):
+    """Multiline prompt: soft-wraps to the width; Enter sends, Shift+Enter newline."""
 
-    def on_input_changed(self, event: Input.Changed) -> None:
-        """Detect dropped/pasted file path and attach it."""
+    def __init__(
+        self,
+        *,
+        placeholder: str = "",
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(
+            placeholder=placeholder,
+            name=name,
+            id=id,
+            classes=classes,
+            disabled=disabled,
+            soft_wrap=True,
+            compact=True,
+            tab_behavior="focus",
+            show_line_numbers=False,
+            highlight_cursor_line=False,
+        )
 
+    def on_text_area_changed(self, event: TextArea.Changed) -> None:
         assert isinstance(self.app, ChatApp)
-        if self.app.maybe_attach_file_from_input(event.value):
-            self.value = ""
+        if self.app.maybe_attach_file_from_input(self.text):
+            self.text = ""
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        """Handle the submit event (Enter key)."""
-        text = event.value.strip()
-        if text == "":
+    async def _on_key(self, event: events.Key) -> None:
+        if event.key in ("enter", "ctrl+m"):
+            event.prevent_default()
+            event.stop()
+            text = self.text.strip()
+            if text == "":
+                return
+            self.text = ""
+            assert isinstance(self.app, ChatApp)
+            self.app.submit_user_text(text)
             return
-        self.value = ""
-
-        assert isinstance(self.app, ChatApp)
-        self.app.submit_user_text(text)
+        await super()._on_key(event)
 
 
 class ChatApp(App):
@@ -319,10 +345,17 @@ class ChatApp(App):
 
     def _extract_file_path(self, raw: str) -> Optional[Path]:
         s = raw.strip().strip("'\"")
+        if not s or len(s) > _MAX_PROMPT_AS_PATH_CHARS:
+            return None
         if s.startswith("file://"):
             s = unquote(urlparse(s).path)
         p = Path(s).expanduser()
-        return p.resolve() if p.is_file() else None
+        try:
+            if p.is_file():
+                return p.resolve()
+        except OSError:
+            return None
+        return None
 
     def maybe_attach_file_from_input(self, raw: str) -> bool:
         path = self._extract_file_path(raw)
@@ -378,7 +411,7 @@ class ChatApp(App):
         self._update_prompt_placeholder()
         self._clear_transcript()
         prompt = self.query_one("#prompt", CommandPrompt)
-        prompt.value = ""
+        prompt.text = ""
         self._refresh_session_dropdown()
 
     def _rebuild_transcript_from_memory(self) -> None:
