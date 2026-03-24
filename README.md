@@ -45,13 +45,13 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 ## Usage Examples
 
 ```bash
-# Consult Selene's Wisdom
+# Ask a simple question
 selene ask "Why did Kraven fail?"
 
-# Search the Archives
+# Search the archives
 selene ask "What does it say about hybrids?" --file ancient.txt
 
-# Meet with the Elder Council
+# Consult Selene's wisdom
 selene chat
 
 # Share resources with Selene
