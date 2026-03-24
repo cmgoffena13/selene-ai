@@ -12,7 +12,7 @@ Tool Result:
 ----- END TOOL RESULT -----
 ```
 
-ALWAYS summarize the results of the tool results and provide a list of the sources at the end.
+ALWAYS summarize the results of the tool results.
 
 ### When to use "web_search" tool
 You MUST use the "web_search" tool when:
