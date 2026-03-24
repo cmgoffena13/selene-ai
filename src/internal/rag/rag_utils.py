@@ -6,7 +6,6 @@ from src.utils import get_selene_ai_config_dir
 
 CHUNK_SIZE = 256
 CHUNK_OVERLAP = 128
-OLLAMA_EMBEDDING_MODEL = "nomic-embed-text"
 SYNC_SNAPSHOT_FILENAME = "sync_context.pickle"
 
 

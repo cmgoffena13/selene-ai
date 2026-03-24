@@ -22,6 +22,7 @@ class GlobalConfig(BaseSettings):
     SELENE_LOG_LEVEL: LogLevel = "ERROR"
     SELENE_OLLAMA_HOST: str = "http://localhost:11434"
     SELENE_OLLAMA_MODEL: Optional[str] = None
+    SELENE_OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
     SELENE_TAVILY_API_KEY: Optional[str] = None
 
     # Setting Defaults for External Libraries

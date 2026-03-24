@@ -10,7 +10,6 @@ from src.exceptions import DuplicateIndexError
 from src.internal.rag.rag_utils import (
     CHUNK_OVERLAP,
     CHUNK_SIZE,
-    OLLAMA_EMBEDDING_MODEL,
     SYNC_SNAPSHOT_FILENAME,
     get_rag_index_path,
     get_rag_indexes_dir,
@@ -66,7 +65,7 @@ def build_rag_index(
 
     builder = LeannBuilder(
         backend_name=backend,
-        embedding_model=OLLAMA_EMBEDDING_MODEL,
+        embedding_model=config.SELENE_OLLAMA_EMBEDDING_MODEL,
         embedding_mode="ollama",
     )
     for c in chunks:
