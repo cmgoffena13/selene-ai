@@ -14,9 +14,11 @@ def test_cli_info_prints_expected_sections(
     assert result.exit_code == 0
     out = result.stdout.replace("\n", "")
     assert "CLI Path:" in result.stdout
-    assert "Chat sessions directory:" in result.stdout
+    assert "Chat Sessions Directory:" in result.stdout
     assert ".config/selene_ai/chat_sessions" in out
-    assert "Ollama model:" in result.stdout
+    assert "LEANN Vector Indexes Directory:" in result.stdout
+    assert ".config/selene_ai/indexes" in out
+    assert "Ollama Model:" in result.stdout
 
 
 def test_cli_version_prints_version_line(runner: CliRunner) -> None:
