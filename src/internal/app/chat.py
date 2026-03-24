@@ -84,15 +84,35 @@ def _message_content_with_links(text: str) -> Content:
     return merged if merged is not None else Content("")
 
 
+def _link_from_click(event: events.Click, screen) -> str | None:
+    """Resolve Rich link URL from the click event (web sometimes omits style on the event)."""
+    link = getattr(event.style, "link", None)
+    if link:
+        return link
+    try:
+        return getattr(
+            screen.get_style_at(event.screen_x, event.screen_y), "link", None
+        )
+    except Exception:
+        return None
+
+
 class BubbleBody(Static):
-    """Transcript line with link spans: click copies URL; Ctrl/⌘+click opens browser."""
+    """Link spans: terminal = click copies, Ctrl/⌘+click opens; web = click opens, Shift+click copies."""
 
     def on_click(self, event: events.Click) -> None:
-        link = getattr(event.style, "link", None)
+        link = _link_from_click(event, self.screen)
         if not link:
             return
         event.stop()
         app = self.app
+        if app.is_web:
+            if event.shift:
+                if not _try_copy_to_system_clipboard(link):
+                    app.copy_to_clipboard(link)
+            else:
+                app.open_url(link)
+            return
         if event.ctrl or event.meta:
             app.open_url(link)
             return
