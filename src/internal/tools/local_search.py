@@ -11,6 +11,11 @@ from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
+LOCAL_SEARCH_DESCRIPTION = """
+Search across all locally-built RAG vector indexes.
+This is useful for searching through the user's own files and documents.
+"""
+
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
     "type": "object",
     "properties": {
@@ -139,7 +144,7 @@ def get_local_search_tool() -> Optional[TOOL]:
         return None
     return TOOL(
         name="local_search",
-        description="Search across all locally-built RAG vector indexes.",
+        description=LOCAL_SEARCH_DESCRIPTION,
         parameters=LOCAL_SEARCH_PARAMETERS,
         fn=_local_search,
     )

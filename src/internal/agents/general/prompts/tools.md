@@ -12,7 +12,8 @@ Tool Result:
 ----- END TOOL RESULT -----
 ```
 
-ALWAYS effectively summarize the results of the tool results.
+ALWAYS summarize the content of the tool results in the first paragraph.
+ALWAYS provide sources as a bulletpoint list in the second paragraph.
 
 ### When to use "web_search" tool
 You MUST use the "web_search" tool when:
@@ -30,7 +31,7 @@ You MUST use the "web_search" tool when:
 - Call the "web_search" tool **immediately** when criteria above are met, before answering the user
 - Use specific, targeted search queries
 - Always cite sources when using search results
-- For **current or time-sensitive** topics, pass `topic: "news"`; use `time_range: "day"` or `"week"` for stricter freshness (the server default is one year when you omit `time_range`)
+- For **current or time-sensitive** topics, pass `topic: "news"`; use `time_range: "week"` for stricter freshness (the server default is one year when you omit `time_range`)
 
 ### When to use "local_search" tool
 You MUST use the "local_search" tool when:

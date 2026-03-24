@@ -14,6 +14,12 @@ _VALID_TOPICS = frozenset({"general", "news", "finance"})
 _VALID_TIME_RANGES = frozenset({"day", "week", "month", "year", "d", "w", "m", "y"})
 DEFAULT_TIME_RANGE = "year"
 
+WEB_SEARCH_DESCRIPTION = """
+Search the web for current or factual information. For breaking news, 
+sports, or politics use topic='news' and 'week' for time_range.
+time_range defaults to one year when omitted.
+"""
+
 WEB_SEARCH_PARAMETERS = {
     "type": "object",
     "properties": {
@@ -36,7 +42,7 @@ WEB_SEARCH_PARAMETERS = {
             "type": "string",
             "description": (
                 "Only return pages published or updated within this window before today "
-                "(by source date). Defaults to 'year' when omitted. Use 'day' or 'week' "
+                "(by source date). Defaults to 'year' when omitted. Use 'week' "
                 "when you need very recent results."
             ),
             "enum": ["day", "week", "month", "year"],
@@ -117,11 +123,7 @@ def get_web_search_tool() -> Optional[TOOL]:
     else:
         return TOOL(
             name="web_search",
-            description=(
-                "Search the web for current or factual information. For breaking news, "
-                "sports, or politics use topic='news' and 'day' or 'week' for time_range. "
-                "time_range defaults to one year when omitted. "
-            ),
+            description=WEB_SEARCH_DESCRIPTION,
             parameters=WEB_SEARCH_PARAMETERS,
             fn=_tavily_search,
         )
