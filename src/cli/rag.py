@@ -26,15 +26,15 @@ def rag_index(
     name: str = Argument(
         ..., help="Index name (e.g. my-docs). Used to look up the index later."
     ),
-    docs: str = Option(
+    dir: str = Option(
         ...,
-        "--docs",
+        "--dir",
         "-d",
         help=f"Directory path of files to index (recursive). {RAG_SUPPORTED_EXTENSIONS_HELP}",
     ),
 ) -> None:
     try:
-        path = build_rag_index(index_name=name, docs_dir=docs)
+        path = build_rag_index(index_name=name, docs_dir=dir)
         echo(f"Index '{name}' built and registered at {path}")
     except NotADirectoryError as e:
         echo(f"Error: {e}", err=True)

@@ -8,8 +8,9 @@
 |____/ \___|_|\___|_| |_|\___|
 ```
 
-![linesofcode](https://aschey.tech/tokei/github/cmgoffena13/selene-ai?category=code)
-![license](https://img.shields.io/badge/license-MIT-informational?style=flat)
+![Lines of Code](https://aschey.tech/tokei/github/cmgoffena13/selene-ai?category=code)
+[![Build Status](https://github.com/cmgoffena13/selene-ai/actions/workflows/build-release.yml/badge.svg)](https://github.com/cmgoffena13/selene-ai/actions)
+![License](https://img.shields.io/badge/license-MIT-informational?style=flat)
 
 > *"Like the weapons of the previous century, we too would become obsolete. Pity, because I lived for it"*
 
@@ -24,6 +25,7 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
 ### Prerequisites
 
 - [Ollama](https://ollama.ai) installed and running
+  - Prompts are designed for `llama3-groq-tool-use:8b` model
 
 ---
 
@@ -40,8 +42,26 @@ See [CLI Documentation](docs/cli.md) for detailed command usage.
    - Auto-Save Conversations
    - Load / Delete Conversations
 
+## Usage Examples
+
+```bash
+# Consult Selene's Wisdom
+selene ask "Why did Kraven fail?"
+
+# Search the Archives
+selene ask "What does it say about hybrids?" --file ancient.txt
+
+# Meet with the Elder Council
+selene chat
+
+# Share resources with Selene
+selene rag index my-documents --dir C:/directory/path/
+```
+
 ## Interactive Chat
 
-Interact with Selene in a remembered conversation.
+Interact with Selene in a remembered conversation. 
+
+`selene chat --web`  
 
 ![Chat Window](static/textualize.png)
