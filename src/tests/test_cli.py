@@ -12,7 +12,6 @@ def test_cli_info_prints_expected_sections(
     monkeypatch.setenv("HOME", str(tmp_path))
     result = runner.invoke(app, ["--info"])
     assert result.exit_code == 0
-    out = result.stdout.replace("\n", "")
     assert "CLI Path:" in result.stdout
     assert "Config Directory:" in result.stdout
     assert "Ollama Model:" in result.stdout
