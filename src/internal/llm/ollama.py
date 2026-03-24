@@ -3,6 +3,8 @@ from typing import Optional
 from ollama import Client, RequestError, ResponseError
 from thoughtflow import LLM
 
+from src.utils import get_selene_ai_config_dir
+
 
 def get_ollama_llm(model: Optional[str]) -> LLM:
     """
@@ -13,7 +15,10 @@ def get_ollama_llm(model: Optional[str]) -> LLM:
     """
 
     if model is None:
-        raise ValueError("Ollama model is not set")
+        raise ValueError(
+            "Ollama model is not set (SELENE_OLLAMA_MODEL). "
+            f"Put a `.env` file in the config directory: {get_selene_ai_config_dir()}/"
+        )
     return LLM(f"ollama:{model}", key="")
 
 
@@ -32,6 +37,5 @@ def warn_if_ollama_unreachable(host: str) -> None:
 
     echo(
         f"Warning: Ollama is not reachable at {host}. "
-        "Start the server with: ollama serve, then verify this host (settings / env).",
-        err=True,
+        "Start the server with: `ollama serve`"
     )

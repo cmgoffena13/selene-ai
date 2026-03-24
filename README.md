@@ -16,18 +16,16 @@
 
 Selene is a command-line AI assistant powered by [Ollama](https://ollama.com), [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main), and [LEANN](https://github.com/yichuan-w/LEANN) 
 
-CLI and GUI powered by [Typer](https://github.com/fastapi/typer) and [Textual](https://github.com/Textualize/textual)
-
 ---
 
-See [CLI Documentation](docs/cli.md) for detailed command usage.
-
-### Prerequisites
-
-- [Ollama](https://ollama.ai) installed and running
-  - Prompts are designed for `llama3-groq-tool-use:8b` model
-
----
+### Setup
+- Download the latest Binary
+  - Rename to `selene`
+  - Add binary to PATH
+- Have [Ollama](https://ollama.ai) installed and running
+- Place a `.env` file in the config directory (utilize `selene --info`)
+  - `SELENE_OLLAMA_MODEL` (Required) Recommended: `llama3-groq-tool-use:8b`
+  - `SELENE_TAVILY_API_KEY` (Optional)
 
 ## Features
  - Utilize [Ollama](https://ollama.com) to manage models / transformers

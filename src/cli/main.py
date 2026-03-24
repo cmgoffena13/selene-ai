@@ -9,13 +9,11 @@ from src.cli.chat import chat_app
 from src.cli.ollama import model_app
 from src.cli.rag import rag_app
 from src.internal.agents.general.agent import selene_agent
-from src.internal.agents.memory_utils import get_chat_sessions_dir
 from src.internal.agents.prompt_utils import append_file_to_prompt
 from src.internal.llm.ollama import warn_if_ollama_unreachable
-from src.internal.rag.rag_utils import get_rag_indexes_dir
 from src.logging_conf import setup_logging
 from src.settings import config
-from src.utils import get_version
+from src.utils import get_selene_ai_config_dir, get_version
 
 logger = structlog.getLogger("src.cli.main")
 
@@ -38,8 +36,7 @@ def main_menu(
     if info:
         cli_path = Path(sys.argv[0]).resolve()
         echo(f"CLI Path: {cli_path}")
-        echo(f"Chat Sessions Directory: {get_chat_sessions_dir()}")
-        echo(f"LEANN Vector Indexes Directory: {get_rag_indexes_dir()}")
+        echo(f"Config Directory: {get_selene_ai_config_dir()}/")
         echo(f"Ollama Model: {config.SELENE_OLLAMA_MODEL}")
         raise Exit(code=0)
 
