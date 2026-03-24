@@ -46,7 +46,6 @@ def ask(
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
     verbose: bool = Option(False, "--verbose", "-v", help="Show verbose output."),
 ) -> None:
-    from src.internal.agents.general.agent import selene_agent
     from src.internal.ui.console import echo
 
     user_prompt = prompt
@@ -65,7 +64,7 @@ def ask(
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
     logger.info("Asking Selene a question", user_prompt=user_prompt)
-    memory = selene_agent(memory)
+    memory = config.SELENE_AGENT(memory)
     if verbose:
         echo(memory.render())
     else:

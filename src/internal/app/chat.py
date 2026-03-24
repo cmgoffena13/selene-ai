@@ -17,7 +17,6 @@ from textual.widgets import Button, Footer, Header, Select, Static, TextArea
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
-from src.internal.agents.general.agent import selene_agent
 from src.internal.agents.memory_utils import (
     delete_chat_session,
     list_chat_sessions_index,
@@ -27,6 +26,7 @@ from src.internal.agents.memory_utils import (
 )
 from src.internal.agents.prompt_utils import append_file_to_prompt
 from src.internal.ui.theme import textual_palette
+from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
@@ -277,7 +277,9 @@ class ChatApp(App):
         self.theme = app_theme.name
 
         self.memory = MEMORY()
-        self.chat = CHAT(agent=selene_agent, memory=self.memory, channel="webapp")
+        self.chat = CHAT(
+            agent=config.SELENE_AGENT, memory=self.memory, channel="webapp"
+        )
         self._current_session_path: Path = new_chat_session_path()
         self._attached_file_path: Optional[Path] = None
         self._thinking: Optional[MessageBubble] = None

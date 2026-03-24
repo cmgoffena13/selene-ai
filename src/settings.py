@@ -3,6 +3,12 @@ from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from thoughtflow import AGENT
+
+from src.internal.agents.general.agent import selene_agent
+from src.internal.agents.planact.agent import planact_agent
+from src.internal.agents.react.agent import react_agent
+from src.internal.agents.reflect.agent import reflect_agent
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -24,6 +30,7 @@ class GlobalConfig(BaseSettings):
     SELENE_OLLAMA_MODEL: Optional[str] = None
     SELENE_OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
     SELENE_TAVILY_API_KEY: Optional[str] = None
+    SELENE_AGENT: AGENT = planact_agent
 
     # Setting Defaults for External Libraries
     LEANN_LOG_LEVEL: LogLevel = "WARNING"
