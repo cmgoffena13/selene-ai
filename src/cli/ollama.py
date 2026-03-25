@@ -1,9 +1,15 @@
 from ollama import Client, RequestError, ResponseError
 from typer import Argument, Exit, Option, Typer
 
+from src.internal.llm.ollama import warn_if_ollama_unreachable
 from src.settings import config
 
 model_app = Typer(help="Manage Ollama models (pull, list, remove).")
+
+
+@model_app.callback()
+def _model_warn_ollama() -> None:
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
 
 
 @model_app.command("list", help="List Ollama models available locally.")

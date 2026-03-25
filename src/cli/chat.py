@@ -2,6 +2,8 @@ import sys
 
 from typer import Option, Typer
 
+from src.settings import config
+
 chat_app = Typer(help="Open an interactive chat with Selene.")
 
 
@@ -17,6 +19,9 @@ def chat_new(
         help="Show full ThoughtFlow memory in the transcript (all roles, logs, refs, vars).",
     ),
 ) -> None:
+    from src.internal.llm.ollama import warn_if_ollama_unreachable
+
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     if web:
         from textual_serve.server import Server
 

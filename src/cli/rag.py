@@ -1,7 +1,9 @@
 import typer
 from typer import Argument, Exit, Option
 
+from src.internal.llm.ollama import warn_if_ollama_unreachable
 from src.internal.ui.console import echo
+from src.settings import config
 
 rag_app = typer.Typer(
     help="Build and manage RAG indexes (stored in ~/.config/selene_ai)."
@@ -32,6 +34,7 @@ def rag_index(
 ) -> None:
     from src.internal.rag.builder import build_rag_index
 
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     try:
         path = build_rag_index(index_name=name, docs_dir=dir)
         echo(f"Index '{name}' built and registered at {path}")
@@ -56,6 +59,7 @@ def rag_update(
 ) -> None:
     from src.internal.rag.updater import update_rag_index
 
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     try:
         path = update_rag_index(index_name=name)
         echo(f"Index '{name}' updated at {path}")

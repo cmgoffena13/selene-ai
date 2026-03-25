@@ -31,12 +31,13 @@ def main_menu(
 
     if version:
         echo(f"Selene AI - Version: {get_version()}")
+        raise Exit(code=0)
     if info:
         cli_path = Path(sys.argv[0]).resolve()
         echo(f"CLI Path: {cli_path}")
         echo(f"Config Directory: {get_selene_ai_config_dir()}/")
         echo(f"Ollama Model: {config.SELENE_OLLAMA_MODEL}")
-    raise Exit(code=0)
+        raise Exit(code=0)
 
 
 @app.command("ask", help="Ask Selene a question")
@@ -48,6 +49,7 @@ def ask(
     from src.internal.agents.planact.agent import planact_agent
     from src.internal.ui.console import echo
 
+    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     user_prompt = prompt
     if file:
         file_path = Path(file).expanduser().resolve()
@@ -74,7 +76,6 @@ def ask(
 
 def main():
     setup_logging()
-    warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     app()
 
 
