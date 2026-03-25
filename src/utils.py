@@ -3,8 +3,12 @@ import time
 import tomllib
 from functools import wraps
 from pathlib import Path
+from typing import Any
 
+import orjson
 import structlog
+
+JSONDecodeError = orjson.JSONDecodeError
 
 logger = structlog.getLogger(__name__)
 
@@ -64,3 +68,13 @@ def get_selene_ai_config_dir(*parts: str) -> Path:
     """
     base = Path.home() / ".config" / "selene_ai"
     return ensure_dir(base.joinpath(*parts))
+
+
+def read_json(path: Path) -> Any:
+    with path.open("rb") as f:
+        return orjson.loads(f.read())
+
+
+def write_json(path: Path, obj: Any) -> None:
+    with path.open("wb") as f:
+        f.write(orjson.dumps(obj))

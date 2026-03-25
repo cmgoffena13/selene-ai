@@ -1,7 +1,3 @@
-import json
-import re
-
-import structlog
 from thoughtflow.agents import PlanActAgent
 
 from src.internal.agents.prompt_utils import (
@@ -12,8 +8,6 @@ from src.internal.agents.prompt_utils import (
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
-
-logger = structlog.getLogger("src.internal.agents.planact.agent")
 
 llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
 tools = get_tool_list()

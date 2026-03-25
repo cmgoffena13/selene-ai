@@ -1,8 +1,7 @@
-import json
 from datetime import datetime
 from pathlib import Path
 
-from src.utils import get_selene_ai_config_dir
+from src.utils import get_selene_ai_config_dir, read_json, write_json
 
 
 def get_chat_sessions_dir() -> Path:
@@ -36,8 +35,7 @@ def _read_sessions_index() -> list[dict[str, str]]:
         _write_sessions_index([])
         return []
 
-    with index_path.open("r", encoding="utf-8") as file:
-        data = json.load(file)
+    data = read_json(index_path)
 
     entries: list[dict[str, str]] = []
     for item in data:
@@ -49,8 +47,7 @@ def _read_sessions_index() -> list[dict[str, str]]:
 
 def _write_sessions_index(entries: list[dict[str, str]]) -> None:
     index_path = get_chat_sessions_index_path()
-    with index_path.open("w", encoding="utf-8") as file:
-        json.dump(entries, file)
+    write_json(index_path, entries)
 
 
 def list_chat_sessions_index() -> list[dict[str, str]]:

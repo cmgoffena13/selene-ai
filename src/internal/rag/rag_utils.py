@@ -1,8 +1,12 @@
-import json
 import shutil
 from pathlib import Path
 
-from src.utils import get_selene_ai_config_dir
+from src.utils import (
+    JSONDecodeError,
+    get_selene_ai_config_dir,
+    read_json,
+    write_json,
+)
 
 CHUNK_SIZE = 256
 CHUNK_OVERLAP = 128
@@ -25,17 +29,15 @@ def load_rag_registry() -> dict[str, dict]:
     if not path.exists():
         return {}
     try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError):
+        return read_json(path)
+    except (JSONDecodeError, OSError):
         return {}
 
 
 def save_rag_registry(registry: dict[str, dict]) -> None:
     """Write { index_name: { path, docs_dir } } to disk."""
     path = get_rag_registry_path()
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(registry, f, indent=2)
+    write_json(path, registry)
 
 
 def register_rag_index(name: str, index_path: str, docs_dir: str) -> None:

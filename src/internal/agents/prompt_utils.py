@@ -1,7 +1,8 @@
 import datetime
-import json
 from pathlib import Path
 from typing import Any, Optional
+
+import orjson
 
 from src.exceptions import AgentDoesNotExistError
 
@@ -61,7 +62,7 @@ def format_tool_result(tool_name: str, query: str, result: Any) -> str:
     if isinstance(result, str):
         result_content = result
     else:
-        result_content = json.dumps(result)
+        result_content = orjson.dumps(result).decode("utf-8")
 
     return (
         f"Tool: {tool_name}\n"

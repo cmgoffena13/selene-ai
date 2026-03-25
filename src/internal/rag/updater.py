@@ -1,4 +1,3 @@
-import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -17,6 +16,7 @@ from src.internal.rag.rag_utils import (
     get_rag_index_path,
 )
 from src.settings import config
+from src.utils import read_json
 
 logger = structlog.getLogger(__name__)
 
@@ -112,8 +112,7 @@ def update_rag_index(index_name: str) -> str:
 
     # Use same backend and embedding as the existing index.
     meta_path = Path(index_path + ".meta.json")
-    with open(meta_path, encoding="utf-8") as f:
-        meta = json.load(f)
+    meta = read_json(meta_path)
     backend_name = meta["backend_name"]
     embedding_model = meta["embedding_model"]
     embedding_mode = meta.get("embedding_mode", "sentence-transformers")
