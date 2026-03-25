@@ -30,6 +30,7 @@ def model_list(
             f"  {size_bytes / (1024**3):.1f} GB" if size_bytes is not None else ""
         )
         echo(f"  {name}{size_display}")
+    raise Exit(code=0)
 
 
 @model_app.command("pull", help="Pull an Ollama model so you can use it with Selene.")
@@ -73,6 +74,7 @@ def model_pull(
         echo(f"Ollama error: {e}", err=True)
         echo("Is Ollama running? Start it with: ollama serve", err=True)
         raise Exit(code=1)
+    raise Exit(code=0)
 
 
 @model_app.command("delete")
@@ -92,3 +94,4 @@ def model_remove(
         echo(f"Ollama error: {e}", err=True)
         echo("Is Ollama running? Start it with: ollama serve", err=True)
         raise Exit(code=1)
+    raise Exit(code=0)

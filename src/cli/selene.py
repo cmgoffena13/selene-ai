@@ -31,13 +31,12 @@ def main_menu(
 
     if version:
         echo(f"Selene AI - Version: {get_version()}")
-        raise Exit(code=0)
     if info:
         cli_path = Path(sys.argv[0]).resolve()
         echo(f"CLI Path: {cli_path}")
         echo(f"Config Directory: {get_selene_ai_config_dir()}/")
         echo(f"Ollama Model: {config.SELENE_OLLAMA_MODEL}")
-        raise Exit(code=0)
+    raise Exit(code=0)
 
 
 @app.command("ask", help="Ask Selene a question")

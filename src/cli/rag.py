@@ -44,6 +44,7 @@ def rag_index(
     except Exception as e:
         echo(f"Error building index: {e}", err=True)
         raise Exit(code=1)
+    raise Exit(code=0)
 
 
 @rag_app.command(
@@ -67,6 +68,7 @@ def rag_update(
     except Exception as e:
         echo(f"Error updating index: {e}", err=True)
         raise Exit(code=1)
+    raise Exit(code=0)
 
 
 @rag_app.command("list", help="List RAG indexes with size (GB) and docs directory.")
@@ -80,6 +82,7 @@ def rag_list() -> None:
     for name, _path, size_bytes, docs_dir in indexes:
         size_gb = size_bytes / (1024**3)
         echo(f"  {name}  {size_gb:.2f} GB  {docs_dir}")
+    raise Exit(code=0)
 
 
 @rag_app.command("delete", help="Delete a stored RAG index by name.")
@@ -93,3 +96,4 @@ def rag_delete(
         echo(f"Index '{name}' deleted.")
     else:
         echo(f"Index '{name}' not found.")
+    raise Exit(code=0)
