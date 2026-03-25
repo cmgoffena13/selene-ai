@@ -14,7 +14,7 @@
 
 > *"Like the weapons of the previous century, we too would become obsolete. Pity, because I lived for it"*
 
-Selene is a local command-line AI assistant powered by [Ollama](https://ollama.com) & [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main)
+Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Thoughtflow](https://github.com/jrolf/thoughtflow/tree/main)
 
 ---
 
