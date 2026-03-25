@@ -19,11 +19,11 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
 ---
 
 ## Setup
-- Download the latest binary
-  - Rename to `selene`
-  - Add binary to PATH
+- Download the latest zip in releases
+  - Extract the zip
+  - Add the `selene` binary in the folder to your PATH
 - Have [Ollama](https://ollama.ai) installed and running
-- Place a `.env` file in the config directory (Utilize `selene --info`)
+- Place a `.env` file in the config directory (Utilize `selene --info` to locate)
   - `SELENE_OLLAMA_MODEL` (Required) Recommended: `llama3-groq-tool-use:8b`
   - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Default: `nomic-embed-text`
   - `SELENE_TAVILY_API_KEY` (Optional)

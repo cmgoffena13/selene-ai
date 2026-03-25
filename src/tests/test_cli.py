@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from src.cli.main import app
+from src.cli.selene import app
 
 
 def test_cli_info_prints_expected_sections(

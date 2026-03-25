@@ -16,13 +16,10 @@ jobs:
         include:
           - os: ubuntu-latest
             output_name: selene-linux-x86_64
-            exe_extension: ''
           - os: macos-latest
             output_name: selene-macos-x86_64
-            exe_extension: ''
           - os: windows-latest
             output_name: selene-windows-x86_64
-            exe_extension: .exe
 
     steps:
       - name: Checkout code
@@ -45,10 +42,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           uv run -- nuitka \
-            --onefile \
             --lto=yes \
             --assume-yes-for-downloads \
-            src/cli/main.py \
+            src/cli/selene.py \
             --output-filename=selene \
             --python-flag="no_warnings" \
             --include-data-files=pyproject.toml=pyproject.toml \
@@ -59,10 +55,9 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           uv run -- nuitka \
-            --onefile \
             --lto=yes \
             --assume-yes-for-downloads \
-            src/cli/main.py \
+            src/cli/selene.py \
             --output-filename=selene \
             --python-flag="no_warnings" \
             --include-data-files=pyproject.toml=pyproject.toml \
@@ -74,34 +69,32 @@ jobs:
         shell: cmd
         run: |
           uv run -- nuitka ^
-            --onefile ^
             --lto=yes ^
             --assume-yes-for-downloads ^
-            src/cli/main.py ^
+            src/cli/selene.py ^
             --output-filename=selene.exe ^
             --python-flag="no_warnings" ^
             --include-data-files=pyproject.toml=pyproject.toml ^
             --noinclude-data-files=src/tests/* ^
             --output-dir=dist/
 
-      - name: Prepare artifact (Linux/macOS)
+      - name: Zip artifact (Linux/macOS)
         if: matrix.os != 'windows-latest'
         run: |
-          cd dist
-          chmod +x selene
-          mv selene ${{ matrix.output_name }}
+          chmod +x dist/selene.dist/selene
+          cd dist && zip -r ${{ matrix.output_name }}.zip selene.dist
 
-      - name: Prepare artifact (Windows)
+      - name: Zip artifact (Windows)
         if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
-          cd dist
-          move selene.exe ${{ matrix.output_name }}.exe
+          Compress-Archive -Path dist/selene.dist -DestinationPath dist/${{ matrix.output_name }}.zip -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.output_name }}
-          path: dist/${{ matrix.output_name }}${{ matrix.exe_extension }}
+          path: dist/${{ matrix.output_name }}.zip
           retention-days: 30
 
   release:
@@ -134,7 +127,7 @@ jobs:
           tag_name: ${{ steps.tag_name.outputs.TAG }}
           name: Release ${{ steps.tag_version.outputs.VERSION }}
           files: |
-            artifacts/**/selene*
+            artifacts/**/*.zip
           generate_release_notes: false
           draft: false
           prerelease: false
