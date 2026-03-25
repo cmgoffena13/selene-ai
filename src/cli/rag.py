@@ -84,7 +84,7 @@ def rag_list() -> None:
 
 @rag_app.command("delete", help="Delete a stored RAG index by name.")
 def rag_delete(
-    name: str = Argument(..., help="Index name to delete (e.g. thoughtflow)."),
+    name: str = Argument(..., help="Index name to delete (e.g. my-docs)."),
 ) -> None:
     from src.internal.rag.rag_utils import delete_rag_index
 
