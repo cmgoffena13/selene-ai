@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict
 
 from thoughtflow import AGENT
 
