@@ -14,6 +14,7 @@ logger = structlog.getLogger(__name__)
 LOCAL_SEARCH_DESCRIPTION = """
 Search across all locally-built RAG vector indexes.
 This is useful for searching through the user's own local files and documents.
+Set "use_grep" to True to search for quoted text in the indexes.
 """
 
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
