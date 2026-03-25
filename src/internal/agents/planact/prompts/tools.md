@@ -43,4 +43,4 @@ You MUST use the "local_search" tool when:
 ### How to Use "local_search"
 - Call the "local_search" tool **immediately** when criteria above are met, before answering the user
 - Use specific, targeted search queries
-- Always cite document sources when using search results
+- Always cite the file paths when using search results

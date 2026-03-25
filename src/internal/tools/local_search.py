@@ -13,7 +13,7 @@ logger = structlog.getLogger(__name__)
 
 LOCAL_SEARCH_DESCRIPTION = """
 Search across all locally-built RAG vector indexes.
-This is useful for searching through the user's own files and documents.
+This is useful for searching through the user's own local files and documents.
 """
 
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
