@@ -15,9 +15,10 @@ _VALID_TIME_RANGES = frozenset({"day", "week", "month", "year", "d", "w", "m", "
 DEFAULT_TIME_RANGE = "year"
 
 WEB_SEARCH_DESCRIPTION = """
-Search the web for current or factual information. For breaking news, 
-sports, or politics use topic='news' and 'week' for time_range.
-time_range defaults to one year when omitted.
+Search the web (Tavily). **Required:** `query` — the actual search string (keywords
+or question text). **Optional:** `topic` (`general`, `news`, `finance`) and
+`time_range` (`day`…`year`) to bias recency; for breaking news prefer
+`topic='news'` and often `time_range='week'`. If you omit `query`, search cannot run.
 """
 
 WEB_SEARCH_PARAMETERS = {

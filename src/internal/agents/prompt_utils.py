@@ -1,16 +1,23 @@
 import datetime
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from src.exceptions import AgentDoesNotExistError
 
-PROMPT_MAPPING = {"identity.md": 1, "tools.md": 2, "files.md": 3, "task.md": 4}
+PROMPT_MAPPING = {"identity.md": 1, "tools.md": 2, "files.md": 3}
 
 
 def agent_prompts_dir(agent_name: str) -> Path:
     """Resolve ``src/internal/agents/<agent_name>/prompts``."""
     return Path(__file__).resolve().parent / agent_name / "prompts"
+
+
+def agent_task_prompt(agent_name: str) -> Optional[str]:
+    path = Path(__file__).resolve().parent / agent_name / "prompts" / "task.md"
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return None
 
 
 def list_agent_prompt_files(agent_name: str) -> list[Path]:
@@ -42,9 +49,11 @@ def inject_system_prompt_placeholders(template: str) -> str:
     Replace placeholders in the system prompt template (e.g. {current_date}).
 
     The date is computed when this runs (typically at process / agent init).
+    Uses string replace instead of str.format so literals like ``{}`` or
+    ``{{task}}`` in prompts are not interpreted as format fields.
     """
     current_date = datetime.datetime.today().strftime("%A, %B %d, %Y")
-    return template.format(current_date=current_date)
+    return template.replace("{current_date}", current_date)
 
 
 def format_tool_result(tool_name: str, query: str, result: Any) -> str:
@@ -52,7 +61,7 @@ def format_tool_result(tool_name: str, query: str, result: Any) -> str:
     if isinstance(result, str):
         result_content = result
     else:
-        result_content = json.dumps(result, ensure_ascii=False, indent=2)
+        result_content = json.dumps(result)
 
     return (
         f"Tool: {tool_name}\n"

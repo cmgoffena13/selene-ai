@@ -53,8 +53,7 @@ def test_build_system_prompt_concatenates_in_mapping_order(
     a = text.index("# identity fixture chunk")
     b = text.index("# tools fixture chunk")
     c = text.index("# files fixture chunk")
-    d = text.index("# task fixture chunk")
-    assert a < b < c < d
+    assert a < b < c
 
 
 def test_build_system_prompt_skips_missing_mapped_files(

@@ -24,9 +24,9 @@ from src.internal.agents.memory_utils import (
     resolve_chat_session_path,
     upsert_chat_session_index,
 )
+from src.internal.agents.planact.agent import planact_agent
 from src.internal.agents.prompt_utils import append_file_to_prompt
 from src.internal.ui.theme import textual_palette
-from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
@@ -277,9 +277,7 @@ class ChatApp(App):
         self.theme = app_theme.name
 
         self.memory = MEMORY()
-        self.chat = CHAT(
-            agent=config.SELENE_AGENT, memory=self.memory, channel="webapp"
-        )
+        self.chat = CHAT(agent=planact_agent, memory=self.memory, channel="webapp")
         self._current_session_path: Path = new_chat_session_path()
         self._attached_file_path: Optional[Path] = None
         self._thinking: Optional[MessageBubble] = None
@@ -312,12 +310,12 @@ class ChatApp(App):
         transcript.scroll_end(animate=False)
         return bubble
 
-    def _append_memory_event(self, ev: dict) -> None:
+    def _append_memory_event(self, event: dict) -> None:
         """Render one MEMORY event for verbose transcript."""
-        t = ev["type"]
+        t = event["type"]
         if t == "msg":
-            role: str = ev["role"]
-            content = str(ev["content"])
+            role: str = event["role"]
+            content = str(event["content"])
             if role == "user":
                 self._append(content, "user")
             elif role == "assistant":
@@ -326,12 +324,12 @@ class ChatApp(App):
                 self._append(content, "verbose", speaker=_VERBOSE_SPEAKER_LABELS[role])
         elif t in ("log", "ref", "var"):
             self._append(
-                str(ev["content"]), "verbose", speaker=_VERBOSE_SPEAKER_LABELS[t]
+                str(event["content"]), "verbose", speaker=_VERBOSE_SPEAKER_LABELS[t]
             )
 
     def _rebuild_transcript_verbose(self) -> None:
-        for ev in self.chat.memory.get_events():
-            self._append_memory_event(ev)
+        for event in self.chat.memory.get_events():
+            self._append_memory_event(event)
 
     def _update_prompt_placeholder(self) -> None:
         prompt = self.query_one("#prompt", CommandPrompt)
