@@ -435,7 +435,13 @@ class ChatApp(App):
     def _load_session_file(self, filename: str) -> None:
         load_path = resolve_chat_session_path(filename)
         if not load_path.exists():
-            raise ValueError(f"Session file not found: {load_path}")
+            self._append(
+                f"Session file not found (it may have been removed): {filename}",
+                "error",
+            )
+            self._refresh_session_dropdown()
+            self.query_one("#transcript", VerticalScroll).scroll_end(animate=True)
+            return
         self.workers.cancel_group(self, "agent")
         loaded = MEMORY.from_json(str(load_path))
         self.memory = loaded

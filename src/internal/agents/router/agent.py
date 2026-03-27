@@ -4,7 +4,7 @@ import structlog
 from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
-from src.internal.agents.prompt_utils import compose_system_prompt
+from src.internal.agents.prompt_utils import load_agent_prompt
 from src.internal.llm.ollama import get_ollama_llm
 from src.settings import config
 
@@ -49,7 +49,7 @@ class RouterAgent(AGENT):
 
         llm = self.llm
         if llm is None:
-            raise RuntimeError("RouterAgent requires an llm")
+            raise RuntimeError("RouterAgent requires llm")
         result = llm.call(messages)
         agent_name = result[0] if result else ""
         logger.debug("RouterAgent Output", result=result)
@@ -94,10 +94,10 @@ class RouterAgent(AGENT):
 
 
 llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
-SELENE_SYSTEM_PROMPT = compose_system_prompt("router")
+ROUTER_SYSTEM_PROMPT = load_agent_prompt("router")
 
 router_agent = RouterAgent(
-    system_prompt=SELENE_SYSTEM_PROMPT,
+    system_prompt=ROUTER_SYSTEM_PROMPT,
     llm=llm,
     name="router",
     max_iterations=5,
