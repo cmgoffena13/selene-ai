@@ -4,11 +4,9 @@ from typing import Any
 
 import orjson
 
-SHARED_PROMPT_MAPPING = {"identity.md": 1, "files.md": 2}
-
 
 def agents_root() -> Path:
-    """Directory containing ``shared_prompts/`` and per-agent packages."""
+    """Directory containing per-agent packages (each with ``prompt.md``)."""
     return Path(__file__).resolve().parent
 
 
