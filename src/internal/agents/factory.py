@@ -4,18 +4,16 @@ from typing import Dict
 
 from thoughtflow import AGENT
 
+from src.internal.agents.archivist.agent import archivist_agent
 from src.internal.agents.general.agent import general_agent
-from src.internal.agents.planner.agent import planner_agent
-from src.internal.agents.react.agent import react_agent
-from src.internal.agents.reflect.agent import reflect_agent
+from src.internal.agents.researcher.agent import researcher_agent
 
 
 class AgentFactory(ABC):
     _registry: Dict[str, AGENT] = {
-        "planner": planner_agent,
-        "react": react_agent,
-        "reflect": reflect_agent,
         "general": general_agent,
+        "researcher": researcher_agent,
+        "archivist": archivist_agent,
     }
 
     @classmethod
