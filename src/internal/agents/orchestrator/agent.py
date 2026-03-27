@@ -63,6 +63,7 @@ class OrchestratorAgent(AGENT):
     def __call__(self, memory):
         prompt = self._extract_prompt(memory)
         if not prompt:
+            logger.warning("No prompt found to respond to.")
             memory.add_msg("assistant", "No prompt found to respond to.")
 
         routed_agent_name = self.router_agent.generate_agent_route(prompt)
@@ -94,8 +95,9 @@ class OrchestratorAgent(AGENT):
         if llm is None:
             raise RuntimeError("OrchestratorAgent requires an llm")
         result = llm.call(messages)
-        memory.add_msg("assistant", result[0] or "")
-
+        output = result[0] or ""
+        memory.add_msg("assistant", output)
+        logger.debug("OrchestratorAgent Output", output=output)
         return memory
 
 
