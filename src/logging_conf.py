@@ -1,40 +1,47 @@
-from logging.config import dictConfig
-from typing import Any
+import logging
+
+import structlog
 
 from src.settings import config
 
 
-def setup_logging():
-    handlers: dict[str, Any] = {
-        "default": {
-            "class": "logging.StreamHandler",
-            "level": str(config.SELENE_LOG_LEVEL),
-            "formatter": "console",
-        },
-    }
+def setup_logging() -> None:
+    level: int = getattr(logging, config.SELENE_LOG_LEVEL)
+    timestamper = structlog.processors.TimeStamper(fmt="iso")
 
-    formatters: dict[str, Any] = {
-        "console": {
-            "class": "logging.Formatter",
-            "datefmt": "%Y-%m-%dT%H:%M:%S",
-            "format": "%(name)s:%(lineno)d - %(message)s",
-        }
-    }
-
-    loggers: dict[str, Any] = {
-        "src": {
-            "level": str(config.SELENE_LOG_LEVEL),
-            "handlers": ["default"],
-            "propagate": False,
-        }
-    }
-
-    dictConfig(
-        {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "formatters": formatters,
-            "handlers": handlers,
-            "loggers": loggers,
-        }
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            timestamper,
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+        ],
+        wrapper_class=structlog.stdlib.BoundLogger,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        cache_logger_on_first_use=True,
     )
+
+    formatter = structlog.stdlib.ProcessorFormatter(
+        processor=structlog.dev.ConsoleRenderer(colors=True),
+        foreign_pre_chain=[
+            timestamper,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.add_logger_name,
+        ],
+    )
+
+    handler = logging.StreamHandler()
+    handler.setLevel(level)
+    handler.setFormatter(formatter)
+
+    src_logger = logging.getLogger("src")
+    src_logger.handlers.clear()
+    src_logger.setLevel(level)
+    src_logger.addHandler(handler)
+    src_logger.propagate = False
