@@ -32,7 +32,7 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
  - **Intelligence on Demand**: Ask questions, Analyze files, etc. via [Typer](https://github.com/fastapi/typer) CLI
  - **Interactive Chat**: Conversation mode with persistent memory via [Textual](https://github.com/Textualize/textual) GUI
  - **Local Search**: Index your local files via [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
- - **Web Search**: Real-time web search tool via [Tavily](https://www.tavily.com)
+ - **Web Search**: Real-time web search via [Tavily](https://www.tavily.com)
 
 ## Usage Examples
 
