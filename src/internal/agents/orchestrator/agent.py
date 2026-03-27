@@ -90,7 +90,6 @@ class OrchestratorAgent(AGENT):
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": user_prompt},
         ]
-        logger.debug("User Prompt Constructed", user_prompt=user_prompt)
 
         llm = self.llm
         if llm is None:
