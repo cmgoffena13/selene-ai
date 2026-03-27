@@ -5,14 +5,14 @@ from typing import Dict
 from thoughtflow import AGENT
 
 from src.internal.agents.general.agent import general_agent
-from src.internal.agents.planact.agent import planact_agent
+from src.internal.agents.planner.agent import planner_agent
 from src.internal.agents.react.agent import react_agent
 from src.internal.agents.reflect.agent import reflect_agent
 
 
 class AgentFactory(ABC):
     _registry: Dict[str, AGENT] = {
-        "planact": planact_agent,
+        "planner": planner_agent,
         "react": react_agent,
         "reflect": reflect_agent,
         "general": general_agent,

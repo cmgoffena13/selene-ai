@@ -1,16 +1,71 @@
-from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
-from src.exceptions import AgentDoesNotExistError
 from src.internal.agents import prompt_utils as pu
 
 
-def test_agent_prompts_dir_ends_with_agent_prompts() -> None:
-    p = pu.agent_prompts_dir("general")
-    assert p.name == "prompts"
-    assert p.parent.name == "general"
+@pytest.fixture
+def isolated_agents_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Minimal agents tree: ``shared_prompts/`` + one agent with ``prompt.md``."""
+    root = tmp_path
+    shared = root / "shared_prompts"
+    shared.mkdir()
+    (shared / "identity.md").write_text("# identity-block\n", encoding="utf-8")
+    (shared / "files.md").write_text("# files-block\n", encoding="utf-8")
+    agent = root / "fixture_agent"
+    agent.mkdir()
+    (agent / "prompt.md").write_text("# agent-block\n", encoding="utf-8")
+    monkeypatch.setattr(pu, "agents_root", lambda: root)
+    return root
+
+
+def test_agents_root_is_internal_agents_package() -> None:
+    assert pu.agents_root().name == "agents"
+    assert (pu.agents_root() / "shared_prompts").is_dir()
+
+
+def test_shared_prompt_mapping_order_in_compose(isolated_agents_root: Path) -> None:
+    text = pu.compose_system_prompt("fixture_agent")
+    a = text.index("# identity-block")
+    b = text.index("# files-block")
+    c = text.index("# agent-block")
+    assert a < b < c
+
+
+def test_load_shared_prompt_sections_order(isolated_agents_root: Path) -> None:
+    text = pu.load_shared_prompt_sections()
+    i = text.index("# identity-block")
+    f = text.index("# files-block")
+    assert i < f
+
+
+def test_load_shared_prompt_sections_missing_file_raises(
+    isolated_agents_root: Path,
+) -> None:
+    (isolated_agents_root / "shared_prompts" / "files.md").unlink()
+    with pytest.raises(FileNotFoundError):
+        pu.load_shared_prompt_sections()
+
+
+def test_load_agent_prompt_missing_raises(isolated_agents_root: Path) -> None:
+    (isolated_agents_root / "fixture_agent" / "prompt.md").unlink()
+    with pytest.raises(FileNotFoundError):
+        pu.load_agent_prompt("fixture_agent")
+
+
+def test_ensure_agent_prompt_file_creates_prompt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path
+    shared = root / "shared_prompts"
+    shared.mkdir()
+    (shared / "identity.md").write_text("i", encoding="utf-8")
+    (shared / "files.md").write_text("f", encoding="utf-8")
+    monkeypatch.setattr(pu, "agents_root", lambda: root)
+    path = pu.ensure_agent_prompt_file("new_agent")
+    assert path.name == "prompt.md"
+    assert path.read_text(encoding="utf-8").startswith("# new_agent")
 
 
 def test_inject_system_prompt_placeholders_replaces_date() -> None:
@@ -29,66 +84,6 @@ def test_format_tool_result_dict() -> None:
 def test_format_tool_result_str() -> None:
     out = pu.format_tool_result("t", "q", "plain")
     assert "plain" in out
-
-
-def test_list_agent_prompt_files_general_includes_mapped_prompts() -> None:
-    paths = pu.list_agent_prompt_files("general")
-    names = {p.name for p in paths}
-    assert "identity.md" in names
-    assert "tools.md" in names
-
-
-def test_list_agent_prompt_files_missing_agent() -> None:
-    with pytest.raises(AgentDoesNotExistError):
-        pu.list_agent_prompt_files("__no_such_agent__")
-
-
-def test_build_system_prompt_concatenates_in_mapping_order(
-    patch_agent_prompts_dir: Callable[[str, Path], None],
-    prompt_agents_fixtures_dir: Path,
-) -> None:
-    prompts = prompt_agents_fixtures_dir / "complete" / "prompts"
-    patch_agent_prompts_dir("fixture_agent", prompts)
-    text = pu.build_system_prompt("fixture_agent")
-    a = text.index("# identity fixture chunk")
-    b = text.index("# tools fixture chunk")
-    c = text.index("# files fixture chunk")
-    assert a < b < c
-
-
-def test_build_system_prompt_skips_missing_mapped_files(
-    patch_agent_prompts_dir: Callable[[str, Path], None],
-    tmp_path: Path,
-) -> None:
-    prompts = tmp_path / "prompts"
-    prompts.mkdir()
-    (prompts / "identity.md").write_text("only_identity", encoding="utf-8")
-    patch_agent_prompts_dir("fixture_agent", prompts)
-    assert pu.build_system_prompt("fixture_agent") == "only_identity"
-
-
-def test_build_system_prompt_ignores_unmapped_nested_file(
-    patch_agent_prompts_dir: Callable[[str, Path], None],
-    prompt_agents_fixtures_dir: Path,
-) -> None:
-    prompts = prompt_agents_fixtures_dir / "with_nested" / "prompts"
-    patch_agent_prompts_dir("fixture_agent", prompts)
-    text = pu.build_system_prompt("fixture_agent")
-    assert "ignored by build_system_prompt" not in text
-    assert "nested-fixture-system" in text
-
-
-def test_list_agent_prompt_files_includes_nested_and_paths_sorted(
-    patch_agent_prompts_dir: Callable[[str, Path], None],
-    prompt_agents_fixtures_dir: Path,
-) -> None:
-    prompts = prompt_agents_fixtures_dir / "with_nested" / "prompts"
-    patch_agent_prompts_dir("fixture_agent", prompts)
-    paths = pu.list_agent_prompt_files("fixture_agent")
-    assert paths == sorted(paths)
-    names = {p.name for p in paths}
-    assert "extra.md" in names
-    assert "identity.md" in names
 
 
 def test_append_file_to_prompt_appends_block() -> None:

@@ -1,48 +1,69 @@
 import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import orjson
 
-from src.exceptions import AgentDoesNotExistError
-
-PROMPT_MAPPING = {"identity.md": 1, "tools.md": 2, "files.md": 3}
+SHARED_PROMPT_MAPPING = {"identity.md": 1, "files.md": 2}
 
 
-def agent_prompts_dir(agent_name: str) -> Path:
-    """Resolve ``src/internal/agents/<agent_name>/prompts``."""
-    return Path(__file__).resolve().parent / agent_name / "prompts"
+def agents_root() -> Path:
+    """Directory containing ``shared_prompts/`` and per-agent packages."""
+    return Path(__file__).resolve().parent
 
 
-def agent_task_prompt(agent_name: str) -> Optional[str]:
-    path = Path(__file__).resolve().parent / agent_name / "prompts" / "task.md"
-    if path.exists():
-        return path.read_text(encoding="utf-8")
-    return None
-
-
-def list_agent_prompt_files(agent_name: str) -> list[Path]:
-    """All files under that agent's ``prompts`` directory (recursive), sorted."""
-    root = agent_prompts_dir(agent_name)
-    if not root.is_dir():
-        raise AgentDoesNotExistError(f"Agent {agent_name} does not exist.")
-    return sorted(p for p in root.rglob("*") if p.is_file())
-
-
-def build_system_prompt(agent_name: str) -> str:
+def load_shared_prompt_sections() -> str:
     """
-    Concatenate prompt files for ``agent_name`` in :data:`PROMPT_MAPPING` order.
+    Load shared markdown sections in :data:`SHARED_PROMPT_MAPPING` rank order.
 
-    Only files that exist under that agent's ``prompts/`` tree and whose basenames
-    appear in the mapping are included; missing mapped names are skipped.
+    Every mapped file must exist under ``shared_prompts/``.
     """
-    all_files = list_agent_prompt_files(agent_name)
-    by_name = {p.name: p for p in all_files if p.name in PROMPT_MAPPING}
-    ordered_names = sorted(PROMPT_MAPPING, key=lambda n: PROMPT_MAPPING[n])
-    parts = [
-        by_name[n].read_text(encoding="utf-8") for n in ordered_names if n in by_name
-    ]
+    base = agents_root() / "shared_prompts"
+    ordered = sorted(SHARED_PROMPT_MAPPING, key=lambda n: SHARED_PROMPT_MAPPING[n])
+    parts: list[str] = []
+    missing: list[str] = []
+    for name in ordered:
+        path = base / name
+        if not path.is_file():
+            missing.append(str(path))
+            continue
+        parts.append(path.read_text(encoding="utf-8"))
+    if missing:
+        raise FileNotFoundError("Missing shared prompt file(s): " + ", ".join(missing))
     return "\n\n".join(parts)
+
+
+def load_agent_prompt(agent_name: str) -> str:
+    path = agents_root() / agent_name / "prompt.md"
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing agent prompt: {path}")
+    return path.read_text(encoding="utf-8")
+
+
+def compose_system_prompt(agent_name: str) -> str:
+    """
+    Full system prompt: shared sections (ordered), then ``<agent>/prompt.md``,
+    with runtime placeholders (e.g. ``{current_date}``) filled in.
+    """
+    shared = load_shared_prompt_sections()
+    agent = load_agent_prompt(agent_name)
+    raw = f"{shared}\n\n{agent}"
+    return inject_system_prompt_placeholders(raw)
+
+
+def ensure_agent_prompt_file(agent_name: str, *, template: str | None = None) -> Path:
+    """
+    Ensure ``<agent_name>/prompt.md`` exists; create parent dirs and a stub if not.
+
+    Returns the path to ``prompt.md``.
+    """
+    path = agents_root() / agent_name / "prompt.md"
+    if path.is_file():
+        return path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    body = template if template is not None else f"# {agent_name}\n\n"
+    path.write_text(body, encoding="utf-8")
+    return path
 
 
 def inject_system_prompt_placeholders(template: str) -> str:
@@ -54,7 +75,7 @@ def inject_system_prompt_placeholders(template: str) -> str:
     ``{{task}}`` in prompts are not interpreted as format fields.
     """
     current_date = datetime.datetime.today().strftime("%A, %B %d, %Y")
-    return template.replace("{current_date}", current_date)
+    return template.replace(f"{{current_date}}", current_date)
 
 
 def format_tool_result(tool_name: str, query: str, result: Any) -> str:
