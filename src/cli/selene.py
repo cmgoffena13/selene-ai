@@ -65,7 +65,7 @@ def ask(
 
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
-    logger.debug("Asking Selene a question", user_prompt=user_prompt)
+    logger.debug("Asking Selene a Question", user_prompt=user_prompt)
     memory = orchestrator_agent(memory)
     if verbose:
         echo(memory.render())

@@ -1,20 +1,39 @@
-from thoughtflow import AGENT
+import structlog
+from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.prompt_utils import load_agent_prompt
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
 
-RESEARCHER_SYSTEM_PROMPT = load_agent_prompt("researcher")
+logger = structlog.getLogger(__name__)
 
-llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
 
-tools = get_tool_list("researcher")
+class ResearcherAgent(AGENT):
+    def __init__(self):
+        self.name = "researcher"
+        self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
+        self.memory = MEMORY()
+        self.system_prompt = load_agent_prompt("researcher")
+        self.tools = get_tool_list("researcher")
+        self.max_iterations = 1
+        super().__init__(
+            name=self.name,
+            llm=self.llm,
+            system_prompt=self.system_prompt,
+            tools=self.tools,
+            max_iterations=self.max_iterations,
+        )
 
-researcher_agent = AGENT(
-    llm=llm,
-    system_prompt=RESEARCHER_SYSTEM_PROMPT,
-    tools=tools,
-    name="researcher",
-    max_iterations=5,
-)
+    def _extract_prompt(self, memory) -> str:
+        """
+        Extract the prompt from the last user message in memory.
+        """
+        msg = memory.last_user_msg()
+        return msg.get("content", "")
+
+    def __call__(self, memory) -> MEMORY:
+        prompt = self._extract_prompt(memory)
+        self.memory.add_msg("user", prompt)
+        self.memory = super().__call__(self.memory)
+        return self.memory

@@ -1,20 +1,39 @@
-from thoughtflow import AGENT
+import structlog
+from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.prompt_utils import compose_system_prompt
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
 
-SELENE_SYSTEM_PROMPT = compose_system_prompt("archivist")
+logger = structlog.getLogger(__name__)
 
-llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
 
-tools = get_tool_list("archivist")
+class ArchivistAgent(AGENT):
+    def __init__(self):
+        self.name = "archivist"
+        self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
+        self.memory = MEMORY()
+        self.system_prompt = compose_system_prompt("archivist")
+        self.tools = get_tool_list("archivist")
+        self.max_iterations = 1
+        super().__init__(
+            name=self.name,
+            llm=self.llm,
+            system_prompt=self.system_prompt,
+            tools=self.tools,
+            max_iterations=self.max_iterations,
+        )
 
-archivist_agent = AGENT(
-    llm=llm,
-    system_prompt=SELENE_SYSTEM_PROMPT,
-    tools=tools,
-    name="archivist",
-    max_iterations=5,
-)
+    def _extract_prompt(self, memory) -> str:
+        """
+        Extract the prompt from the last user message in memory.
+        """
+        msg = memory.last_user_msg()
+        return msg.get("content", "")
+
+    def __call__(self, memory) -> MEMORY:
+        prompt = self._extract_prompt(memory)
+        self.memory.add_msg("user", prompt)
+        self.memory = super().__call__(self.memory)
+        return self.memory

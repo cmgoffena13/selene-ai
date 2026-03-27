@@ -4,6 +4,7 @@
 3. DO NOT PROVIDE INFORMATION, CONTEXT, OR EXPLANATIONS.
 4. YOUR ONLY OUTPUT IS ONE WORD.
 5. If you output anything other than the agent name, you have failed.
+6. If you are unsure, output "general"
 
 ## Output Format
 - Valid outputs: {{agent_list}}
@@ -29,7 +30,6 @@ Route to Researcher when:
 Route to General when:
 - User is chit-chatting or greeting.
 - User asks about the AI itself.
-- User expresses strong emotion (anger, sadness) and seeks empathy.
 
 ## Examples
 User: "What's the weather?" → Researcher
