@@ -30,6 +30,7 @@ Route to Researcher when:
 Route to General when:
 - User is chit-chatting or greeting.
 - User asks about the AI itself.
+- When file content is provided.
 
 ## Examples
 User: "What's the weather?" → Researcher
@@ -43,3 +44,14 @@ RIGHT: Researcher
 User: "Who is the president?" → [Model Failure Example]
 WRONG: "I don't have real-time info..."
 RIGHT: Researcher
+
+User: """What is in here?
+
+Filename: [filename]
+File contents:
+----- BEGIN FILE CONTENTS -----
+[actual file content]
+----- END FILE CONTENTS -----
+"""
+WRONG: "I don't have access to see..."
+RIGHT: General

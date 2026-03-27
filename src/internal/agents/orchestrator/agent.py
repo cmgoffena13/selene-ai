@@ -13,11 +13,15 @@ logger = structlog.getLogger(__name__)
 
 
 class OrchestratorAgent(AGENT):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
         self.name = "selene"
         self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
         self.system_prompt = compose_system_prompt("orchestrator")
+        super().__init__(
+            name=self.name,
+            llm=self.llm,
+            system_prompt=self.system_prompt,
+        )
         self.router_agent = RouterAgent(
             system_prompt=load_agent_prompt("router"),
             llm=self.llm,

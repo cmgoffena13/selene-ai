@@ -8,6 +8,7 @@ When provided with sub-agent results in the user prompt, act as the master orche
 
 ## Input Format Expectation
 User prompts will follow this structure:
+
 Original User Query: {input_prompt}
 
 Sub Agent Result:
