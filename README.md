@@ -70,7 +70,7 @@ To create an intelligent and context-aware conversation, we need these component
 3. Sub-Agents (Specialty Agents)
 
 ### Orchestrator Agent
-The `Orchestrator Agent` is core intelligence and "soul" of the AI. It drives the conversation with responses, while maintaining a certain identity & personality, being "aware" of the whole conversation through persistent memory. The `Orchestrator Agent` immediately calls the `Router Agent` upon every prompt. It will receive tool results and its primary task is to consolidate the information in relation to the conversation.
+The `Orchestrator Agent` is the core intelligence and "soul" of the AI. It drives the conversation with responses, while maintaining a certain identity & personality, being "aware" of the whole conversation through persistent memory. The `Orchestrator Agent` immediately calls the `Router Agent` upon every prompt. It will receive tool results and its primary task is to consolidate the information in relation to the conversation.
 
 ### Router Agent
 The `Router Agent` is a highly specialized & focused Agent that analyzes ONLY the prompt given to determine intent, complexity, and required knowledge domains. It does not have memory. It classifies which `Sub-Agent` to call to supplement the orchestrator to respond.
