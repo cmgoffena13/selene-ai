@@ -49,7 +49,7 @@ class OrchestratorAgent(AGENT):
         prompt_template = f"""
         Original User Query: {input_prompt}
         
-        Sub Agent Result(s):
+        Sub Agent Result:
         {sub_agent_result}
         
         Synthesize these into a final coherent response to the original query.

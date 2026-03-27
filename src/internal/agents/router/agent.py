@@ -1,12 +1,9 @@
 import re
 
 import structlog
-from thoughtflow import AGENT, MEMORY
+from thoughtflow import AGENT
 
 from src.internal.agents.factory import AgentFactory
-from src.internal.agents.prompt_utils import load_agent_prompt
-from src.internal.llm.ollama import get_ollama_llm
-from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
