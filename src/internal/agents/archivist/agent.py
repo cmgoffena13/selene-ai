@@ -25,6 +25,18 @@ class ArchivistAgent(AGENT):
             max_iterations=self.max_iterations,
         )
 
+    def _last_result_or_assistant_content(self, mem: MEMORY) -> str:
+        """Prefer the last tool ``result`` message; else last assistant text."""
+        result_msgs = mem.get_msgs(include=["result"])
+        if result_msgs:
+            return str(result_msgs[-1].get("content", "")).lstrip()
+        last = mem.last_asst_msg()
+        if last is None:
+            return "No input from sub agent."
+        if isinstance(last, dict):
+            return str(last.get("content", "")).lstrip()
+        return str(last).lstrip()
+
     def _extract_prompt(self, memory) -> str:
         """
         Extract the prompt from the last user message in memory.
@@ -36,4 +48,6 @@ class ArchivistAgent(AGENT):
         prompt = self._extract_prompt(memory)
         self.memory.add_msg("user", prompt)
         self.memory = super().__call__(self.memory)
+        result = self._last_result_or_assistant_content(self.memory)
+        logger.debug("ArchivistAgent Output", output=result)
         return self.memory

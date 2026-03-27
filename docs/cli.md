@@ -127,6 +127,7 @@ $ selene chat [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `-w, --web`: Serve chat UI in a web browser.
+* `-c, --classic`: Use the classic Thoughtflow chat.
 * `-v, --verbose`: Show full ThoughtFlow memory in the transcript (all roles, logs, refs, vars).
 * `--help`: Show this message and exit.
 
@@ -167,7 +168,7 @@ $ selene rag index [OPTIONS] NAME
 
 **Options**:
 
-* `-d, --docs TEXT`: Directory path of files to index (recursive). Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.  [required]
+* `-d, --dir TEXT`: Directory path of files to index (recursive). Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.  [required]
 * `--help`: Show this message and exit.
 
 ### `selene rag update`
@@ -214,7 +215,7 @@ $ selene rag delete [OPTIONS] NAME
 
 **Arguments**:
 
-* `NAME`: Index name to delete (e.g. thoughtflow).  [required]
+* `NAME`: Index name to delete (e.g. my-docs).  [required]
 
 **Options**:
 

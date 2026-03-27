@@ -1,6 +1,6 @@
 import sys
 
-from typer import Option, Typer
+from typer import Exit, Option, Typer
 
 from src.settings import config
 
@@ -12,6 +12,9 @@ chat_app = Typer(help="Open an interactive chat with Selene.")
 )
 def chat_new(
     web: bool = Option(False, "--web", "-w", help="Serve chat UI in a web browser."),
+    classic: bool = Option(
+        False, "--classic", "-c", help="Use the classic Thoughtflow chat."
+    ),
     verbose: bool = Option(
         False,
         "--verbose",
@@ -32,6 +35,16 @@ def chat_new(
         )
         Server(command).serve(debug=False)
         return
+
+    if classic:
+        from thoughtflow import CHAT, MEMORY
+
+        from src.internal.agents.orchestrator.agent import orchestrator_agent
+
+        memory = MEMORY()
+        chat = CHAT(agent=orchestrator_agent, memory=memory, channel="cli")
+        chat.run()
+        raise Exit(code=0)
 
     from src.internal.app.chat import ChatApp
 

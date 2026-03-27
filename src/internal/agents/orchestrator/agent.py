@@ -66,6 +66,7 @@ class OrchestratorAgent(AGENT):
             logger.warning("No prompt found to respond to.")
             memory.add_msg("assistant", "No prompt found to respond to.")
 
+        logger.debug("User Asked Selene a Question", prompt=prompt)
         routed_agent_name = self.router_agent.generate_agent_route(prompt)
 
         # NOTE: If the router agent cannot determine an appropriate agent, the orchestrator will respond to the user directly.
