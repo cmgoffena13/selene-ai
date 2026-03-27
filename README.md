@@ -60,3 +60,20 @@ Interact with Selene in a remembered conversation.
 `selene chat --web`  
 
 ![Chat Window](static/textualize.png)
+
+## Architecture
+
+To create an intelligent and context-aware conversation, we need these components:  
+
+1. Orchestrator Agent
+2. Router Agent
+3. Sub-Agents (Specialty Agents)
+
+### Orchestrator Agent
+The `Orchestrator Agent` is core intelligence and "soul" of the AI. It drives the conversation with responses, while maintaining a certain identity & personality, being "aware" of the whole conversation through persistent memory. The `Orchestrator Agent` immediately calls the `Router Agent` upon every prompt. It will receive tool results and its primary task is to consolidate the information in relation to the conversation.
+
+### Router Agent
+The `Router Agent` is a highly specialized & focused Agent that analyzes ONLY the prompt given to determine intent, complexity, and required knowledge domains. It does not have memory. It classifies which `Sub-Agent` to call to supplement the orchestrator to respond.
+
+### Sub-Agent
+A `Sub-Agent` is something akin to an advanced tool call. It has a hyper-focused prompt to achieve its tool goal to a highly detailed degree. The reason for a `Sub-Agent` is that it maintains its own isolated memory during the conversation, of its own tool calls and results, while the User is interacting with the `Orchestrator Agent`. This allows the `Orchestrator Agent` to help guide the `Sub-Agent` with hints/advice to help align its purpose to the actual conversation WITHOUT the `Sub-Agent` having any memory of the conversation itself.
