@@ -12,43 +12,12 @@ def agents_root() -> Path:
     return Path(__file__).resolve().parent
 
 
-def load_shared_prompt_sections() -> str:
-    """
-    Load shared markdown sections in :data:`SHARED_PROMPT_MAPPING` rank order.
-
-    Every mapped file must exist under ``shared_prompts/``.
-    """
-    base = agents_root() / "shared_prompts"
-    ordered = sorted(SHARED_PROMPT_MAPPING, key=lambda n: SHARED_PROMPT_MAPPING[n])
-    parts: list[str] = []
-    missing: list[str] = []
-    for name in ordered:
-        path = base / name
-        if not path.is_file():
-            missing.append(str(path))
-            continue
-        parts.append(path.read_text(encoding="utf-8"))
-    if missing:
-        raise FileNotFoundError("Missing shared prompt file(s): " + ", ".join(missing))
-    return "\n\n".join(parts)
-
-
 def load_agent_prompt(agent_name: str) -> str:
     path = agents_root() / agent_name / "prompt.md"
     if not path.is_file():
         raise FileNotFoundError(f"Missing agent prompt: {path}")
-    return path.read_text(encoding="utf-8")
-
-
-def compose_system_prompt(agent_name: str) -> str:
-    """
-    Full system prompt: shared sections (ordered), then ``<agent>/prompt.md``,
-    with runtime placeholders (e.g. ``{current_date}``) filled in.
-    """
-    shared = load_shared_prompt_sections()
-    agent = load_agent_prompt(agent_name)
-    raw = f"{shared}\n\n{agent}"
-    return inject_system_prompt_placeholders(raw)
+    system_prompt = path.read_text(encoding="utf-8")
+    return inject_system_prompt_placeholders(system_prompt)
 
 
 def ensure_agent_prompt_file(agent_name: str, *, template: str | None = None) -> Path:

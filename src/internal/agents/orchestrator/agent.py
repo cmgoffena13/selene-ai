@@ -4,7 +4,7 @@ import structlog
 from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
-from src.internal.agents.prompt_utils import compose_system_prompt, load_agent_prompt
+from src.internal.agents.prompt_utils import load_agent_prompt
 from src.internal.agents.router.agent import RouterAgent
 from src.internal.llm.ollama import get_ollama_llm
 from src.settings import config
@@ -16,7 +16,7 @@ class OrchestratorAgent(AGENT):
     def __init__(self):
         self.name = "selene"
         self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
-        self.system_prompt = compose_system_prompt("orchestrator")
+        self.system_prompt = load_agent_prompt("orchestrator")
         super().__init__(
             name=self.name,
             llm=self.llm,

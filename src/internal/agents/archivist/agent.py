@@ -1,7 +1,7 @@
 import structlog
 from thoughtflow import AGENT, MEMORY
 
-from src.internal.agents.prompt_utils import compose_system_prompt
+from src.internal.agents.prompt_utils import load_agent_prompt
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
@@ -14,7 +14,7 @@ class ArchivistAgent(AGENT):
         self.name = "archivist"
         self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
         self.memory = MEMORY()
-        self.system_prompt = compose_system_prompt("archivist")
+        self.system_prompt = load_agent_prompt("archivist")
         self.tools = get_tool_list("archivist")
         self.max_iterations = 1
         super().__init__(
