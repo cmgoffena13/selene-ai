@@ -48,7 +48,7 @@ class RouterAgent(AGENT):
             raise RuntimeError("RouterAgent requires llm")
         result = llm.call(messages)
         agent_name = result[0] if result else ""
-        logger.debug("RouterAgent Output", result=result)
+        logger.info("RouterAgent Output", result=result)
 
         agent_name.strip().lower()
         if agent_name not in self.agent_list:

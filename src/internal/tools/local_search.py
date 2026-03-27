@@ -47,7 +47,7 @@ LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
 
 
 def _local_search(**kwargs: Any) -> str:
-    logger.debug("Local search kwargs", kwargs=kwargs)
+    logger.info("Local search kwargs", kwargs=kwargs)
     try:
         query = (kwargs.get("query") or "").strip()
         if not query:
