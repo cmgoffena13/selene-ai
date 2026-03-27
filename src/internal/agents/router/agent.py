@@ -15,7 +15,6 @@ class RouterAgent(AGENT):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.agent_list = AgentFactory.get_agent_names()
-        self.agent_lines = "\n".join(f"- {name}" for name in self.agent_list)
         self.system_prompt = self.system_prompt.replace(
             "{{agent_list}}", str(self.agent_list)
         )
@@ -38,7 +37,7 @@ class RouterAgent(AGENT):
         match = self.agent_name_re.search(output_text)
         return match.group(0).strip().lower() if match else ""
 
-    def _generate_route(self, input_prompt: str) -> str:
+    def generate_agent_route(self, input_prompt: str) -> str:
         """
         Route the prompt to the appropriate agent name.
         """
@@ -61,44 +60,3 @@ class RouterAgent(AGENT):
                 agent_name = "general"
 
         return agent_name
-
-    def __call__(self, memory):
-        prompt = self._extract_prompt(memory)
-
-        if not prompt:
-            memory.add_msg("assistant", "No prompt found to route.")
-            return memory
-
-        agent_name = self._generate_route(prompt)
-
-        memory.add_msg("assistant", f'Routing to "{agent_name}" agent…')
-
-        routed_agent = AgentFactory.create_agent(agent_name)
-
-        # NOTE: After routing, create new memory to isolate agent context
-        routed_memory = MEMORY()
-        routed_memory.add_msg("user", prompt)
-        routed_memory = routed_agent(routed_memory)
-
-        # NOTE: Add logs from the routed agent to the original memory for initial observibility
-        routed_logs = routed_memory.get_logs()
-        for log in routed_logs:
-            memory.add_log(log)
-
-        # NOTE: Add response from the routed agent to the original memory for output
-        last_asst_msg = routed_memory.last_asst_msg()
-        asst_msg_content = last_asst_msg["content"] if last_asst_msg else ""
-        memory.add_msg("assistant", asst_msg_content)
-
-        return memory
-
-
-llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
-ROUTER_SYSTEM_PROMPT = load_agent_prompt("router")
-
-router_agent = RouterAgent(
-    system_prompt=ROUTER_SYSTEM_PROMPT,
-    llm=llm,
-    name="router",
-    max_iterations=5,
-)

@@ -5,13 +5,11 @@ from typing import Dict
 from thoughtflow import AGENT
 
 from src.internal.agents.archivist.agent import archivist_agent
-from src.internal.agents.general.agent import general_agent
 from src.internal.agents.researcher.agent import researcher_agent
 
 
 class AgentFactory(ABC):
     _registry: Dict[str, AGENT] = {
-        "general": general_agent,
         "researcher": researcher_agent,
         "archivist": archivist_agent,
     }

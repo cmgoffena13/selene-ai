@@ -46,7 +46,7 @@ def ask(
     file: str = Option(None, "--file", "-f", help="Attach a file to analyze."),
     verbose: bool = Option(False, "--verbose", "-v", help="Show verbose output."),
 ) -> None:
-    from src.internal.agents.router.agent import router_agent
+    from src.internal.agents.orchestrator.agent import orchestrator_agent
     from src.internal.ui.console import echo
 
     warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
@@ -66,7 +66,7 @@ def ask(
     memory = MEMORY()
     memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
     logger.debug("Asking Selene a question", user_prompt=user_prompt)
-    memory = router_agent(memory)
+    memory = orchestrator_agent(memory)
     if verbose:
         echo(memory.render())
     else:
