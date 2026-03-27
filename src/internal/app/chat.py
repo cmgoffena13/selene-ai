@@ -24,8 +24,8 @@ from src.internal.agents.memory_utils import (
     resolve_chat_session_path,
     upsert_chat_session_index,
 )
-from src.internal.agents.planact.agent import planact_agent
 from src.internal.agents.prompt_utils import append_file_to_prompt
+from src.internal.agents.router.agent import router_agent
 from src.internal.ui.theme import textual_palette
 
 logger = structlog.getLogger(__name__)
@@ -277,7 +277,7 @@ class ChatApp(App):
         self.theme = app_theme.name
 
         self.memory = MEMORY()
-        self.chat = CHAT(agent=planact_agent, memory=self.memory, channel="webapp")
+        self.chat = CHAT(agent=router_agent, memory=self.memory, channel="webapp")
         self._current_session_path: Path = new_chat_session_path()
         self._attached_file_path: Optional[Path] = None
         self._thinking: Optional[MessageBubble] = None

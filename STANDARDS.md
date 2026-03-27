@@ -68,3 +68,32 @@ Prompt Research:
 - Breakdown down complex tasks into subtasks (1., 2., 3. etc)
 - Test Prompt Variation (keywords, level of detail, prompt length, etc.)
 - Remember the PBJ Assignment, every step matters
+
+## Architecture Notes
+Need a router Agent to best support user experience. This router agent will:
+- Analyze Intent, Complexity, and Required Domain Knowledge.
+- Analyze input to determine the agent needed
+    - Single Domain? Single-step task?
+        - Yes -> route to specialist
+        - No -> route to planner to decompose tasks for specialists
+
+AI Thought
+```
+Here's what that "classification" step actually involves:
+
+Intent Detection: Am I being asked for a fact, a creative story, a technical explanation, or a code snippet?
+Safety & Policy Check: Does the request touch on sensitive topics (like the encryption architecture we just discussed) or require specific handling (like avoiding hallucinations)?
+Tool Trigger Decision: Do I need to reach out to the outside world?
+Is it about Proton? → Trigger proton_info.
+Is it about current events or verification? → Trigger web_search.
+Is it a static fact or logic puzzle? → Stay internal.
+Context Retrieval: Do I need to pull up specific details from our conversation history (like the "three steps" you noticed) to answer coherently?
+```
+
+Possible Routed Specialist Agents:
+- Fact-Checker (Search & Verification) - optimized for synthesis & citation
+- Analyst (Reasoning & Logic) - high-reasoning, chain-of-thought
+- Creator (Generative & Creative) - high temperature, creative model
+- Archivist (Knowledge Retrieval (RAG)) - fast, low-latency, with access to the RAG tools
+- Executor? (Tool Use & Automation) - precise tool integration
+- Conversationalist (Chit-Chat & Context) - empathetic
