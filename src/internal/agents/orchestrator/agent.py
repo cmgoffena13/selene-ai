@@ -22,10 +22,12 @@ class OrchestratorAgent(AGENT):
         self.name = "selene"
         self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
         self.system_prompt = load_agent_prompt("orchestrator")
+        self.max_iterations = 1
         super().__init__(
             name=self.name,
             llm=self.llm,
             system_prompt=self.system_prompt,
+            max_iterations=self.max_iterations,
         )
         self.planner_llm = get_ollama_llm(
             config.SELENE_OLLAMA_MODEL,
@@ -49,30 +51,22 @@ class OrchestratorAgent(AGENT):
     def _sub_agent_result_text(self, mem: MEMORY) -> str:
         """
         Prefer the last tool ``result`` payload (ThoughtFlow wraps tool output in JSON).
-
-        If we only used ``last_asst_msg``, we would miss tool-only turns and could pick
-        a later assistant apology instead of the structured search/RAG JSON.
         """
         inner = extract_tool_result_payload(mem)
         if inner is not None:
             return inner
-        last = mem.last_asst_msg(content_only=True)
-        if not last:
-            return "No input from sub agent."
-        return last.lstrip()
+        else:
+            return "Result not found."
 
     def _generate_user_prompt(
         self, input_prompt: str, sub_agent_result: str, specialist_name: str
     ) -> str:
-        envelope = json.dumps(
-            {"name": specialist_name, "result": sub_agent_result},
-            ensure_ascii=False,
-        )
+        envelope = json.dumps({"name": specialist_name, "result": sub_agent_result})
         return (
             f"Original User Query: {input_prompt}\n\n"
             "Sub Agent Result:\n"
             f"`{envelope}`\n\n"
-            "Synthesize these into a final coherent response to the original query."
+            "Synthesize these into a final coherent response to the original user query."
         )
 
     def __call__(self, memory):
@@ -93,7 +87,6 @@ class OrchestratorAgent(AGENT):
         routed_agent_memory = MEMORY()
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
-
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
 
         # Sub-agent JSON is only passed into the synthesis call below — do not add it as an
@@ -103,17 +96,8 @@ class OrchestratorAgent(AGENT):
         )
         logger.debug("OrchestratorAgent User Prompt", user_prompt=user_prompt)
 
-        messages = [
-            {"role": "system", "content": self.system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-
-        llm = self.llm
-        if llm is None:
-            raise RuntimeError("OrchestratorAgent requires an llm")
-        result = llm.call(messages)
-        output = result[0] or ""
-        memory.add_msg("assistant", output)
+        memory.add_msg("user", user_prompt)
+        memory = super().__call__(memory)
         return memory
 
 

@@ -101,4 +101,4 @@ Original User Query: {input_prompt}
 Sub Agent Result:
 `{"name": "<agent or tool name>", "result": "<JSON string from the specialist tool>"}`
 
-Synthesize these into a final coherent response to the original query.
+Synthesize these into a final coherent response to the original user query.

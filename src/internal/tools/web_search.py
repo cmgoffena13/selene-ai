@@ -15,11 +15,17 @@ _VALID_TIME_RANGES = frozenset({"day", "week", "month", "year", "d", "w", "m", "
 DEFAULT_TIME_RANGE = "year"
 
 WEB_SEARCH_DESCRIPTION = """
-Search the web (Tavily). **Required:** `query` (search string), `topic`, and
-`time_range`. **topic:** `general`, `news`, or `finance` (real-time / news
-bias). **time_range:** `day`, `week`, `month`, or `year` (recency window).
-For breaking news use `topic='news'` and `time_range='week'`.
-If `query` is empty, search does not run.
+Search the web (Tavily).
+
+**How the agent invokes this tool:** the model must emit JSON that the runtime
+recognizes as a tool call, e.g. `{"name":"web_search","arguments":{...}}`.
+The `arguments` object must satisfy the fields below — that is separate from
+the JSON **result** the tool returns after running (hits, `total_found`, etc.).
+
+**Arguments (all required unless noted):** `query` (search string), `topic`
+(`general` | `news` | `finance`), `time_range` (`day` | `week` | `month` | `year`).
+Optional: `max_results` (default 5). For breaking news prefer `topic=news` and
+often `time_range=week`. Empty `query` returns an empty result without calling Tavily.
 """
 
 WEB_SEARCH_PARAMETERS = {

@@ -7,10 +7,7 @@ from src.internal.agents.prompt_utils import (
     extract_tool_result_payload,
     load_agent_prompt,
 )
-from src.internal.agents.researcher.schema import (
-    WebSearchToolResult,
-    web_search_tool_result_json_schema,
-)
+from src.internal.agents.researcher.schema import WebSearchToolResult
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
 from src.settings import config
@@ -72,10 +69,12 @@ class ResearcherAgent(AGENT):
                 if attempt >= _MAX_TOOL_PARSE_ATTEMPTS - 1:
                     break
                 feedback = (
-                    "Your previous reply was not valid JSON matching the schema, or "
-                    f"failed validation: {last_err}\n\n"
-                    "You MUST call the web search tool and return the results in the correct format."
-                    "Reply with a single JSON object only, no markdown"
+                    "Either the web_search tool did not run, or its result did not validate.\n"
+                    f"Details: {last_err}\n\n"
+                    "To invoke the tool, your assistant reply must be tool-call JSON only, e.g. "
+                    '{"name":"web_search","arguments":{"query":"...","topic":"news","time_range":"week"}} '
+                    "(not a flat {query,topic,time_range} object, and not invented search results). "
+                    "No markdown, no prose."
                 )
                 self.memory.add_msg("assistant", result)
                 self.memory.add_msg("user", feedback)
