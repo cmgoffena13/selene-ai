@@ -49,15 +49,6 @@ class ResearcherAgent(AGENT):
         return msg.get("content", "")
 
     def __call__(self, memory) -> MEMORY:
-        feedback = (
-            "Either the web_search tool did not run, or its result did not validate.\n"
-            f"Details: Invalid JSON: expected ident at line 1 column 2 [type=json_invalid, input_value='No input from sub agent.', input_type=str]"
-            "For further information visit https://errors.pydantic.dev/2.12/v/json_invalid"
-            "To invoke the tool, your assistant reply must be tool-call JSON only, e.g. "
-            '{"name":"web_search","arguments":{"query":"...","topic":"news","time_range":"week"}} '
-            "(not a flat {query,topic,time_range} object, and not invented search results). "
-            "No markdown, no prose."
-        )
         prompt = self._extract_prompt(memory)
         self.memory.add_msg("user", prompt)
 
