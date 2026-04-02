@@ -24,8 +24,7 @@ class PlannerAgent(AGENT):
         )
 
     def _extract_prompt(self, memory) -> str:
-        msg = memory.last_user_msg()
-        return msg.get("content", "")
+        return memory.last_user_msg(content_only=True)
 
     def _parse_routing_plan(self, raw: str) -> RoutingPlan:
         text = (raw or "").strip()
