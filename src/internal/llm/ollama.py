@@ -6,7 +6,7 @@ from thoughtflow import LLM
 from src.utils import get_selene_ai_config_dir
 
 
-def get_ollama_llm(model: Optional[str]) -> LLM:
+def get_ollama_llm(model: Optional[str], **kwargs) -> LLM:
     """
     Return a thoughtflow LLM that uses Ollama at http://localhost:11434 (default).
 
@@ -19,7 +19,7 @@ def get_ollama_llm(model: Optional[str]) -> LLM:
             "Ollama model is not set (SELENE_OLLAMA_MODEL). "
             f"Put a `.env` file in the config directory: {get_selene_ai_config_dir()}/"
         )
-    return LLM(f"ollama:{model}", key="")
+    return LLM(f"ollama:{model}", key="", **kwargs)
 
 
 def is_ollama_reachable(host: str) -> bool:

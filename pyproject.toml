@@ -5,6 +5,7 @@ description = "Selene AI - Death Dealer, Elder Slayer, Silent Watcher"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "pydantic>=2.0",
     "leann>=0.3.7",
     "nuitka>=4.0.5",
     "ollama>=0.6.1",
