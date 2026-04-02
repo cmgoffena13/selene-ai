@@ -8,6 +8,7 @@ from src.internal.agents.factory import AgentFactory
 from src.internal.agents.planner.agent import PlannerAgent
 from src.internal.agents.planner.schema import RoutingPlan, planner_json_schema
 from src.internal.agents.prompt_utils import (
+    apply_planner_agent_hint,
     extract_tool_result_payload,
     load_agent_prompt,
 )
@@ -79,9 +80,15 @@ class OrchestratorAgent(AGENT):
         logger.info("User Asked Selene a Question", prompt=prompt)
         plan: RoutingPlan = self.planner_agent.generate_agent_route(prompt)
 
-        # NOTE: If the planner chooses general or fails, the orchestrator answers directly.
         if not plan.agent or plan.agent == "general":
-            return super().__call__(memory)
+            main_system_prompt = self.system_prompt
+            self.system_prompt = apply_planner_agent_hint(
+                main_system_prompt, plan.agent_hint
+            )
+            try:
+                return super().__call__(memory)
+            finally:
+                self.system_prompt = main_system_prompt
 
         routed_agent = AgentFactory.create_agent(plan.agent, agent_hint=plan.agent_hint)
         routed_agent_memory = MEMORY()
