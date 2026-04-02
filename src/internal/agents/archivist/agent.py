@@ -7,6 +7,7 @@ from src.internal.agents.archivist.schema import (
     local_search_tool_result_json_schema,
 )
 from src.internal.agents.prompt_utils import (
+    apply_planner_agent_hint,
     extract_tool_result_payload,
     load_agent_prompt,
 )
@@ -20,13 +21,15 @@ _MAX_TOOL_PARSE_ATTEMPTS = 5
 
 
 class ArchivistAgent(AGENT):
-    def __init__(self):
+    def __init__(self, *, agent_hint: str | None = None):
         self.name = "archivist"
         self.llm = get_ollama_llm(
             config.SELENE_OLLAMA_MODEL, format=local_search_tool_result_json_schema()
         )
         self.memory = MEMORY()
-        self.system_prompt = load_agent_prompt("archivist")
+        self.system_prompt = apply_planner_agent_hint(
+            load_agent_prompt("archivist"), agent_hint
+        )
         self.tools = get_tool_list("archivist")
         self.max_iterations = 1
         super().__init__(

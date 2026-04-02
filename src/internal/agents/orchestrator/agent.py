@@ -6,7 +6,7 @@ from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
 from src.internal.agents.planner.agent import PlannerAgent
-from src.internal.agents.planner.schema import planner_json_schema
+from src.internal.agents.planner.schema import RoutingPlan, planner_json_schema
 from src.internal.agents.prompt_utils import (
     extract_tool_result_payload,
     load_agent_prompt,
@@ -83,13 +83,13 @@ class OrchestratorAgent(AGENT):
             return memory
 
         logger.info("User Asked Selene a Question", prompt=prompt)
-        routed_agent_name = self.planner_agent.generate_agent_route(prompt)
+        plan: RoutingPlan = self.planner_agent.generate_agent_route(prompt)
 
         # NOTE: If the planner chooses general or fails, the orchestrator answers directly.
-        if not routed_agent_name or routed_agent_name == "general":
+        if not plan.agent or plan.agent == "general":
             return super().__call__(memory)
 
-        routed_agent = AgentFactory.create_agent(routed_agent_name)
+        routed_agent = AgentFactory.create_agent(plan.agent, agent_hint=plan.agent_hint)
         routed_agent_memory = MEMORY()
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
@@ -99,7 +99,7 @@ class OrchestratorAgent(AGENT):
         # Sub-agent JSON is only passed into the synthesis call below — do not add it as an
         # assistant turn or the UI will show the raw paste before/with the real answer.
         user_prompt = self._generate_user_prompt(
-            prompt, routed_agent_result, routed_agent_name
+            prompt, routed_agent_result, plan.agent
         )
         logger.debug("OrchestratorAgent User Prompt", user_prompt=user_prompt)
 

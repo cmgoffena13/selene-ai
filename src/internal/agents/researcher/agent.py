@@ -3,6 +3,7 @@ from pydantic import ValidationError
 from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.prompt_utils import (
+    apply_planner_agent_hint,
     extract_tool_result_payload,
     load_agent_prompt,
 )
@@ -20,11 +21,13 @@ _MAX_TOOL_PARSE_ATTEMPTS = 5
 
 
 class ResearcherAgent(AGENT):
-    def __init__(self):
+    def __init__(self, *, agent_hint: str | None = None):
         self.name = "researcher"
         self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
         self.memory = MEMORY()
-        self.system_prompt = load_agent_prompt("researcher")
+        self.system_prompt = apply_planner_agent_hint(
+            load_agent_prompt("researcher"), agent_hint
+        )
         self.tools = get_tool_list("researcher")
         self.max_iterations = 1
         super().__init__(

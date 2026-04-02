@@ -59,6 +59,19 @@ def ensure_agent_prompt_file(agent_name: str, *, template: str | None = None) ->
     return path
 
 
+def apply_planner_agent_hint(system_prompt: str, agent_hint: str | None) -> str:
+    """
+    Append planner ``agent_hint`` to a sub-agent system prompt when present.
+
+    Keeps specialist prompts unchanged when routing provides no hint.
+    """
+    if agent_hint is None or not str(agent_hint).strip():
+        return system_prompt
+    return (
+        f"{system_prompt.rstrip()}\n\n## Planner guidance\n{str(agent_hint).strip()}\n"
+    )
+
+
 def inject_system_prompt_placeholders(template: str) -> str:
     """
     Replace placeholders in the system prompt template (e.g. {current_date}).

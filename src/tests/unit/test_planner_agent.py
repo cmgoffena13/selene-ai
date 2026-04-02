@@ -13,7 +13,7 @@ def test_generate_agent_route_valid_first_try(planner_system_prompt: str) -> Non
         max_iterations=2,
     )
     out = agent.generate_agent_route("hi")
-    assert out == "general"
+    assert out.agent == "general"
     llm.call.assert_called_once()
 
 
@@ -30,7 +30,7 @@ def test_generate_agent_route_retries_then_succeeds(planner_system_prompt: str) 
         max_iterations=2,
     )
     out = agent.generate_agent_route("latest news?")
-    assert out == "researcher"
+    assert out.agent == "researcher"
     assert llm.call.call_count == 2
 
 
@@ -46,5 +46,5 @@ def test_generate_agent_route_falls_back_after_three_failures(
         max_iterations=2,
     )
     out = agent.generate_agent_route("x")
-    assert out == "general"
+    assert out.agent == "general"
     assert llm.call.call_count == 3

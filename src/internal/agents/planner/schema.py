@@ -14,6 +14,10 @@ class RoutingPlan(BaseModel):
         None,
         description="Short justification for the routing choice.",
     )
+    agent_hint: str | None = Field(
+        None,
+        description="Guide agent with information to help it achieve its goal.",
+    )
 
     @field_validator("agent")
     @classmethod

@@ -1,6 +1,6 @@
 from abc import ABC
 from functools import lru_cache
-from typing import Dict, Type
+from typing import Callable, Dict
 
 from thoughtflow import AGENT
 
@@ -8,10 +8,18 @@ from src.internal.agents.archivist.agent import ArchivistAgent
 from src.internal.agents.researcher.agent import ResearcherAgent
 
 
+def _make_researcher(*, agent_hint: str | None = None) -> AGENT:
+    return ResearcherAgent(agent_hint=agent_hint)
+
+
+def _make_archivist(*, agent_hint: str | None = None) -> AGENT:
+    return ArchivistAgent(agent_hint=agent_hint)
+
+
 class AgentFactory(ABC):
-    _registry: Dict[str, Type[AGENT]] = {
-        "researcher": ResearcherAgent,
-        "archivist": ArchivistAgent,
+    _registry: Dict[str, Callable[..., AGENT]] = {
+        "researcher": _make_researcher,
+        "archivist": _make_archivist,
     }
 
     @classmethod
@@ -20,9 +28,9 @@ class AgentFactory(ABC):
         return (*cls._registry.keys(), "general")
 
     @classmethod
-    def create_agent(cls, agent_name: str) -> AGENT:
+    def create_agent(cls, agent_name: str, *, agent_hint: str | None = None) -> AGENT:
         if agent_name not in cls._registry:
             raise ValueError(
                 f"Agent {agent_name} not found, available agents: {cls.get_agent_names()}"
             )
-        return cls._registry[agent_name]()
+        return cls._registry[agent_name](agent_hint=agent_hint)

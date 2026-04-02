@@ -30,12 +30,13 @@ class PlannerAgent(AGENT):
         text = (raw or "").strip()
         return RoutingPlan.model_validate_json(text)
 
-    def generate_agent_route(self, input_prompt: str) -> str:
+    def generate_agent_route(self, input_prompt: str) -> RoutingPlan:
         """
-        Return the chosen agent name (registered in :class:`AgentFactory`).
+        Return a validated routing plan (agent, optional rationale and ``agent_hint``).
 
         Calls the planner LLM up to :data:`_MAX_PLAN_ATTEMPTS` times with validation
-        feedback on parse/validation failure.
+        feedback on parse/validation failure. On exhaustion, returns ``general`` with
+        no hint.
         """
         llm = self.llm
         if llm is None:
@@ -56,7 +57,7 @@ class PlannerAgent(AGENT):
 
             try:
                 plan = self._parse_routing_plan(last_raw)
-                return plan.agent
+                return plan
             except ValidationError as e:
                 last_err = str(e)
                 logger.warning(
@@ -70,7 +71,8 @@ class PlannerAgent(AGENT):
                     "Your previous reply was not valid JSON matching the schema, or "
                     f"failed validation: {last_err}\n\n"
                     "Reply with a single JSON object only, no markdown, with fields "
-                    "`agent` (one of the allowed names) and optional `rationale`."
+                    "`agent` (one of the allowed names), optional `rationale`, and "
+                    "optional `agent_hint` (guidance for the specialist)."
                 )
                 messages.append({"role": "assistant", "content": last_raw})
                 messages.append({"role": "user", "content": feedback})
@@ -79,4 +81,4 @@ class PlannerAgent(AGENT):
             "PlannerAgent exhausted retries; falling back to general",
             last_error=last_err,
         )
-        return "general"
+        return RoutingPlan(agent="general", rationale=None, agent_hint=None)
