@@ -99,13 +99,6 @@ User prompts will follow this structure:
 Original User Query: {input_prompt}
 
 Sub Agent Result:
-{"name": [tool_name], "result": 
-Tool: [tool name]
-Tool Query: [query]
-Tool Result:
------ BEGIN TOOL RESULT -----
-[tool result content]
------ END TOOL RESULT -----
-}
+`{"name": "<agent or tool name>", "result": "<JSON string from the specialist tool>"}`
 
 Synthesize these into a final coherent response to the original query.

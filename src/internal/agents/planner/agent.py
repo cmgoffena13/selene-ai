@@ -58,7 +58,7 @@ class PlannerAgent(AGENT):
             try:
                 plan = self._parse_routing_plan(last_raw)
                 return plan.agent
-            except (ValidationError, json.JSONDecodeError) as e:
+            except ValidationError as e:
                 last_err = str(e)
                 logger.warning(
                     "PlannerAgent validation failed",

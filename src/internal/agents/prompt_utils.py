@@ -1,8 +1,34 @@
 import datetime
+import json
 from pathlib import Path
 from typing import Any
 
-import orjson
+
+def extract_tool_result_payload(memory: Any) -> str | None:
+    """
+    Inner tool output string from the last ``result`` message.
+
+    ThoughtFlow stores tool results as JSON:
+    ``{"name": "<tool>", "result": "<tool return string>"}``.
+    When the model only calls tools (no assistant message), validation must read
+    this, not ``last_asst_msg``.
+    """
+    msgs = memory.get_msgs(include=["result"])
+    if not msgs:
+        return None
+    raw = msgs[-1].get("content", "") or ""
+    if not raw.strip():
+        return None
+    try:
+        obj = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(obj, dict):
+        return None
+    inner = obj.get("result")
+    if inner is None:
+        return None
+    return str(inner).lstrip()
 
 
 def agents_root() -> Path:
@@ -43,23 +69,6 @@ def inject_system_prompt_placeholders(template: str) -> str:
     """
     current_date = datetime.datetime.today().strftime("%A, %B %d, %Y")
     return template.replace(f"{{current_date}}", current_date)
-
-
-def format_tool_result(tool_name: str, query: str, result: Any) -> str:
-    """Format one tool result block for prompt context."""
-    if isinstance(result, str):
-        result_content = result
-    else:
-        result_content = orjson.dumps(result).decode("utf-8")
-
-    return (
-        f"Tool: {tool_name}\n"
-        f"Tool Query: {query}\n"
-        "Tool Result:\n"
-        "----- BEGIN TOOL RESULT -----\n"
-        f"{result_content}\n"
-        "----- END TOOL RESULT -----"
-    )
 
 
 def format_file_attachment(filename: str, content: str) -> str:

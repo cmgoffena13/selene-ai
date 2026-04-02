@@ -12,16 +12,7 @@ File contents:
 ----- END FILE CONTENTS -----
 ```
 
-## Tool Output
-
-```
-Tool: [tool name]
-Tool Query: [query]
-Tool Result:
------ BEGIN TOOL RESULT -----
-[tool result content]
------ END TOOL RESULT -----
-```
+Specialist tools return **JSON** strings (validated by Pydantic schemas in each agent’s `schema.py`).
 
 ## System Prompt Sections
 - Identity & Personality

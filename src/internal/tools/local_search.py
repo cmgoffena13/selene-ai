@@ -5,7 +5,11 @@ from leann import LeannSearcher
 from leann.cli import suppress_cpp_output
 from thoughtflow import TOOL
 
-from src.internal.agents.prompt_utils import format_tool_result
+from src.internal.agents.archivist.schema import (
+    LocalSearchErrorItem,
+    LocalSearchHit,
+    LocalSearchToolResult,
+)
 from src.internal.rag.rag_utils import list_rag_indexes_with_sizes
 from src.settings import config
 
@@ -51,11 +55,13 @@ def _local_search(**kwargs: Any) -> str:
     try:
         query = (kwargs.get("query") or "").strip()
         if not query:
-            return format_tool_result(
-                "local_search",
-                "",
-                {"query": "", "indexes_searched": 0, "results": []},
+            payload = LocalSearchToolResult(
+                query="",
+                indexes_searched=0,
+                results=[],
+                errors=[],
             )
+            return payload.model_dump_json()
 
         use_grep = bool(kwargs.get("use_grep", False))
 
@@ -76,11 +82,13 @@ def _local_search(**kwargs: Any) -> str:
 
         indexes = list_rag_indexes_with_sizes()
         if not indexes:
-            return format_tool_result(
-                "local_search",
-                query,
-                {"query": query, "indexes_searched": 0, "results": []},
+            payload = LocalSearchToolResult(
+                query=query,
+                indexes_searched=0,
+                results=[],
+                errors=[],
             )
+            return payload.model_dump_json()
 
         aggregated: list[dict[str, Any]] = []
         for index_name, index_path, _size_bytes, _docs_dir in indexes:
@@ -125,13 +133,14 @@ def _local_search(**kwargs: Any) -> str:
         final = scored[:top_k]
 
         # If some indexes errored, include their errors too (but don’t let them break ranking).
-        errors = [r for r in aggregated if "error" in r]
-        payload = {
-            "indexes_searched": len(indexes),
-            "results": final,
-            "errors": errors,
-        }
-        result = format_tool_result("local_search", query, payload)
+        errors_raw = [r for r in aggregated if "error" in r]
+        payload = LocalSearchToolResult(
+            query=query,
+            indexes_searched=len(indexes),
+            results=[LocalSearchHit.model_validate(h) for h in final],
+            errors=[LocalSearchErrorItem.model_validate(e) for e in errors_raw],
+        )
+        result = payload.model_dump_json()
         logger.debug("Local search result", result=result)
         return result
     except Exception as e:

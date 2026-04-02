@@ -1,3 +1,4 @@
+import json
 from typing import Dict
 
 import structlog
@@ -6,7 +7,10 @@ from thoughtflow import AGENT, MEMORY
 from src.internal.agents.factory import AgentFactory
 from src.internal.agents.planner.agent import PlannerAgent
 from src.internal.agents.planner.schema import planner_json_schema
-from src.internal.agents.prompt_utils import load_agent_prompt
+from src.internal.agents.prompt_utils import (
+    extract_tool_result_payload,
+    load_agent_prompt,
+)
 from src.internal.llm.ollama import get_ollama_llm
 from src.settings import config
 
@@ -42,25 +46,34 @@ class OrchestratorAgent(AGENT):
         msg = memory.last_user_msg()
         return msg.get("content", "")
 
-    def _last_assistant_content(self, mem: MEMORY) -> str:
-        """Last assistant message from routed sub-agent memory (validated tool JSON or prose)."""
-        last = mem.last_asst_msg()
-        if last is None:
-            return "No input from sub agent."
-        if isinstance(last, dict):
-            return str(last.get("content", "")).lstrip()
-        return str(last).lstrip()
-
-    def _generate_user_prompt(self, input_prompt: str, sub_agent_result: str) -> str:
-        prompt_template = f"""
-        Original User Query: {input_prompt}
-        
-        Sub Agent Result:
-        {sub_agent_result}
-        
-        Synthesize these into a final coherent response to the original query.
+    def _sub_agent_result_text(self, mem: MEMORY) -> str:
         """
-        return prompt_template.strip()
+        Prefer the last tool ``result`` payload (ThoughtFlow wraps tool output in JSON).
+
+        If we only used ``last_asst_msg``, we would miss tool-only turns and could pick
+        a later assistant apology instead of the structured search/RAG JSON.
+        """
+        inner = extract_tool_result_payload(mem)
+        if inner is not None:
+            return inner
+        last = mem.last_asst_msg(content_only=True)
+        if not last:
+            return "No input from sub agent."
+        return last.lstrip()
+
+    def _generate_user_prompt(
+        self, input_prompt: str, sub_agent_result: str, specialist_name: str
+    ) -> str:
+        envelope = json.dumps(
+            {"name": specialist_name, "result": sub_agent_result},
+            ensure_ascii=False,
+        )
+        return (
+            f"Original User Query: {input_prompt}\n\n"
+            "Sub Agent Result:\n"
+            f"`{envelope}`\n\n"
+            "Synthesize these into a final coherent response to the original query."
+        )
 
     def __call__(self, memory):
         prompt = self._extract_prompt(memory)
@@ -81,11 +94,14 @@ class OrchestratorAgent(AGENT):
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
 
-        routed_agent_result = self._last_assistant_content(routed_agent_memory)
-        memory.add_msg("assistant", routed_agent_result)
+        routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
 
-        # NOTE: This is the prompt that the orchestrator will use to respond to the user.
-        user_prompt = self._generate_user_prompt(prompt, routed_agent_result)
+        # Sub-agent JSON is only passed into the synthesis call below — do not add it as an
+        # assistant turn or the UI will show the raw paste before/with the real answer.
+        user_prompt = self._generate_user_prompt(
+            prompt, routed_agent_result, routed_agent_name
+        )
+        logger.debug("OrchestratorAgent User Prompt", user_prompt=user_prompt)
 
         messages = [
             {"role": "system", "content": self.system_prompt},
@@ -98,7 +114,6 @@ class OrchestratorAgent(AGENT):
         result = llm.call(messages)
         output = result[0] or ""
         memory.add_msg("assistant", output)
-        logger.debug("OrchestratorAgent Output", output=output)
         return memory
 
 

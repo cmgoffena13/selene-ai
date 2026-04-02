@@ -55,18 +55,6 @@ def test_inject_system_prompt_placeholders_replaces_date() -> None:
     assert "Today is " in out
 
 
-def test_format_tool_result_dict() -> None:
-    out = pu.format_tool_result("t", "q", {"a": 1})
-    assert "Tool: t" in out
-    assert "Tool Query: q" in out
-    assert '"a"' in out
-
-
-def test_format_tool_result_str() -> None:
-    out = pu.format_tool_result("t", "q", "plain")
-    assert "plain" in out
-
-
 def test_append_file_to_prompt_appends_block() -> None:
     out = pu.append_file_to_prompt("hello", Path("/tmp/x.py"), "line1")
     assert out.startswith("hello\n\n")

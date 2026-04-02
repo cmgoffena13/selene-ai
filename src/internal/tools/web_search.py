@@ -4,7 +4,7 @@ import structlog
 from tavily import TavilyClient
 from thoughtflow import TOOL
 
-from src.internal.agents.prompt_utils import format_tool_result
+from src.internal.agents.researcher.schema import WebSearchHit, WebSearchToolResult
 from src.settings import config
 
 logger = structlog.getLogger(__name__)
@@ -15,10 +15,11 @@ _VALID_TIME_RANGES = frozenset({"day", "week", "month", "year", "d", "w", "m", "
 DEFAULT_TIME_RANGE = "year"
 
 WEB_SEARCH_DESCRIPTION = """
-Search the web (Tavily). **Required:** `query` — the actual search string (keywords
-or question text). **Optional:** `topic` (`general`, `news`, `finance`) and
-`time_range` (`day`…`year`) to bias recency; for breaking news prefer
-`topic='news'` and often `time_range='week'`. If you omit `query`, search cannot run.
+Search the web (Tavily). **Required:** `query` (search string), `topic`, and
+`time_range`. **topic:** `general`, `news`, or `finance` (real-time / news
+bias). **time_range:** `day`, `week`, `month`, or `year` (recency window).
+For breaking news use `topic='news'` and `time_range='week'`.
+If `query` is empty, search does not run.
 """
 
 WEB_SEARCH_PARAMETERS = {
@@ -33,47 +34,44 @@ WEB_SEARCH_PARAMETERS = {
         "topic": {
             "type": "string",
             "description": (
-                "Tavily search category: 'general' (default), 'news' for real-time "
+                "Tavily search category: 'general', 'news' for real-time "
                 "and current-events coverage, 'finance' for markets and business."
             ),
             "enum": ["general", "news", "finance"],
-            "default": "general",
         },
         "time_range": {
             "type": "string",
             "description": (
                 "Only return pages published or updated within this window before today "
-                "(by source date). Defaults to 'year' when omitted. Use 'week' "
-                "when you need very recent results."
+                "(by source date). Use 'week' when you need very recent results."
             ),
             "enum": ["day", "week", "month", "year"],
-            "default": "year",
         },
     },
-    "required": ["query"],
+    "required": ["query", "topic", "time_range"],
 }
 
 
-def _tavily_search(**kwargs):
+def _tavily_search(**kwargs) -> str:
     """Call Tavily search API."""
     logger.info("Tavily search kwargs", kwargs=kwargs)
     try:
         query = (kwargs.get("query") or "").strip()
         if not query:
-            return {"query": "", "results": [], "total_found": 0}
+            payload = WebSearchToolResult(query="", results=[], total_found=0)
+            return payload.model_dump_json()
+
         try:
             max_results = max(0, min(20, int(kwargs.get("max_results", 5))))
         except (TypeError, ValueError):
             max_results = 5
 
-        topic = kwargs.get("topic") or "general"
+        topic = kwargs.get("topic")
         if topic not in _VALID_TOPICS:
             topic = "general"
 
         time_range = kwargs.get("time_range")
-        if time_range is not None and time_range not in _VALID_TIME_RANGES:
-            time_range = None
-        if time_range is None:
+        if time_range not in _VALID_TIME_RANGES:
             time_range = DEFAULT_TIME_RANGE
 
         search_kwargs: dict = {
@@ -87,32 +85,28 @@ def _tavily_search(**kwargs):
             **search_kwargs
         )
         raw = response.get("results", []) if isinstance(response, dict) else []
-        results = [
-            {
-                "title": row.get("title", ""),
-                "url": row.get("url", ""),
-                "snippet": row.get("content", ""),
-                "published_date": row.get("published_date", ""),
-                "rank": index + 1,
-                "source": (row.get("url") or "")[:100],
-            }
+        hits = [
+            WebSearchHit(
+                title=row.get("title", ""),
+                url=row.get("url", ""),
+                snippet=row.get("content", ""),
+                published_date=row.get("published_date", ""),
+                rank=index + 1,
+                source=(row.get("url") or "")[:100],
+            )
             for index, row in enumerate(raw)
         ]
-        payload = {
-            "query": query,
-            "provider": "tavily",
-            "topic": topic,
-            "time_range": time_range,
-            "results": results,
-            "total_found": len(results),
-        }
-        result = format_tool_result(
-            "web_search",
-            payload["query"],
-            payload,
+        payload = WebSearchToolResult(
+            query=query,
+            provider="tavily",
+            topic=topic,
+            time_range=time_range,
+            results=hits,
+            total_found=len(hits),
         )
-        logger.debug("Web search result", result=result)
-        return result
+        out = payload.model_dump_json()
+        logger.debug("Web search result", result=out)
+        return out
     except Exception as e:
         logger.error("Web search error", error=e)
         raise e
