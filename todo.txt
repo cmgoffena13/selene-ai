@@ -1,5 +1,2 @@
- - implement orchestrator/face agent
-    - will classify whether an agent is needed (planact, react, reflect)
- - implement researcher agent (for web search)
  - Switch LEANN index update to use IVF (once its out?)
  - Research reAct framework
