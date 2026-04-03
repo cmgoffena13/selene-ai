@@ -26,6 +26,7 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
 - Place a `.env` file in the config directory (Utilize `selene --info` to locate)
   - `SELENE_OLLAMA_MODEL` (Required)
   - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Default: `nomic-embed-text`
+    - This needs installed via Ollama as well!
   - `SELENE_TAVILY_API_KEY` (Optional)
 
 ## Capabilities
