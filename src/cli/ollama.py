@@ -14,7 +14,12 @@ def _model_warn_ollama() -> None:
 
 @model_app.command("list", help="List Ollama models available locally.")
 def model_list(
-    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(
+        config.SELENE_OLLAMA_HOST,
+        "--host",
+        "-h",
+        help="Ollama host",
+    ),
 ) -> None:
 
     from src.internal.ui.console import echo
@@ -42,7 +47,12 @@ def model_list(
 @model_app.command("pull", help="Pull an Ollama model so you can use it with Selene.")
 def model_pull(
     name: str = Argument(..., help="Model name (e.g. llama3.2, mistral)"),
-    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(
+        config.SELENE_OLLAMA_HOST,
+        "--host",
+        "-h",
+        help="Ollama host",
+    ),
 ) -> None:
 
     from src.internal.ui.console import echo
@@ -83,10 +93,15 @@ def model_pull(
     raise Exit(code=0)
 
 
-@model_app.command("delete")
+@model_app.command("delete", help="Remove a local Ollama model")
 def model_remove(
     name: str = Argument(..., help="Model name to remove (e.g. llama3.2)"),
-    host: str = Option(config.SELENE_OLLAMA_HOST, "--host", "-H", help="Ollama host"),
+    host: str = Option(
+        config.SELENE_OLLAMA_HOST,
+        "--host",
+        "-h",
+        help="Ollama host",
+    ),
 ) -> None:
     from src.internal.ui.console import echo
 

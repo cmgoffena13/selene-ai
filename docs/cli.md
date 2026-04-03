@@ -76,7 +76,7 @@ $ selene model [OPTIONS] COMMAND [ARGS]...
 
 * `list`: List Ollama models available locally.
 * `pull`: Pull an Ollama model so you can use it...
-* `delete`
+* `delete`: Remove a local Ollama model
 
 ### `selene model list`
 
@@ -90,7 +90,7 @@ $ selene model list [OPTIONS]
 
 **Options**:
 
-* `-H, --host TEXT`: Ollama host  [default: http://localhost:11434]
+* `-h, --host TEXT`: Ollama host  [default: http://localhost:11434]
 * `--help`: Show this message and exit.
 
 ### `selene model pull`
@@ -109,10 +109,12 @@ $ selene model pull [OPTIONS] NAME
 
 **Options**:
 
-* `-H, --host TEXT`: Ollama host  [default: http://localhost:11434]
+* `-h, --host TEXT`: Ollama host  [default: http://localhost:11434]
 * `--help`: Show this message and exit.
 
 ### `selene model delete`
+
+Remove a local Ollama model
 
 **Usage**:
 
@@ -126,7 +128,7 @@ $ selene model delete [OPTIONS] NAME
 
 **Options**:
 
-* `-H, --host TEXT`: Ollama host  [default: http://localhost:11434]
+* `-h, --host TEXT`: Ollama host  [default: http://localhost:11434]
 * `--help`: Show this message and exit.
 
 ## `selene chat`
@@ -183,7 +185,7 @@ $ selene rag index [OPTIONS] NAME
 
 **Options**:
 
-* `-d, --dir TEXT`: Directory path of files to index (recursive). Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.  [required]
+* `-d, --dir TEXT`: Directory path of files to index (recursive).  [required]
 * `--help`: Show this message and exit.
 
 ### `selene rag update`

@@ -29,7 +29,7 @@ def rag_index(
         ...,
         "--dir",
         "-d",
-        help=f"Directory path of files to index (recursive). {RAG_SUPPORTED_EXTENSIONS_HELP}",
+        help=f"Directory path of files to index (recursive).",
     ),
 ) -> None:
     from src.internal.rag.builder import build_rag_index

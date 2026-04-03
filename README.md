@@ -42,6 +42,8 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
  - **Local Search**: Index your local files via [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
  - **Web Search**: Real-time web search via [Tavily](https://www.tavily.com)
 
+> See [CLI Doc](docs/cli.md) for all commands
+
 ## Usage Examples
 
 ```bash
