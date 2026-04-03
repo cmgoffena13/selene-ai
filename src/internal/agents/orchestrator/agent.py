@@ -31,7 +31,9 @@ class OrchestratorAgent(AGENT):
             max_iterations=self.max_iterations,
         )
         self.planner_llm = get_ollama_llm(
-            config.SELENE_OLLAMA_MODEL, format=planner_json_schema()
+            config.SELENE_OLLAMA_MODEL,
+            format=planner_json_schema(),
+            options=PLANNER_LLM_OPTIONS,
         )
         self.planner_agent = PlannerAgent(
             system_prompt=load_agent_prompt("planner"),
