@@ -14,17 +14,6 @@ File contents:
 
 Specialist tools return **JSON** strings (validated by Pydantic schemas in each agent’s `schema.py`).
 
-## System Prompt Sections
-- Identity & Personality
-    - Critical Thinking & Engagement Principles
-- Tool Usage
-- File Handling
-
-hmmmm, so maybe this standard (so far):
-- identity.md (only need one of these)
-- tools.md
-- files.md
-
 ## Notes
 An agent's context typically includes:
 - System instructions — Who the agent is, how it should behave, what rules to follow
@@ -61,12 +50,12 @@ Prompt Research:
 - Remember the PBJ Assignment, every step matters
 
 ## Architecture Notes
-Need a router Agent to best support user experience. This router agent will:
+Need a planner Agent to best support user experience. This planner agent will:
 - Analyze Intent, Complexity, and Required Domain Knowledge.
 - Analyze input to determine the agent needed
     - Single Domain? Single-step task?
         - Yes -> route to specialist
-        - No -> route to planner to decompose tasks for specialists
+        - No -> Give plan of specialists with dependencies
 
 AI Thought
 ```
