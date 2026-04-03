@@ -5,7 +5,7 @@ import structlog
 from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
-from src.internal.agents.planner.agent import PLANNER_LLM_OPTIONS, PlannerAgent
+from src.internal.agents.planner.agent import PlannerAgent
 from src.internal.agents.planner.schema import RoutingPlan, planner_json_schema
 from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
@@ -31,9 +31,7 @@ class OrchestratorAgent(AGENT):
             max_iterations=self.max_iterations,
         )
         self.planner_llm = get_ollama_llm(
-            config.SELENE_OLLAMA_MODEL,
-            format=planner_json_schema(),
-            options=PLANNER_LLM_OPTIONS,
+            config.SELENE_OLLAMA_MODEL, format=planner_json_schema()
         )
         self.planner_agent = PlannerAgent(
             system_prompt=load_agent_prompt("planner"),
@@ -79,7 +77,7 @@ class OrchestratorAgent(AGENT):
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
 
         synthesis_system = json.dumps(
-            {"name": plan.agent, "result": routed_agent_result}
+            {"specialist": plan.agent, "result": routed_agent_result}
         )
         logger.info(
             "OrchestratorAgent Synthesis Input",
