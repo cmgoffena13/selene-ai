@@ -1,11 +1,11 @@
 from abc import ABC
-from functools import lru_cache
 from typing import Callable, Dict
 
 from thoughtflow import AGENT
 
 from src.internal.agents.archivist.agent import ArchivistAgent
 from src.internal.agents.researcher.agent import ResearcherAgent
+from src.settings import is_archivist_configured, is_researcher_configured
 
 
 def _make_researcher(*, agent_hint: str | None = None) -> AGENT:
@@ -23,14 +23,19 @@ class AgentFactory(ABC):
     }
 
     @classmethod
-    @lru_cache(maxsize=1)
     def get_agent_names(cls) -> tuple[str, ...]:
-        return (*cls._registry.keys(), "general")
+        names: list[str] = []
+        if is_researcher_configured():
+            names.append("researcher")
+        if is_archivist_configured():
+            names.append("archivist")
+        names.append("general")
+        return tuple(names)
 
     @classmethod
     def create_agent(cls, agent_name: str, *, agent_hint: str | None = None) -> AGENT:
         if agent_name not in cls._registry:
             raise ValueError(
-                f"Agent {agent_name} not found, available agents: {cls.get_agent_names()}"
+                f"Agent {agent_name!r} not in registry; known: {tuple(cls._registry)}"
             )
         return cls._registry[agent_name](agent_hint=agent_hint)

@@ -22,7 +22,7 @@ class GlobalConfig(BaseSettings):
     SELENE_LOG_LEVEL: LogLevel = "ERROR"
     SELENE_OLLAMA_HOST: str = "http://localhost:11434"
     SELENE_OLLAMA_MODEL: Optional[str] = None
-    SELENE_OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
+    SELENE_OLLAMA_EMBEDDING_MODEL: Optional[str] = None
     SELENE_TAVILY_API_KEY: Optional[str] = None
 
     # Setting Defaults for External Libraries
@@ -38,3 +38,15 @@ def get_config():
 
 
 config = get_config()
+
+
+def is_researcher_configured(c: GlobalConfig | None = None) -> bool:
+    """Tavily-backed web search is available (planner may route to ``researcher``)."""
+    key = (c or get_config()).SELENE_TAVILY_API_KEY
+    return bool(key and key.strip())
+
+
+def is_archivist_configured(c: GlobalConfig | None = None) -> bool:
+    """RAG embedding model is set (planner may route to ``archivist``)."""
+    m = (c or get_config()).SELENE_OLLAMA_EMBEDDING_MODEL
+    return bool(m and str(m).strip())

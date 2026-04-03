@@ -24,10 +24,17 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
   - Add the `selene` binary in the folder to your PATH
 - Have [Ollama](https://ollama.ai) installed and running
 - Place a `.env` file in the config directory (Utilize `selene --info` to locate)
-  - `SELENE_OLLAMA_MODEL` (Required)
-  - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Default: `nomic-embed-text`
-    - This needs installed via Ollama as well!
-  - `SELENE_TAVILY_API_KEY` (Optional)
+
+## .env Variables
+- `SELENE_OLLAMA_MODEL` (Required) Ex. `gemma4:e2b`
+- `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Ex. `nomic-embed-text`
+  - Required for `archivist` sub-agent
+  - Utilize & update [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
+- `SELENE_TAVILY_API_KEY` (Optional)
+  - Required for `researcher` sub-agent
+  - A free account with [Tavily](https://www.tavily.com) offers 1k free credits monthly
+- `SELENE_LOG_LEVEL` (Optional) Default: `ERROR`
+- `SELENE_OLLAMA_HOST` (Optional) Default: `http://localhost:11434`
 
 ## Capabilities
  - **Intelligence on Demand**: Ask questions, Analyze files, etc. via [Typer](https://github.com/fastapi/typer) CLI

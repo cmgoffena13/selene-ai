@@ -14,10 +14,10 @@ Respond with **only** a single JSON object (no markdown fences, no prose before 
 
 ## Agent hints
 
-### archivist
+### archivist (if available)
 - If a term is quoted, advise to use "use_grep" True for the tool call
 
-### researcher
+### researcher (if available)
 - If the latest user line does not have context, advise on the context
 
 ### general
@@ -26,10 +26,10 @@ Respond with **only** a single JSON object (no markdown fences, no prose before 
 
 ## Routing hints
 
-### archivist
+### archivist (if available)
 - User wants to search or look up **their own files**, local notes, or on-disk content.
 
-### researcher
+### researcher (if available)
 - Current events, news, weather, stocks, sports, facts that need the web, or anything after your knowledge cutoff.
 
 ### general

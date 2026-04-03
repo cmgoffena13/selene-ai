@@ -1,7 +1,19 @@
-from pathlib import Path
-
 import pytest
 from typer.testing import CliRunner
+
+from src.internal.agents.factory import AgentFactory
+
+
+def _all_routable_agents(cls) -> tuple[str, ...]:
+    return ("researcher", "archivist", "general")
+
+
+@pytest.fixture
+def planner_allows_all_agents(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Planner tests that need ``researcher`` / ``archivist`` in the routing enum."""
+    monkeypatch.setattr(
+        AgentFactory, "get_agent_names", classmethod(_all_routable_agents)
+    )
 
 
 @pytest.fixture

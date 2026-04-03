@@ -25,7 +25,10 @@ def test_planner_call_valid_first_try(planner_system_prompt: str) -> None:
     llm.call.assert_called_once()
 
 
-def test_planner_call_retries_then_succeeds(planner_system_prompt: str) -> None:
+def test_planner_call_retries_then_succeeds(
+    planner_system_prompt: str,
+    planner_allows_all_agents: None,
+) -> None:
     llm = MagicMock()
     llm.call.side_effect = [
         ["not json"],
