@@ -54,7 +54,7 @@ selene ask "What does it say about hybrids?" --file ancient.txt
 # Consult Selene's wisdom
 selene chat
 
-# Share persistent resources with Selene
+# Share persistent resources with Selene (Embedding Model Required)
 selene rag index my-documents --dir C:/directory/path/
 
 # Real-time observation (Tavily API Key Required)
