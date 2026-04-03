@@ -100,3 +100,5 @@ A system message may follow right after the user prompt in the below format.
 ```json
 {"name": "<sub-agent name>", "result": "<inner tool output from the sub-agent>"}
 ```
+
+Synthesize the results into a final coherent response to the original user query.

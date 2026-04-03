@@ -63,7 +63,7 @@ class PlannerAgent(AGENT):
         for attempt in range(_MAX_PLAN_ATTEMPTS):
             result = llm.call(messages)
             last_raw = (result[0] if result else "") or ""
-            logger.debug("PlannerAgent output", attempt=attempt + 1, raw=last_raw)
+            logger.info("PlannerAgent Output", attempt=attempt + 1, raw=last_raw)
 
             try:
                 plan = self._parse_routing_plan(last_raw)

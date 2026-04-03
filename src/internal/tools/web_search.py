@@ -60,7 +60,7 @@ WEB_SEARCH_PARAMETERS = {
 
 def _tavily_search(**kwargs) -> str:
     """Call Tavily search API."""
-    logger.info("Tavily search kwargs", kwargs=kwargs)
+    logger.info("Tavily Search kwargs", kwargs=kwargs)
     try:
         query = (kwargs.get("query") or "").strip()
         if not query:

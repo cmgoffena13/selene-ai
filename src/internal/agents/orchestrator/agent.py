@@ -79,8 +79,8 @@ class OrchestratorAgent(AGENT):
         synthesis_system = json.dumps(
             {"name": plan.agent, "result": routed_agent_result}
         )
-        logger.debug(
-            "OrchestratorAgent synthesis turn",
+        logger.info(
+            "OrchestratorAgent Synthesis Input",
             user_prompt=prompt,
             specialist=plan.agent,
             synthesis_system_chars=len(synthesis_system),
