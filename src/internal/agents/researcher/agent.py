@@ -44,12 +44,8 @@ class ResearcherAgent(AGENT):
             return "No input from sub agent."
         return last.lstrip()
 
-    def _extract_prompt(self, memory) -> str:
-        msg = memory.last_user_msg()
-        return msg.get("content", "")
-
     def __call__(self, memory) -> MEMORY:
-        prompt = self._extract_prompt(memory)
+        prompt = memory.last_user_msg(content_only=True)
         self.memory.add_msg("user", prompt)
 
         for attempt in range(_MAX_TOOL_PARSE_ATTEMPTS):

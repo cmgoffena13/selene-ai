@@ -59,17 +59,6 @@ class OrchestratorAgent(AGENT):
         else:
             return "Result not found."
 
-    def _generate_user_prompt(
-        self, input_prompt: str, sub_agent_result: str, specialist_name: str
-    ) -> str:
-        envelope = json.dumps({"name": specialist_name, "result": sub_agent_result})
-        return (
-            f"Original User Query: {input_prompt}\n\n"
-            "Sub Agent Result:\n"
-            f"`{envelope}`\n\n"
-            "Synthesize these into a final coherent response to the original user query."
-        )
-
     def __call__(self, memory):
         prompt = self._extract_prompt(memory)
         if not prompt:
@@ -96,14 +85,17 @@ class OrchestratorAgent(AGENT):
         routed_agent_memory = routed_agent(routed_agent_memory)
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
 
-        # Sub-agent JSON is only passed into the synthesis call below — do not add it as an
-        # assistant turn or the UI will show the raw paste before/with the real answer.
-        user_prompt = self._generate_user_prompt(
-            prompt, routed_agent_result, plan.agent
+        synthesis_system = json.dumps(
+            {"name": plan.agent, "result": routed_agent_result}
         )
-        logger.debug("OrchestratorAgent User Prompt", user_prompt=user_prompt)
+        logger.debug(
+            "OrchestratorAgent synthesis turn",
+            user_prompt=prompt,
+            specialist=plan.agent,
+            synthesis_system_chars=len(synthesis_system),
+        )
 
-        memory.add_msg("user", user_prompt)
+        memory.add_msg("system", synthesis_system)
         memory = super().__call__(memory)
         return memory
 

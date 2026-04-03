@@ -13,7 +13,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.content import Content
 from textual.style import Style
 from textual.theme import Theme
-from textual.widgets import Button, Footer, Header, Select, Static, TextArea
+from textual.widgets import Button, Footer, Header, Markdown, Select, Static, TextArea
 from textual.worker import WorkerState
 from thoughtflow import CHAT, MEMORY
 
@@ -150,11 +150,16 @@ class MessageBubble(Vertical):
             )
         super().__init__()
         self._label = Static(self.speaker, classes="bubble_label")
-        self._body = BubbleBody(
-            _message_content_with_links(text),
-            classes="bubble_body",
-            markup=False,
-        )
+        # Assistant / thinking replies are Markdown (GFM); other roles stay plain + link styling.
+        self._markdown_mode = role in {"assistant", "thinking"}
+        if self._markdown_mode:
+            self._body = Markdown(text, classes="bubble_body")
+        else:
+            self._body = BubbleBody(
+                _message_content_with_links(text),
+                classes="bubble_body",
+                markup=False,
+            )
         self._content = Vertical(self._label, self._body, classes="bubble_content")
         self.add_class("bubble")
         self.add_class(role)
@@ -163,7 +168,15 @@ class MessageBubble(Vertical):
         yield self._content
 
     def set_text(self, text: str) -> None:
-        self._body.update(_message_content_with_links(text))
+        if self._markdown_mode:
+            self.call_later(self._apply_markdown, text)
+        else:
+            assert isinstance(self._body, BubbleBody)
+            self._body.update(_message_content_with_links(text))
+
+    async def _apply_markdown(self, text: str) -> None:
+        assert isinstance(self._body, Markdown)
+        await self._body.update(text)
 
 
 class MessageRow(Horizontal):

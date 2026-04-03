@@ -68,7 +68,7 @@ def apply_planner_agent_hint(system_prompt: str, agent_hint: str | None) -> str:
     if agent_hint is None or not str(agent_hint).strip():
         return system_prompt
     return (
-        f"{system_prompt.rstrip()}\n\n## Planner guidance\n{str(agent_hint).strip()}\n"
+        f"{system_prompt.rstrip()}\n\n## Planner Guidance\n{str(agent_hint).strip()}\n"
     )
 
 
