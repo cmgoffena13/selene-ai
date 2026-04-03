@@ -58,6 +58,7 @@ selene ask "What is the status on the development of Silver Nitrate?"
 
 Interact with Selene in a remembered conversation. 
 
-`selene chat --web`  
+`selene chat`  
 
 ![Chat Window](static/textualize.png)
+> Utilize `selene chat --help` for options!
