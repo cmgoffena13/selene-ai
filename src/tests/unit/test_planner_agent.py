@@ -1,9 +1,17 @@
 from unittest.mock import MagicMock
 
+from thoughtflow import MEMORY
+
 from src.internal.agents.planner.agent import PlannerAgent
 
 
-def test_generate_agent_route_valid_first_try(planner_system_prompt: str) -> None:
+def _mem_with_user(text: str) -> MEMORY:
+    m = MEMORY()
+    m.add_msg("user", text)
+    return m
+
+
+def test_planner_call_valid_first_try(planner_system_prompt: str) -> None:
     llm = MagicMock()
     llm.call.return_value = ['{"agent": "general", "rationale": "greeting"}']
     agent = PlannerAgent(
@@ -12,12 +20,12 @@ def test_generate_agent_route_valid_first_try(planner_system_prompt: str) -> Non
         name="planner",
         max_iterations=2,
     )
-    out = agent.generate_agent_route("hi")
+    out = agent(_mem_with_user("hi"))
     assert out.agent == "general"
     llm.call.assert_called_once()
 
 
-def test_generate_agent_route_retries_then_succeeds(planner_system_prompt: str) -> None:
+def test_planner_call_retries_then_succeeds(planner_system_prompt: str) -> None:
     llm = MagicMock()
     llm.call.side_effect = [
         ["not json"],
@@ -29,12 +37,12 @@ def test_generate_agent_route_retries_then_succeeds(planner_system_prompt: str) 
         name="planner",
         max_iterations=2,
     )
-    out = agent.generate_agent_route("latest news?")
+    out = agent(_mem_with_user("latest news?"))
     assert out.agent == "researcher"
     assert llm.call.call_count == 2
 
 
-def test_generate_agent_route_falls_back_after_three_failures(
+def test_planner_call_falls_back_after_three_failures(
     planner_system_prompt: str,
 ) -> None:
     llm = MagicMock()
@@ -45,6 +53,6 @@ def test_generate_agent_route_falls_back_after_three_failures(
         name="planner",
         max_iterations=2,
     )
-    out = agent.generate_agent_route("x")
+    out = agent(_mem_with_user("x"))
     assert out.agent == "general"
     assert llm.call.call_count == 3

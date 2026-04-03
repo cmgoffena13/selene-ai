@@ -10,6 +10,7 @@ from src.internal.agents.planner.schema import RoutingPlan
 logger = structlog.getLogger(__name__)
 
 _MAX_PLAN_ATTEMPTS = 3
+_MAX_ROUTING_CONTEXT_MESSAGES = 4
 
 
 class PlannerAgent(AGENT):
@@ -22,28 +23,52 @@ class PlannerAgent(AGENT):
             "{{agent_list}}", str(self.agent_list)
         )
 
-    def _extract_prompt(self, memory) -> str:
-        return memory.last_user_msg(content_only=True)
-
-    def _parse_routing_plan(self, raw: str) -> RoutingPlan:
-        text = (raw or "").strip()
-        return RoutingPlan.model_validate_json(text)
-
-    def generate_agent_route(self, input_prompt: str) -> RoutingPlan:
+    def _routing_user_content(self, memory) -> str:
         """
-        Return a validated routing plan (agent, optional rationale and ``agent_hint``).
+        Build planner user text: latest user turn, plus prior user/assistant turns for context.
+        """
+        last_user = memory.last_user_msg(content_only=True)
 
-        Calls the planner LLM up to :data:`_MAX_PLAN_ATTEMPTS` times with validation
-        feedback on parse/validation failure. On exhaustion, returns ``general`` with
-        no hint.
+        messages = memory.get_msgs(include=["user", "assistant"], limit=-1)
+        if len(messages) > _MAX_ROUTING_CONTEXT_MESSAGES:
+            messages = messages[-_MAX_ROUTING_CONTEXT_MESSAGES:]
+
+        lines: list[str] = []
+        for message in messages:
+            role = message["role"]
+            content = (message.get("content") or "").strip()
+            if not content:
+                continue
+            lines.append(f"{role.upper()}: {content}")
+
+        if len(lines) <= 1:
+            return last_user
+
+        transcript = "\n".join(lines)
+        return (
+            "Conversation context (use this to interpret follow-ups and short questions; "
+            "you must still route for the **latest** user message only):\n\n"
+            f"{transcript}\n"
+        )
+
+    def __call__(self, memory) -> RoutingPlan:
+        """
+        Return a validated routing plan from conversation ``memory``.
+
+        Uses recent user/assistant messages as context so short follow-ups can be routed
+        with reference to prior turns. Does not run the default AGENT tool loop.
         """
         llm = self.llm
         if llm is None:
             raise RuntimeError("PlannerAgent requires llm")
 
+        user_content = self._routing_user_content(memory)
+        if not user_content:
+            return RoutingPlan(agent="general", rationale=None, agent_hint=None)
+
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": self.system_prompt},
-            {"role": "user", "content": input_prompt},
+            {"role": "user", "content": user_content},
         ]
 
         last_raw = ""
@@ -51,11 +76,11 @@ class PlannerAgent(AGENT):
 
         for attempt in range(_MAX_PLAN_ATTEMPTS):
             result = llm.call(messages)
-            last_raw = (result[0] if result else "") or ""
+            last_raw = (result[0].strip() if result else "") or ""
             logger.info("PlannerAgent Output", attempt=attempt + 1, raw=last_raw)
 
             try:
-                plan = self._parse_routing_plan(last_raw)
+                plan = RoutingPlan.model_validate_json(last_raw)
                 return plan
             except ValidationError as e:
                 last_err = str(e)

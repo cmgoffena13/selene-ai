@@ -58,7 +58,7 @@ class OrchestratorAgent(AGENT):
             return memory
 
         logger.info("User Asked Selene a Question", prompt=prompt)
-        plan: RoutingPlan = self.planner_agent.generate_agent_route(prompt)
+        plan: RoutingPlan = self.planner_agent(memory)
 
         if not plan.agent or plan.agent == "general":
             main_system_prompt = self.system_prompt
