@@ -5,7 +5,7 @@ import structlog
 from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
-from src.internal.agents.planner.agent import PlannerAgent
+from src.internal.agents.planner.agent import PLANNER_LLM_OPTIONS, PlannerAgent
 from src.internal.agents.planner.schema import RoutingPlan, planner_json_schema
 from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
@@ -31,8 +31,7 @@ class OrchestratorAgent(AGENT):
             max_iterations=self.max_iterations,
         )
         self.planner_llm = get_ollama_llm(
-            config.SELENE_OLLAMA_MODEL,
-            format=planner_json_schema(),
+            config.SELENE_OLLAMA_MODEL, format=planner_json_schema()
         )
         self.planner_agent = PlannerAgent(
             system_prompt=load_agent_prompt("planner"),
@@ -40,14 +39,6 @@ class OrchestratorAgent(AGENT):
             name="planner",
             max_iterations=2,
         )
-        self.active_sub_agents: Dict[str, AGENT] = {}
-
-    def _extract_prompt(self, memory) -> str:
-        """
-        Extract the prompt from the last user message in memory.
-        """
-        msg = memory.last_user_msg()
-        return msg.get("content", "")
 
     def _sub_agent_result_text(self, mem: MEMORY) -> str:
         """
@@ -60,7 +51,7 @@ class OrchestratorAgent(AGENT):
             return "Result not found."
 
     def __call__(self, memory):
-        prompt = self._extract_prompt(memory)
+        prompt = memory.last_user_msg(content_only=True)
         if not prompt:
             logger.warning("No prompt found to respond to.")
             memory.add_msg("assistant", "No prompt found to respond to.")

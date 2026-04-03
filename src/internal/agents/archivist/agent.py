@@ -20,11 +20,24 @@ logger = structlog.getLogger(__name__)
 _MAX_TOOL_PARSE_ATTEMPTS = 5
 
 
+ARCHIVIST_LLM_OPTIONS = {
+    "num_ctx": 256,  # Minimal context needed
+    "temperature": 0.0,  # Always deterministic
+    "top_p": 0.8,  # Narrow sampling
+    "top_k": 20,  # Fewer token choices
+    "repeat_penalty": 1.0,  # No penalty needed
+    "num_thread": 4,  # Light CPU load
+    "num_gpu": 99,  # Full GPU offload
+}
+
+
 class ArchivistAgent(AGENT):
     def __init__(self, *, agent_hint: str | None = None):
         self.name = "archivist"
         self.llm = get_ollama_llm(
-            config.SELENE_OLLAMA_MODEL, format=local_search_tool_result_json_schema()
+            config.SELENE_OLLAMA_MODEL,
+            format=local_search_tool_result_json_schema(),
+            options=ARCHIVIST_LLM_OPTIONS,
         )
         self.memory = MEMORY()
         self.system_prompt = apply_planner_agent_hint(

@@ -39,6 +39,7 @@ THINKING_PHRASES = [
     "Withholding my Judgement…",
     "Honoring the Bloodlines…",
     "Seeking the Truth…",
+    "Avenging my Family…",
 ]
 
 FIRST_PROMPT_PREVIEW_LEN = 50

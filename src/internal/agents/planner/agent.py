@@ -1,4 +1,3 @@
-import json
 from typing import Any
 
 import structlog
@@ -11,6 +10,17 @@ from src.internal.agents.planner.schema import RoutingPlan
 logger = structlog.getLogger(__name__)
 
 _MAX_PLAN_ATTEMPTS = 3
+
+
+PLANNER_LLM_OPTIONS = {
+    "num_ctx": 256,  # Minimal context needed
+    "temperature": 0.0,  # Always deterministic
+    "top_p": 0.8,  # Narrow sampling
+    "top_k": 20,  # Fewer token choices
+    "repeat_penalty": 1.0,  # No penalty needed
+    "num_thread": 4,  # Light CPU load
+    "num_gpu": 99,  # Full GPU offload
+}
 
 
 class PlannerAgent(AGENT):

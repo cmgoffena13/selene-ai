@@ -17,10 +17,23 @@ logger = structlog.getLogger(__name__)
 _MAX_TOOL_PARSE_ATTEMPTS = 5
 
 
+RESEARCHER_LLM_OPTIONS = {
+    "num_ctx": 256,  # Minimal context needed
+    "temperature": 0.0,  # Always deterministic
+    "top_p": 0.8,  # Narrow sampling
+    "top_k": 20,  # Fewer token choices
+    "repeat_penalty": 1.0,  # No penalty needed
+    "num_thread": 4,  # Light CPU load
+    "num_gpu": 99,  # Full GPU offload
+}
+
+
 class ResearcherAgent(AGENT):
     def __init__(self, *, agent_hint: str | None = None):
         self.name = "researcher"
-        self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
+        self.llm = get_ollama_llm(
+            config.SELENE_OLLAMA_MODEL, options=RESEARCHER_LLM_OPTIONS
+        )
         self.memory = MEMORY()
         self.system_prompt = apply_planner_agent_hint(
             load_agent_prompt("researcher"), agent_hint
