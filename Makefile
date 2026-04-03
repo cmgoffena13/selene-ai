@@ -25,6 +25,9 @@ compile:
 		--lto=yes \
 		--output-filename=selene \
 		--python-flag=no_warnings \
+		--include-package=src \
+		--include-data-dir=src/internal/agents=src/internal/agents \
+		--include-data-dir=src/internal/app=src/internal/app \
 		--include-data-files=pyproject.toml=pyproject.toml \
 		--noinclude-data-files=src/tests/* \
 		--output-dir=dist/
