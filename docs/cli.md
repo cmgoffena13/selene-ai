@@ -19,6 +19,7 @@ $ selene [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `ask`: Ask Selene a question
+* `agents`: List all sub-agents available to Selene
 * `model`: Manage Ollama models (pull, list, remove).
 * `chat`: Open an interactive chat with Selene.
 * `rag`: Build and manage RAG indexes (stored in...
@@ -41,6 +42,20 @@ $ selene ask [OPTIONS] PROMPT
 
 * `-f, --file TEXT`: Attach a file to analyze.
 * `-v, --verbose`: Show verbose output.
+* `--help`: Show this message and exit.
+
+## `selene agents`
+
+List all sub-agents available to Selene
+
+**Usage**:
+
+```console
+$ selene agents [OPTIONS]
+```
+
+**Options**:
+
 * `--help`: Show this message and exit.
 
 ## `selene model`

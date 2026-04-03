@@ -73,6 +73,17 @@ def ask(
     raise Exit(code=0)
 
 
+@app.command("agents", help="List all sub-agents available to Selene")
+def agents() -> None:
+    from src.internal.agents.factory import AgentFactory
+    from src.internal.ui.console import echo
+
+    echo("Available sub agents:")
+    for agent in AgentFactory.get_agent_names():
+        echo(f"- {agent}")
+    raise Exit(code=0)
+
+
 def main():
     setup_logging()
     app()
