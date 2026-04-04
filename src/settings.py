@@ -40,13 +40,11 @@ def get_config():
 config = get_config()
 
 
-def is_researcher_configured(c: GlobalConfig | None = None) -> bool:
+def is_researcher_configured() -> bool:
     """Tavily-backed web search is available (planner may route to ``researcher``)."""
-    key = (c or get_config()).SELENE_TAVILY_API_KEY
-    return bool(key and key.strip())
+    return bool(get_config().SELENE_TAVILY_API_KEY)
 
 
-def is_archivist_configured(c: GlobalConfig | None = None) -> bool:
+def is_archivist_configured() -> bool:
     """RAG embedding model is set (planner may route to ``archivist``)."""
-    m = (c or get_config()).SELENE_OLLAMA_EMBEDDING_MODEL
-    return bool(m and str(m).strip())
+    return bool(get_config().SELENE_OLLAMA_EMBEDDING_MODEL)
