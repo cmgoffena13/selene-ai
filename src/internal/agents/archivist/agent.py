@@ -38,6 +38,7 @@ class ArchivistAgent(AGENT):
             config.SELENE_OLLAMA_MODEL,
             format=local_search_tool_result_json_schema(),
             options=ARCHIVIST_LLM_OPTIONS,
+            think=True,
         )
         self.memory = MEMORY()
         self.system_prompt = apply_planner_agent_hint(
