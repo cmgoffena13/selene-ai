@@ -32,7 +32,7 @@ class ResearcherAgent(AGENT):
     def __init__(self, *, agent_hint: str | None = None):
         self.name = "researcher"
         self.llm = get_ollama_llm(
-            config.SELENE_OLLAMA_MODEL, options=RESEARCHER_LLM_OPTIONS, think=True
+            config.SELENE_OLLAMA_MODEL, options=RESEARCHER_LLM_OPTIONS, think=False
         )
         self.memory = MEMORY()
         self.system_prompt = apply_planner_agent_hint(

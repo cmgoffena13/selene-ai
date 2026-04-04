@@ -21,7 +21,7 @@ logger = structlog.getLogger(__name__)
 class OrchestratorAgent(AGENT):
     def __init__(self):
         self.name = "selene"
-        self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL)
+        self.llm = get_ollama_llm(config.SELENE_OLLAMA_MODEL, think=True)
         self.system_prompt = load_agent_prompt("orchestrator")
         self.max_iterations = 1
         super().__init__(
