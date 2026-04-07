@@ -6,6 +6,7 @@ from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
     load_agent_prompt,
     specialist_tool_payload_text,
+    specialist_validation_retry_feedback,
 )
 from src.internal.agents.researcher.schema import WebSearchToolResult
 from src.internal.llm.ollama import get_ollama_llm
@@ -68,14 +69,7 @@ class ResearcherAgent(AGENT):
                 )
                 if attempt >= _MAX_TOOL_PARSE_ATTEMPTS - 1:
                     break
-                feedback = (
-                    "Either the web_search tool did not run, or its result did not validate.\n"
-                    f"Details: {last_err}\n\n"
-                    "To invoke the tool, your assistant reply must be tool-call JSON only, e.g. "
-                    '{"name":"web_search","arguments":{"query":"...","topic":"news","time_range":"week"}} '
-                    "(not a flat {query,topic,time_range} object, and not invented search results). "
-                    "No markdown, no prose."
-                )
+                feedback = specialist_validation_retry_feedback("web_search", last_err)
                 self.memory.add_msg("assistant", result)
                 self.memory.add_msg("user", feedback)
 

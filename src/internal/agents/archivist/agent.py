@@ -10,6 +10,7 @@ from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
     load_agent_prompt,
     specialist_tool_payload_text,
+    specialist_validation_retry_feedback,
 )
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
@@ -74,11 +75,8 @@ class ArchivistAgent(AGENT):
                 )
                 if attempt >= _MAX_TOOL_PARSE_ATTEMPTS - 1:
                     break
-                feedback = (
-                    "Your previous reply was not valid JSON matching the schema, or "
-                    f"failed validation: {last_err}\n\n"
-                    "You MUST call the local search tool and return the results in the correct format."
-                    "Reply with a single JSON object only, no markdown"
+                feedback = specialist_validation_retry_feedback(
+                    "local_search", last_err
                 )
                 self.memory.add_msg("assistant", result)
                 self.memory.add_msg("user", feedback)

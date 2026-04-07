@@ -81,6 +81,13 @@ def test_specialist_tool_payload_text_falls_back_to_assistant(
     assert pu.specialist_tool_payload_text(mem) == "assistant  "
 
 
+def test_specialist_validation_retry_feedback_includes_tool_and_error() -> None:
+    out = pu.specialist_validation_retry_feedback("web_search", "bad json")
+    assert "web_search" in out
+    assert "bad json" in out
+    assert "tool-call JSON only" in out
+
+
 def test_specialist_tool_payload_text_fallback_when_empty(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

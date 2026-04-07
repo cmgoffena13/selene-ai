@@ -42,6 +42,16 @@ def specialist_tool_payload_text(memory: Any) -> str:
     return last.lstrip()
 
 
+def specialist_validation_retry_feedback(tool_name: str, last_err: str) -> str:
+    """User message when specialist tool output fails Pydantic validation (retry loop)."""
+    return (
+        f"Either the {tool_name} tool did not run, or its result did not validate.\n"
+        f"Details: {last_err}\n\n"
+        f"To invoke the {tool_name} tool, your assistant reply must be tool-call JSON only. "
+        "Reply with a single JSON object only; No markdown, no prose."
+    )
+
+
 def agents_root() -> Path:
     """Directory containing per-agent packages (each with ``prompt.md``)."""
     return Path(__file__).resolve().parent
