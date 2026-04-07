@@ -2,6 +2,7 @@ import sys
 
 from typer import Exit, Option, Typer
 
+from src.logging_conf import set_log_level
 from src.settings import config
 
 chat_app = Typer(help="Open an interactive chat with Selene.")
@@ -26,11 +27,15 @@ def chat_new(
 
     warn_if_ollama_unreachable(config.SELENE_OLLAMA_HOST)
     if web:
+        set_log_level("ERROR")
         from textual_serve.server import Server
 
         v = "True" if verbose else "False"
         command = (
-            f'{sys.executable} -c "from src.internal.app.chat import ChatApp; '
+            f'{sys.executable} -c "from src.settings import config; '
+            f'config.SELENE_LOG_LEVEL = \\"ERROR\\"; '
+            f"from src.logging_conf import setup_logging; setup_logging(); "
+            f"from src.internal.app.chat import ChatApp; "
             f'ChatApp(verbose={v}).run()"'
         )
         Server(command).serve(debug=False)
@@ -46,6 +51,7 @@ def chat_new(
         chat.run()
         raise Exit(code=0)
 
+    set_log_level("ERROR")
     from src.internal.app.chat import ChatApp
 
     ChatApp(verbose=verbose, watch_css=False).run()
