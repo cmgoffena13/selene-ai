@@ -30,7 +30,7 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
 - `SELENE_OLLAMA_EMBEDDING_MODEL` (Optional) Ex. `nomic-embed-text`
   - Required for `archivist` sub-agent
   - Utilize & update [LEANN](https://github.com/yichuan-w/LEANN) vector indexes
-- `SELENE_TAVILY_API_KEY` (Optional)
+- `SELENE_TAVILY_API_KEY` (Optional) Ex. `tvly-dev-XXXXXX`
   - Required for `researcher` sub-agent
   - A free account with [Tavily](https://www.tavily.com) offers 1k free credits monthly
 - `SELENE_LOG_LEVEL` (Optional) Default: `ERROR`

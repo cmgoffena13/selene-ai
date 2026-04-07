@@ -30,7 +30,7 @@ An agent's context typically includes:
 - Who the AI is
 - How they speak / interact
 - Set the Knowledge Base (ex. Current Date)
-- Dos / Donts (enfore rules)
+- Dos / Donts (Enfore Rules)
 - What to do (Task Instruction)
 
 ### Prompt Research
