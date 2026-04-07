@@ -8,8 +8,8 @@ from src.internal.agents.archivist.schema import (
 )
 from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
-    extract_tool_result_payload,
     load_agent_prompt,
+    specialist_tool_payload_text,
 )
 from src.internal.llm.ollama import get_ollama_llm
 from src.internal.tools.registry import get_tool_list
@@ -54,15 +54,6 @@ class ArchivistAgent(AGENT):
             max_iterations=self.max_iterations,
         )
 
-    def _payload_for_validation(self, mem: MEMORY) -> str:
-        inner = extract_tool_result_payload(mem)
-        if inner is not None:
-            return inner
-        last = mem.last_asst_msg(content_only=True)
-        if not last:
-            return "No input from sub agent."
-        return last.lstrip()
-
     def __call__(self, memory) -> MEMORY:
         prompt = memory.last_user_msg(content_only=True)
         self.memory.add_msg("user", prompt)
@@ -70,7 +61,7 @@ class ArchivistAgent(AGENT):
         for attempt in range(_MAX_TOOL_PARSE_ATTEMPTS):
             try:
                 self.memory = super().__call__(self.memory)
-                result = self._payload_for_validation(self.memory)
+                result = specialist_tool_payload_text(self.memory)
                 logger.debug("ArchivistAgent Output", output=result)
                 LocalSearchToolResult.model_validate_json(result)
                 return self.memory
@@ -92,7 +83,7 @@ class ArchivistAgent(AGENT):
                 self.memory.add_msg("assistant", result)
                 self.memory.add_msg("user", feedback)
 
-        out = self._payload_for_validation(self.memory)
+        out = specialist_tool_payload_text(self.memory)
         self.memory.add_msg("assistant", out)
         logger.debug("ArchivistAgent Output", output=out)
         return self.memory

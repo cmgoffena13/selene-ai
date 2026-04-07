@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -60,10 +61,30 @@ def test_append_file_to_prompt_appends_block() -> None:
     assert out.startswith("hello\n\n")
     assert "x.py" in out
     assert "line1" in out
-
-
-def test_format_file_attachment_shape() -> None:
-    out = pu.format_file_attachment("a.txt", "body")
-    assert "Filename: a.txt" in out
-    assert "body" in out
     assert "BEGIN FILE CONTENTS" in out
+    assert "END FILE CONTENTS" in out
+
+
+def test_specialist_tool_payload_text_prefers_tool_result(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(pu, "extract_tool_result_payload", lambda m: "from_tool")
+    assert pu.specialist_tool_payload_text(MagicMock()) == "from_tool"
+
+
+def test_specialist_tool_payload_text_falls_back_to_assistant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(pu, "extract_tool_result_payload", lambda m: None)
+    mem = MagicMock()
+    mem.last_asst_msg.return_value = "  assistant  "
+    assert pu.specialist_tool_payload_text(mem) == "assistant  "
+
+
+def test_specialist_tool_payload_text_fallback_when_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(pu, "extract_tool_result_payload", lambda m: None)
+    mem = MagicMock()
+    mem.last_asst_msg.return_value = ""
+    assert pu.specialist_tool_payload_text(mem) == "No input from sub agent."

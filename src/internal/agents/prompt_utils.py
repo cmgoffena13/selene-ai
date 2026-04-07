@@ -31,6 +31,17 @@ def extract_tool_result_payload(memory: Any) -> str | None:
     return str(inner).lstrip()
 
 
+def specialist_tool_payload_text(memory: Any) -> str:
+    """Tool ``result`` payload if present; else last assistant text; else fixed fallback."""
+    inner = extract_tool_result_payload(memory)
+    if inner is not None:
+        return inner
+    last = memory.last_asst_msg(content_only=True)
+    if not last:
+        return "No input from sub agent."
+    return last.lstrip()
+
+
 def agents_root() -> Path:
     """Directory containing per-agent packages (each with ``prompt.md``)."""
     return Path(__file__).resolve().parent
@@ -85,17 +96,6 @@ def inject_system_prompt_placeholders(template: str) -> str:
     return template.replace(f"{{current_date}}", current_date)
 
 
-def format_file_attachment(filename: str, content: str) -> str:
-    """Format one file attachment block for prompt context."""
-    return (
-        f"Filename: {filename}\n"
-        "File contents:\n"
-        "----- BEGIN FILE CONTENTS -----\n"
-        f"{content}\n"
-        "----- END FILE CONTENTS -----"
-    )
-
-
 def append_file_to_prompt(prompt: str, file_path: Path, content: str) -> str:
     """
     Return prompt text with one file attachment block appended.
@@ -103,5 +103,11 @@ def append_file_to_prompt(prompt: str, file_path: Path, content: str) -> str:
     This helper is intentionally small and reusable so Textual chat can
     adopt the same file attachment envelope later.
     """
-    block = format_file_attachment(file_path.name, content)
+    block = (
+        f"Filename: {file_path.name}\n"
+        "File contents:\n"
+        "----- BEGIN FILE CONTENTS -----\n"
+        f"{content}\n"
+        "----- END FILE CONTENTS -----"
+    )
     return f"{prompt}\n\n{block}"
