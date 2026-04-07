@@ -62,3 +62,6 @@ selene rag index my-documents --dir C:/directory/path/
 # Real-time observation (Tavily API Key Required)
 selene ask "What is the status on the development of Silver Nitrate?"
 ```
+
+## Standards
+See the ever-evolving [standards](STANDARDS.md) doc for design decisions.
