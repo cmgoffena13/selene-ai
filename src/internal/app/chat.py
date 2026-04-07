@@ -1,7 +1,5 @@
 import random
 import re
-import shutil
-import subprocess
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse
@@ -64,27 +62,6 @@ _VERBOSE_SPEAKER_LABELS: dict[str, str] = {
 }
 
 
-def _try_copy_to_system_clipboard(text: str) -> bool:
-    """Use OS clipboard when available (macOS pbcopy, Wayland, X11)."""
-    try:
-        if p := shutil.which("pbcopy"):
-            subprocess.run([p], input=text.encode("utf-8"), check=False)
-            return True
-        if p := shutil.which("wl-copy"):
-            subprocess.run([p], input=text.encode("utf-8"), check=False)
-            return True
-        if p := shutil.which("xclip"):
-            subprocess.run(
-                [p, "-selection", "clipboard"],
-                input=text.encode("utf-8"),
-                check=False,
-            )
-            return True
-    except OSError:
-        pass
-    return False
-
-
 def _message_content_with_links(text: str) -> Content:
     """Plain text with http(s) spans styled as links (no markup string parsing)."""
     parts = _URL_SPLIT.split(text)
@@ -100,42 +77,6 @@ def _message_content_with_links(text: str) -> Content:
             chunk = Content(part)
         merged = chunk if merged is None else merged + chunk
     return merged if merged is not None else Content("")
-
-
-def _link_from_click(event: events.Click, screen) -> str | None:
-    """Resolve Rich link URL from the click event (web sometimes omits style on the event)."""
-    link = getattr(event.style, "link", None)
-    if link:
-        return link
-    try:
-        return getattr(
-            screen.get_style_at(event.screen_x, event.screen_y), "link", None
-        )
-    except Exception:
-        return None
-
-
-class BubbleBody(Static):
-    """Link spans: terminal = click copies, Ctrl/⌘+click opens; web = click opens, Shift+click copies."""
-
-    def on_click(self, event: events.Click) -> None:
-        link = _link_from_click(event, self.screen)
-        if not link:
-            return
-        event.stop()
-        app = self.app
-        if app.is_web:
-            if event.shift:
-                if not _try_copy_to_system_clipboard(link):
-                    app.copy_to_clipboard(link)
-            else:
-                app.open_url(link)
-            return
-        if event.ctrl or event.meta:
-            app.open_url(link)
-            return
-        if not _try_copy_to_system_clipboard(link):
-            app.copy_to_clipboard(link)
 
 
 class MessageBubble(Vertical):
@@ -156,7 +97,7 @@ class MessageBubble(Vertical):
         if self._markdown_mode:
             self._body = Markdown(text, classes="bubble_body")
         else:
-            self._body = BubbleBody(
+            self._body = Static(
                 _message_content_with_links(text),
                 classes="bubble_body",
                 markup=False,
@@ -172,7 +113,7 @@ class MessageBubble(Vertical):
         if self._markdown_mode:
             self.call_later(self._apply_markdown, text)
         else:
-            assert isinstance(self._body, BubbleBody)
+            assert isinstance(self._body, Static)
             self._body.update(_message_content_with_links(text))
 
     async def _apply_markdown(self, text: str) -> None:
