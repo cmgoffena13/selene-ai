@@ -32,10 +32,7 @@ def chat_new(
 
         v = "True" if verbose else "False"
         command = (
-            f'{sys.executable} -c "from src.settings import config; '
-            f'config.SELENE_LOG_LEVEL = \\"ERROR\\"; '
-            f"from src.logging_conf import setup_logging; setup_logging(); "
-            f"from src.internal.app.chat import ChatApp; "
+            f'{sys.executable} -c "from src.internal.app.chat import ChatApp; '
             f'ChatApp(verbose={v}).run()"'
         )
         Server(command).serve(debug=False)
