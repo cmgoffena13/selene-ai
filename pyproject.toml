@@ -35,3 +35,6 @@ pythonpath = [ "." ]
 
 [tool.ruff]
 lint.select = ["I"]
+
+[tool.uv]
+exclude-newer = "7 days"
