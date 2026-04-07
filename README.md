@@ -48,18 +48,18 @@ Selene is a local command-line AI powered by [Ollama](https://ollama.com) & [Tho
 
 ```bash
 # Ask a simple question
-selene ask "Why did Kraven fail?"
+selene ask "Are you really Selene?"
 
-# Search the archives
+# Search the archives (Read Files)
 selene ask "What does it say about hybrids?" --file ancient.txt
 
-# Consult Selene's wisdom
+# Consult Selene's wisdom (Persistent Conversations)
 selene chat
 
-# Share persistent resources with Selene (Embedding Model Required)
+# Give Selene access to local resources (Embedding Model Required)
 selene rag index my-documents --dir C:/directory/path/
 
-# Real-time observation (Tavily API Key Required)
+# Real-time observations & data (Tavily API Key Required)
 selene ask "What is the status on the development of Silver Nitrate?"
 ```
 
