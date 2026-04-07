@@ -267,19 +267,21 @@ class ChatApp(App):
 
     def _append_memory_event(self, event: dict) -> None:
         """Render one MEMORY event for verbose transcript."""
-        t = event["type"]
-        if t == "msg":
-            role: str = event["role"]
-            content = str(event["content"])
+        message_type = event["type"]
+        if message_type == "msg":
+            role = event["role"]
+            content = event["content"]
             if role == "user":
                 self._append(content, "user")
             elif role == "assistant":
                 self._append(content, "assistant")
             else:
                 self._append(content, "verbose", speaker=_VERBOSE_SPEAKER_LABELS[role])
-        elif t in ("log", "ref", "var"):
+        elif message_type in ("log", "ref", "var"):
             self._append(
-                str(event["content"]), "verbose", speaker=_VERBOSE_SPEAKER_LABELS[t]
+                str(event["content"]),
+                "verbose",
+                speaker=_VERBOSE_SPEAKER_LABELS[message_type],
             )
 
     def _rebuild_transcript_verbose(self) -> None:
@@ -300,17 +302,17 @@ class ChatApp(App):
 
     def _extract_file_path(self, raw: str) -> Optional[Path]:
         s = raw.strip().strip("'\"")
-        if not s or len(s) > _MAX_PROMPT_AS_PATH_CHARS:
-            return None
-        if s.startswith("file://"):
-            s = unquote(urlparse(s).path)
-        p = Path(s).expanduser()
-        try:
-            if p.is_file():
-                return p.resolve()
-        except OSError:
-            return None
-        return None
+        path: Optional[Path] = None
+        if s and len(s) <= _MAX_PROMPT_AS_PATH_CHARS:
+            if s.startswith("file://"):
+                s = unquote(urlparse(s).path)
+            p = Path(s).expanduser()
+            try:
+                if p.is_file():
+                    path = p.resolve()
+            except OSError:
+                pass
+        return path
 
     def maybe_attach_file_from_input(self, raw: str) -> bool:
         path = self._extract_file_path(raw)
