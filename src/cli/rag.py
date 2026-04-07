@@ -91,7 +91,7 @@ def rag_list() -> None:
     indexes = list_rag_indexes_with_sizes()
     if not indexes:
         echo("No RAG indexes found.")
-        return
+        raise Exit(code=0)
     for name, _path, size_bytes, docs_dir in indexes:
         size_gb = size_bytes / (1024**3)
         echo(f"  {name}  {size_gb:.2f} GB  {docs_dir}")
