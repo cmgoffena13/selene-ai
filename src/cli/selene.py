@@ -64,7 +64,7 @@ def ask(
         user_prompt = append_file_to_prompt(prompt, file_path, content)
 
     memory = MEMORY()
-    memory.add_msg(role="user", content=user_prompt, mode="text", channel="cli")
+    memory.add_msg(role="user", content=user_prompt, channel="cli")
     memory = orchestrator_agent(memory)
     if verbose:
         echo(memory.render())
