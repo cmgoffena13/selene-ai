@@ -59,14 +59,8 @@ def rag_index(
     try:
         path = build_rag_index(index_name=name, docs_dir=dir)
         echo(f"Index '{name}' built and registered at {path}")
-    except NotADirectoryError as e:
-        echo(f"Error: {e}", err=True)
-        raise Exit(code=1)
-    except ValueError as e:
-        echo(f"Error: {e}", err=True)
-        raise Exit(code=1)
     except Exception as e:
-        echo(f"Error building index: {e}", err=True)
+        echo(f"Error: {e}", err=True)
         raise Exit(code=1)
     raise Exit(code=0)
 
@@ -84,14 +78,8 @@ def rag_update(
     try:
         path = update_rag_index(index_name=name)
         echo(f"Index '{name}' updated at {path}")
-    except NotADirectoryError as e:
-        echo(f"Error: {e}", err=True)
-        raise Exit(code=1)
-    except ValueError as e:
-        echo(f"Error: {e}", err=True)
-        raise Exit(code=1)
     except Exception as e:
-        echo(f"Error updating index: {e}", err=True)
+        echo(f"Error: {e}", err=True)
         raise Exit(code=1)
     raise Exit(code=0)
 
