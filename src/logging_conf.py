@@ -16,6 +16,7 @@ def set_log_level(level: str) -> None:
 
 
 def setup_logging() -> None:
+    """Setup the logging configuration."""
     level: int = getattr(logging, config.SELENE_LOG_LEVEL)
     timestamper = structlog.processors.TimeStamper(fmt="iso")
 

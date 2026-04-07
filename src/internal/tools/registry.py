@@ -5,6 +5,7 @@ from src.internal.tools.web_search import get_web_search_tool
 
 
 def get_tool_list(agent_name: str) -> list[TOOL]:
+    """Get the tool list for the given agent name."""
     tool_list: list[TOOL] = []
 
     local_search = get_local_search_tool()

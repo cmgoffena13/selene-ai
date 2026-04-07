@@ -10,10 +10,10 @@ LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 def _env_file_paths() -> tuple[str, ...]:
     paths: list[str] = []
     repo_root = Path(__file__).resolve().parent.parent
-    # Local for Development
+    # NOTE: Local for Development
     if (repo_root / "pyproject.toml").is_file():
         paths.append(str(repo_root / ".env"))
-    # Global for Production
+    # NOTE: Global for Production
     paths.append(str(Path.home() / ".config" / "selene_ai" / ".env"))
     return tuple(paths)
 

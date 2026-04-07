@@ -119,6 +119,7 @@ def _tavily_search(**kwargs) -> str:
 
 
 def get_web_search_tool() -> Optional[TOOL]:
+    """Get the web search tool."""
     if config.SELENE_TAVILY_API_KEY is None:
         return None
     else:

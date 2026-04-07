@@ -30,6 +30,7 @@ def resolve_chat_session_path(filename: str) -> Path:
 
 
 def _read_sessions_index() -> list[dict[str, str]]:
+    """Read the chat sessions index from the file."""
     index_path = get_chat_sessions_index_path()
     if not index_path.exists():
         _write_sessions_index([])
@@ -46,6 +47,7 @@ def _read_sessions_index() -> list[dict[str, str]]:
 
 
 def _write_sessions_index(entries: list[dict[str, str]]) -> None:
+    """Write the chat sessions index to the file."""
     index_path = get_chat_sessions_index_path()
     write_json(index_path, entries)
 

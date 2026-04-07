@@ -41,28 +41,32 @@ def _is_truecolor(color_system: Any) -> bool:
 
 
 def rich_palette(color_system: Any) -> dict[str, str]:
-    return (
-        {
+    """Get the rich palette."""
+    output = None
+    if _is_truecolor(color_system):
+        output = {
             "main": MAIN_COLOR,
             "background": BACKGROUND_COLOR,
             "surface": SURFACE_COLOR,
             "border": BORDER_COLOR,
             "panel": PANEL_COLOR,
         }
-        if _is_truecolor(color_system)
-        else RICH_ANSI
-    )
+    else:
+        output = RICH_ANSI
+    return output
 
 
 def textual_palette(color_system: Any) -> dict[str, str]:
-    return (
-        {
+    """Get the textual palette."""
+    output = None
+    if _is_truecolor(color_system):
+        output = {
             "main": MAIN_COLOR,
             "background": BACKGROUND_COLOR,
             "surface": SURFACE_COLOR,
             "border": BORDER_COLOR,
             "panel": PANEL_COLOR,
         }
-        if _is_truecolor(color_system)
-        else TEXTUAL_ANSI
-    )
+    else:
+        output = TEXTUAL_ANSI
+    return output

@@ -14,6 +14,8 @@ logger = structlog.getLogger(__name__)
 
 
 def retry(attempts: int = 3, delay: float = 0.25, backoff: float = 2.0):
+    """Retry a function if it fails."""
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -36,6 +38,7 @@ def retry(attempts: int = 3, delay: float = 0.25, backoff: float = 2.0):
 
 
 def get_version() -> str:
+    """Get the version of the application."""
     if getattr(sys, "frozen", False):
         meipass = getattr(sys, "_MEIPASS", None)
         if not isinstance(meipass, str):
@@ -71,10 +74,12 @@ def get_selene_ai_config_dir(*parts: str) -> Path:
 
 
 def read_json(path: Path) -> Any:
+    """Read a JSON file."""
     with path.open("rb") as f:
         return orjson.loads(f.read())
 
 
 def write_json(path: Path, obj: Any) -> None:
+    """Write a JSON file."""
     with path.open("wb") as f:
         f.write(orjson.dumps(obj))

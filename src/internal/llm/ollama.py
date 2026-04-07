@@ -23,6 +23,7 @@ def get_ollama_llm(model: Optional[str], **kwargs) -> LLM:
 
 
 def is_ollama_reachable(host: str) -> bool:
+    """Check if Ollama is reachable at the given host."""
     try:
         Client(host=host).list()
     except (RequestError, ResponseError, ConnectionError):
@@ -31,8 +32,10 @@ def is_ollama_reachable(host: str) -> bool:
 
 
 def warn_if_ollama_unreachable(host: str) -> None:
+    """Warn if Ollama is not reachable at the given host."""
     if is_ollama_reachable(host):
         return
+
     from src.internal.ui.console import echo
 
     echo(

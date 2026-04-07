@@ -37,6 +37,7 @@ def agents_root() -> Path:
 
 
 def load_agent_prompt(agent_name: str) -> str:
+    """Load the agent prompt for the given agent name."""
     path = agents_root() / agent_name / "prompt.md"
     if not path.is_file():
         raise FileNotFoundError(f"Missing agent prompt: {path}")

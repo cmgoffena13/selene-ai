@@ -51,6 +51,7 @@ LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
 
 
 def _local_search(**kwargs: Any) -> str:
+    """Perform a local LEANN search."""
     logger.info("Local Search kwargs", kwargs=kwargs)
     try:
         query = (kwargs.get("query") or "").strip()
@@ -149,6 +150,7 @@ def _local_search(**kwargs: Any) -> str:
 
 
 def get_local_search_tool() -> Optional[TOOL]:
+    """Get the local search tool."""
     indexes = list_rag_indexes_with_sizes()
     if not indexes:
         return None

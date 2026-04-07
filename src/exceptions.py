@@ -8,7 +8,7 @@ class CustomException(Exception):
 
 class DuplicateIndexError(CustomException):
     """
-    Exception raised when a duplicate index is found.
+    Exception raised when a duplicate LEANN index is found.
     """
 
     pass
