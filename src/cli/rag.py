@@ -9,11 +9,32 @@ rag_app = typer.Typer(
     help="Build and manage RAG indexes (stored in ~/.config/selene_ai)."
 )
 
-# LlamaIndex SimpleDirectoryReader: dedicated readers for these; other files read as plain text.
+RAG_SUPPORTED_EXTENSIONS = (
+    ".csv",
+    ".docx",
+    ".epub",
+    ".gif",
+    ".hwp",
+    ".ipynb",
+    ".jpeg",
+    ".jpg",
+    ".md",
+    ".mbox",
+    ".mp3",
+    ".mp4",
+    ".pdf",
+    ".png",
+    ".pptx",
+    ".py",
+    ".txt",
+    ".webp",
+    ".xls",
+    ".xlsx",
+)
 RAG_SUPPORTED_EXTENSIONS_HELP = (
-    "Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, "
-    "images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. "
-    "Other files (e.g. .py, .md, .txt) are read as plain text."
+    "Supported: "
+    + ", ".join(RAG_SUPPORTED_EXTENSIONS)
+    + ". Other files are read as plain text."
 )
 
 
