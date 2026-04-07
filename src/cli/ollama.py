@@ -105,7 +105,6 @@ def model_remove(
 ) -> None:
     from src.internal.ui.console import echo
 
-    """Remove a local Ollama model."""
     try:
         client = Client(host=host)
         echo(f"Removing {name}...")
