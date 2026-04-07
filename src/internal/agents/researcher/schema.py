@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pydantic import BaseModel
 
 
@@ -23,6 +25,7 @@ class WebSearchToolResult(BaseModel):
     total_found: int
 
 
+@lru_cache()
 def web_search_tool_result_json_schema() -> dict:
     """JSON Schema for ``WebSearchToolResult``."""
     return WebSearchToolResult.model_json_schema()

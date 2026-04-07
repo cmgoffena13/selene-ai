@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -35,6 +36,7 @@ class LocalSearchToolResult(BaseModel):
     errors: list[LocalSearchErrorItem] = Field(default_factory=list)
 
 
+@lru_cache()
 def local_search_tool_result_json_schema() -> dict:
     """JSON Schema for ``LocalSearchToolResult`` (tool output, not LLM tool-call JSON)."""
     return LocalSearchToolResult.model_json_schema()

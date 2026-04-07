@@ -6,7 +6,7 @@ from thoughtflow import AGENT, MEMORY
 
 from src.internal.agents.factory import AgentFactory
 from src.internal.agents.planner.agent import PlannerAgent
-from src.internal.agents.planner.schema import RoutingPlan, planner_json_schema
+from src.internal.agents.planner.schema import planner_json_schema
 from src.internal.agents.prompt_utils import (
     apply_planner_agent_hint,
     extract_tool_result_payload,
@@ -53,14 +53,13 @@ class OrchestratorAgent(AGENT):
     def __call__(self, memory):
         prompt = memory.last_user_msg(content_only=True)
         if not prompt:
-            logger.warning("No prompt found to respond to.")
-            memory.add_msg("assistant", "No prompt found to respond to.")
-            return memory
+            raise ValueError("No prompt found to respond to.")
 
         logger.info("User Asked Selene a Question", prompt=prompt)
-        plan: RoutingPlan = self.planner_agent(memory)
+        plan = self.planner_agent(memory)
 
-        if not plan.agent or plan.agent == "general":
+        # NOTE: No sub agent selected, simply answer.
+        if plan.agent == "general":
             main_system_prompt = self.system_prompt
             self.system_prompt = apply_planner_agent_hint(
                 main_system_prompt, plan.agent_hint
@@ -70,23 +69,24 @@ class OrchestratorAgent(AGENT):
             finally:
                 self.system_prompt = main_system_prompt
 
+        # NOTE: Route the user prompt to the appropriate agent. Separate Memory.
         routed_agent = AgentFactory.create_agent(plan.agent, agent_hint=plan.agent_hint)
         routed_agent_memory = MEMORY()
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
 
-        synthesis_system = json.dumps(
+        routed_agent_result_json = json.dumps(
             {"specialist": plan.agent, "result": routed_agent_result}
         )
         logger.info(
             "OrchestratorAgent Synthesis Input",
             user_prompt=prompt,
             specialist=plan.agent,
-            synthesis_system_chars=len(synthesis_system),
+            synthesis_system_chars=len(routed_agent_result_json),
         )
 
-        memory.add_msg("system", synthesis_system)
+        memory.add_msg("system", routed_agent_result_json)
         memory = super().__call__(memory)
         return memory
 

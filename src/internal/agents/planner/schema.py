@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pydantic import BaseModel, Field, field_validator
 
 from src.internal.agents.factory import AgentFactory
@@ -29,6 +31,7 @@ class RoutingPlan(BaseModel):
         return low
 
 
+@lru_cache()
 def planner_json_schema() -> dict:
     """
     JSON Schema for Ollama ``format`` (merged into ThoughtFlow LLM ``default_params``).
