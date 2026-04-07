@@ -1,2 +1,9 @@
  - Switch LEANN index update to use IVF (once its out?)
  - Research reAct framework
+ - Update Researcher SubAgent to have multiple steps
+ - Update Archivist SubAgent to have multiple steps
+ - Simplify and settle on Tool Descriptions, balanced with system prompts
+ - Create a formalized structure for tests (too many mocks)
+ - Refactor SubAgent results to inject into User instead of System
+    - Need to strip results from UI unless verbose flag.
+ - Look into Pattern around Reminders.
