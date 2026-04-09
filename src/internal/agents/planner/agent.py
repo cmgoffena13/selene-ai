@@ -33,7 +33,7 @@ class PlannerAgent(AGENT):
         if len(messages) > _MAX_ROUTING_CONTEXT_MESSAGES:
             messages = messages[-_MAX_ROUTING_CONTEXT_MESSAGES:]
 
-        lines: list[str] = []
+        lines = []
         for message in messages:
             role = message["role"]
             content = (message.get("content") or "").strip()
@@ -66,17 +66,15 @@ class PlannerAgent(AGENT):
         if not user_content:
             return RoutingPlan(agent="general", rationale=None, agent_hint=None)
 
-        messages: list[dict[str, Any]] = [
+        messages = [
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": user_content},
         ]
 
-        last_raw = ""
-        last_err: str | None = None
-
+        last_err = None
         for attempt in range(_MAX_PLAN_ATTEMPTS):
             result = llm.call(messages)
-            last_raw = (result[0].strip() if result else "") or ""
+            last_raw = result[0].strip() if result else ""
             logger.info("PlannerAgent Output", attempt=attempt + 1, raw=last_raw)
 
             try:

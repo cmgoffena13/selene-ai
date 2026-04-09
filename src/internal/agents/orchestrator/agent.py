@@ -75,7 +75,6 @@ class OrchestratorAgent(AGENT):
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
-
         routed_agent_result_json = json.dumps(
             {"specialist": plan.agent, "result": routed_agent_result}
         )
@@ -85,7 +84,7 @@ class OrchestratorAgent(AGENT):
             "OrchestratorAgent Synthesis Input",
             user_prompt=prompt,
             specialist=plan.agent,
-            synthesis_system_chars=len(context_prompt),
+            context_prompt_chars=len(context_prompt),
         )
 
         memory.add_msg("system", context_prompt)
