@@ -1,10 +1,12 @@
 import datetime
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
+
+from thoughtflow import MEMORY
 
 
-def extract_tool_result_payload(memory: Any) -> str | None:
+def extract_tool_result_payload(memory: MEMORY) -> Optional[str]:
     """
     Inner tool output string from the last ``result`` message.
 
@@ -13,25 +15,23 @@ def extract_tool_result_payload(memory: Any) -> str | None:
     When the model only calls tools (no assistant message), validation must read
     this, not ``last_asst_msg``.
     """
+    output = None
     msgs = memory.get_msgs(include=["result"])
-    if not msgs:
-        return None
-    raw = msgs[-1].get("content", "") or ""
-    if not raw.strip():
-        return None
-    try:
-        obj = json.loads(raw)
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(obj, dict):
-        return None
-    inner = obj.get("result")
-    if inner is None:
-        return None
-    return str(inner).lstrip()
+    if msgs:
+        raw = msgs[-1].get("content")
+        if raw is not None:
+            try:
+                obj = json.loads(raw)
+            except json.JSONDecodeError:
+                obj = None
+            if isinstance(obj, dict):
+                result = obj.get("result")
+                if result is not None:
+                    output = str(result).lstrip()
+    return output
 
 
-def specialist_tool_payload_text(memory: Any) -> str:
+def specialist_tool_payload_text(memory: MEMORY) -> str:
     """Tool ``result`` payload if present; else last assistant text; else fixed fallback."""
     inner = extract_tool_result_payload(memory)
     if inner is not None:
@@ -66,7 +66,9 @@ def load_agent_prompt(agent_name: str) -> str:
     return inject_system_prompt_placeholders(system_prompt)
 
 
-def ensure_agent_prompt_file(agent_name: str, *, template: str | None = None) -> Path:
+def ensure_agent_prompt_file(
+    agent_name: str, *, template: Optional[str] = None
+) -> Path:
     """
     Ensure ``<agent_name>/prompt.md`` exists; create parent dirs and a stub if not.
 
@@ -81,7 +83,7 @@ def ensure_agent_prompt_file(agent_name: str, *, template: str | None = None) ->
     return path
 
 
-def apply_planner_agent_hint(system_prompt: str, agent_hint: str | None) -> str:
+def apply_planner_agent_hint(system_prompt: str, agent_hint: Optional[str]) -> str:
     """
     Append planner ``agent_hint`` to a sub-agent system prompt when present.
 
