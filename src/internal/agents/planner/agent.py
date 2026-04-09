@@ -85,6 +85,7 @@ class PlannerAgent(AGENT):
                 logger.warning(
                     "PlannerAgent validation failed",
                     attempt=attempt + 1,
+                    output=output,
                     error=last_err,
                 )
                 if attempt >= _MAX_PLAN_ATTEMPTS - 1:
