@@ -1,5 +1,3 @@
-from typing import Any
-
 import structlog
 from pydantic import ValidationError
 from thoughtflow import AGENT
