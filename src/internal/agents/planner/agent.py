@@ -74,11 +74,11 @@ class PlannerAgent(AGENT):
         last_err = None
         for attempt in range(_MAX_PLAN_ATTEMPTS):
             result = llm.call(messages)
-            last_raw = result[0].strip() if result else ""
-            logger.info("PlannerAgent Output", attempt=attempt + 1, raw=last_raw)
+            output = result[0].strip() if result else ""
+            logger.info("PlannerAgent Output", attempt=attempt + 1, output=output)
 
             try:
-                plan = RoutingPlan.model_validate_json(last_raw)
+                plan = RoutingPlan.model_validate_json(output)
                 return plan
             except ValidationError as e:
                 last_err = str(e)
@@ -96,7 +96,7 @@ class PlannerAgent(AGENT):
                     "`agent` (one of the allowed names), optional `rationale`, and "
                     "optional `agent_hint` (guidance for the specialist)."
                 )
-                messages.append({"role": "assistant", "content": last_raw})
+                messages.append({"role": "assistant", "content": output})
                 messages.append({"role": "user", "content": feedback})
 
         logger.error(
