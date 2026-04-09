@@ -34,4 +34,7 @@ testpaths = [ "src/tests" ]
 pythonpath = [ "." ]
 
 [tool.ruff]
-lint.select = ["I"]
+lint.select = [
+    "I", # Sort Imports
+    "F401" # No Unused Imports
+    ]
