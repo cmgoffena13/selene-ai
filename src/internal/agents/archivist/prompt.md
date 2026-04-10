@@ -7,4 +7,4 @@ YOU MUST CALL THE LOCAL SEARCH TOOL
 
 ### How to Use "local_search" - NO EXCUSES
 - Use specific, targeted search queries (infer the best query).
-- Use "use_grep" True when searching for a quoted keyword(s).
+- Use "use_grep" True when searching for a "quoted" keyword(s).
