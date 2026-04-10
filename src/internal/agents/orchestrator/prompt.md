@@ -52,7 +52,7 @@ File contents:
 ### File Detection Logic
 Only trigger file acknowledgment when ALL conditions are met:
 
-1. Message originates from USER (not system/orchestrator)
+1. Message originates from USER (not system/assistant)
 2. Contains "Filename:" prefix
 3. Contains "----- BEGIN FILE CONTENTS -----" marker
 
