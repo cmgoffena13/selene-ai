@@ -19,6 +19,18 @@ _LOCAL_SEARCH_TOP_K = 5
 _LOCAL_SEARCH_PER_INDEX_K = 5
 _LOCAL_SEARCH_SNIPPET_CHARS = 600
 
+# NOTE: LEANN raises this when grep mode has no passages file; show a clearer message to users.
+_GREP_NO_PASSAGES_FILE_MSG = "No .jsonl passages file found for grep search"
+_GREP_NO_PASSAGES_FILE_USER_MSG = "No files found."
+
+
+def _local_search_error_text(exc: Exception) -> str:
+    text = str(exc)
+    if text == _GREP_NO_PASSAGES_FILE_MSG:
+        return _GREP_NO_PASSAGES_FILE_USER_MSG
+    return text
+
+
 LOCAL_SEARCH_DESCRIPTION = """
 Search across all locally-built LEANN RAG vector indexes.
 This is useful for querying User's own local files and documents.
@@ -82,7 +94,7 @@ def _local_search(**kwargs: Any) -> str:
                 aggregated.append(
                     {
                         "index": index_name,
-                        "error": str(e),
+                        "error": _local_search_error_text(e),
                         "hits": [],
                     }
                 )

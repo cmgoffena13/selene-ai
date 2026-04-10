@@ -77,7 +77,9 @@ class OrchestratorAgent(AGENT):
         routed_agent_result_json = json.dumps(
             {"specialist": plan.agent, "result": routed_agent_result}
         )
-        context_prompt = f"<context>{routed_agent_result_json}</context>"
+        context_prompt = (
+            f"<SPECIALIST_OUTPUT>{routed_agent_result_json}</SPECIALIST_OUTPUT>"
+        )
 
         logger.info(
             "OrchestratorAgent Synthesis Input",
