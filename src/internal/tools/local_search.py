@@ -15,38 +15,26 @@ from src.settings import config
 
 logger = structlog.getLogger(__name__)
 
+_LOCAL_SEARCH_TOP_K = 5
+_LOCAL_SEARCH_PER_INDEX_K = 5
+_LOCAL_SEARCH_SNIPPET_CHARS = 600
+
 LOCAL_SEARCH_DESCRIPTION = """
-Search across all locally-built RAG vector indexes.
-This is useful for searching through the user's own local files and documents.
+Search across all locally-built LEANN RAG vector indexes.
+This is useful for querying User's own local files and documents.
 Set "use_grep" to True to search for quoted text in the indexes.
 """
 
 LOCAL_SEARCH_PARAMETERS: dict[str, Any] = {
     "type": "object",
     "properties": {
-        "query": {"type": "string", "description": "Search query"},
+        "query": {"type": "string", "description": "Semantic search query"},
         "use_grep": {
             "type": "boolean",
-            "description": "If true, use LEANN grep search over indexed passages instead of vector similarity (default: false)",
-            "default": False,
-        },
-        "top_k": {
-            "type": "integer",
-            "description": "Max results to return across all indexes (default 5)",
-            "default": 5,
-        },
-        "per_index_k": {
-            "type": "integer",
-            "description": "How many results to fetch per index before aggregating (default 5)",
-            "default": 5,
-        },
-        "text_snippet_chars": {
-            "type": "integer",
-            "description": "Max characters per result snippet (default 600)",
-            "default": 600,
+            "description": "If true, use LEANN grep search over indexed passages instead of vector similarity",
         },
     },
-    "required": ["query"],
+    "required": ["query", "use_grep"],
 }
 
 
@@ -65,21 +53,6 @@ def _local_search(**kwargs: Any) -> str:
             return payload.model_dump_json()
 
         use_grep = bool(kwargs.get("use_grep", False))
-
-        try:
-            top_k = max(1, int(kwargs.get("top_k", 5)))
-        except (TypeError, ValueError):
-            top_k = 5
-
-        try:
-            per_index_k = max(1, int(kwargs.get("per_index_k", top_k)))
-        except (TypeError, ValueError):
-            per_index_k = top_k
-
-        try:
-            text_snippet_chars = max(0, int(kwargs.get("text_snippet_chars", 600)))
-        except (TypeError, ValueError):
-            text_snippet_chars = 600
 
         indexes = list_rag_indexes_with_sizes()
         if not indexes:
@@ -102,7 +75,9 @@ def _local_search(**kwargs: Any) -> str:
                         recompute_embeddings=True,
                         use_daemon=True,
                     )
-                    hits = searcher.search(query, top_k=per_index_k, use_grep=use_grep)
+                    hits = searcher.search(
+                        query, top_k=_LOCAL_SEARCH_PER_INDEX_K, use_grep=use_grep
+                    )
             except Exception as e:
                 aggregated.append(
                     {
@@ -115,8 +90,11 @@ def _local_search(**kwargs: Any) -> str:
 
             for h in hits:
                 snippet = (h.text or "").strip()
-                if text_snippet_chars and len(snippet) > text_snippet_chars:
-                    snippet = snippet[:text_snippet_chars] + "…"
+                if (
+                    _LOCAL_SEARCH_SNIPPET_CHARS
+                    and len(snippet) > _LOCAL_SEARCH_SNIPPET_CHARS
+                ):
+                    snippet = snippet[:_LOCAL_SEARCH_SNIPPET_CHARS] + "…"
 
                 aggregated.append(
                     {
@@ -131,7 +109,7 @@ def _local_search(**kwargs: Any) -> str:
         # Keep only the highest scoring results; ignore error blobs for ranking.
         scored = [r for r in aggregated if "score" in r]
         scored.sort(key=lambda x: float(x["score"]), reverse=True)
-        final = scored[:top_k]
+        final = scored[:_LOCAL_SEARCH_TOP_K]
 
         # If some indexes errored, include their errors too (but don’t let them break ranking).
         errors_raw = [r for r in aggregated if "error" in r]
