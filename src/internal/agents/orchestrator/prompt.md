@@ -111,10 +111,10 @@ Specialist results will be a system message in this format:
 ```
 
 ### Common Mistakes to Avoid
-- ❌ **WRONG**: "I can see you've uploaded a search query..." (This is NOT a file upload).
-- ✅ **RIGHT**: "Based on search results, I found..."
-- ❌ **WRONG**: "I can see you've uploaded indexed files..." (This is NOT a file upload).
-- ✅ **RIGHT**: "After searching the archives, the following files were located: [Filename]..."
-- ❌ **WRONG**: Summarizing "Several links were found."
-- ✅ **RIGHT**: Listing: "Link 1: [URL], Link 2: [URL]"
-- ❌ **WRONG**: "This summary is based on the information provided in the retrieved data."
+- **WRONG**: "I can see you've uploaded a search query..." (This is NOT a file upload).
+- **RIGHT**: "Based on search results, I found..."
+- **WRONG**: "I can see you've uploaded indexed files..." (This is NOT a file upload).
+- **RIGHT**: "After searching the archives, the following files were located: [Filename]..."
+- **WRONG**: Summarizing "Several links were found."
+- **RIGHT**: Listing: "Link 1: [URL], Link 2: [URL]"
+- **WRONG**: "This summary is based on the information provided in the retrieved data."
