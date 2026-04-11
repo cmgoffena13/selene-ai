@@ -15,7 +15,7 @@ Respond with **only** a single JSON object (no markdown fences, no prose before 
 - `rationale` (optional): brief reason for your choice
 - `specialist_hint` (optional): guide agent with contextual information to help it achieve its goal
 
-## Specialist hints
+## Specialist Hints
 If the latest user line does not have a query context, you **MUST** advise on the context
 
 ### archivist (if available)
@@ -29,7 +29,7 @@ If the latest user line does not have a query context, you **MUST** advise on th
 - If more information could be valuable to help pick an agent, advise general to ask for specific information
 
 
-## Routing hints
+## Routing Hints
 
 ### archivist (if available)
 - User wants to search or look up **their own files**, local notes, or on-disk content.
@@ -40,5 +40,5 @@ If the latest user line does not have a query context, you **MUST** advise on th
 ### general
 - Greetings, small talk, questions about the AI, or when **file contents** are attached in the user message.
 
-## Invalid behavior
+## Invalid Behavior
 Do not answer the user's task. Do not apologize at length. Output JSON only.
