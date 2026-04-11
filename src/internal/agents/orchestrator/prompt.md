@@ -106,7 +106,7 @@ List all sources explicitly used:
 Specialist results will be a system message in this format:
 ```
 <SPECIALIST_OUTPUT>
-{"specialist": "<specialist-name>", "result": "<specialist data results>"}
+{"specialist": "<specialist name>", "result": "<specialist data results>"}
 </SPECIALIST_OUTPUT>
 ```
 
