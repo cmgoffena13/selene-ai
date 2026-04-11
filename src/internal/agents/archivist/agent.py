@@ -71,7 +71,7 @@ class ArchivistAgent(AGENT):
                 logger.warning(
                     "ArchivistAgent validation failed",
                     attempt=attempt + 1,
-                    error=last_err,
+                    answer=result,
                 )
                 if attempt >= _MAX_TOOL_PARSE_ATTEMPTS - 1:
                     break
