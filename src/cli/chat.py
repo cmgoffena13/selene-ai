@@ -14,7 +14,7 @@ chat_app = Typer(help="Open an interactive chat with Selene.")
 def chat_new(
     web: bool = Option(False, "--web", "-w", help="Serve chat UI in a web browser."),
     classic: bool = Option(
-        False, "--classic", "-c", help="Use the classic Thoughtflow chat."
+        False, "--classic", "-c", help="Use the classic Thoughtflow chat. (Not Saved)"
     ),
     verbose: bool = Option(
         False,

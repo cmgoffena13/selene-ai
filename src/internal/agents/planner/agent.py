@@ -62,7 +62,9 @@ class PlannerAgent(AGENT):
 
         user_content = self._routing_user_content(memory)
         if not user_content:
-            return RoutingPlan(agent="general", rationale=None, agent_hint=None)
+            return RoutingPlan(
+                specialist="general", rationale=None, specialist_hint=None
+            )
 
         messages = [
             {"role": "system", "content": self.system_prompt},
@@ -92,8 +94,8 @@ class PlannerAgent(AGENT):
                     "Your previous reply was not valid JSON matching the schema, or "
                     f"failed validation: {last_err}\n\n"
                     "Reply with a single JSON object only, no markdown, with fields "
-                    "`agent` (one of the allowed names), optional `rationale`, and "
-                    "optional `agent_hint` (guidance for the specialist)."
+                    "`specialist` (one of the allowed names), optional `rationale`, and "
+                    "optional `specialist_hint` (guidance for the specialist)."
                 )
                 messages.append({"role": "assistant", "content": output})
                 messages.append({"role": "user", "content": feedback})
@@ -102,4 +104,4 @@ class PlannerAgent(AGENT):
             "PlannerAgent exhausted retries; falling back to general",
             last_error=last_err,
         )
-        return RoutingPlan(agent="general", rationale=None, agent_hint=None)
+        return RoutingPlan(specialist="general", rationale=None, specialist_hint=None)

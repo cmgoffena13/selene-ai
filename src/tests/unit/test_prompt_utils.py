@@ -58,11 +58,7 @@ def test_inject_system_prompt_placeholders_replaces_date() -> None:
 
 def test_append_file_to_prompt_appends_block() -> None:
     out = pu.append_file_to_prompt("hello", Path("/tmp/x.py"), "line1")
-    assert out.startswith("hello\n\n")
-    assert "x.py" in out
-    assert "line1" in out
-    assert "BEGIN FILE CONTENTS" in out
-    assert "END FILE CONTENTS" in out
+    assert out == "hello\n\n<file name=x.py><content>line1</content></file>"
 
 
 def test_specialist_tool_payload_text_prefers_tool_result(

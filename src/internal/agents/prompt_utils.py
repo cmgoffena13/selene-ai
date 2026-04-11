@@ -115,11 +115,5 @@ def append_file_to_prompt(prompt: str, file_path: Path, content: str) -> str:
     This helper is intentionally small and reusable so Textual chat can
     adopt the same file attachment envelope later.
     """
-    block = (
-        f"Filename: {file_path.name}\n"
-        "File contents:\n"
-        "----- BEGIN FILE CONTENTS -----\n"
-        f"{content}\n"
-        "----- END FILE CONTENTS -----"
-    )
+    block = f"<file name={file_path.name}><content>{content}</content></file>"
     return f"{prompt}\n\n{block}"

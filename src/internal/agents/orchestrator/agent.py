@@ -58,10 +58,10 @@ class OrchestratorAgent(AGENT):
         plan = self.planner_agent(memory)
 
         # NOTE: No sub agent selected, simply answer.
-        if plan.agent == "general":
+        if plan.specialist == "general":
             main_system_prompt = self.system_prompt
             self.system_prompt = apply_planner_agent_hint(
-                main_system_prompt, plan.agent_hint
+                main_system_prompt, plan.specialist_hint
             )
             try:
                 return super().__call__(memory)
@@ -69,13 +69,15 @@ class OrchestratorAgent(AGENT):
                 self.system_prompt = main_system_prompt
 
         # NOTE: Route the user prompt to the appropriate agent. Separate Memory.
-        routed_agent = AgentFactory.create_agent(plan.agent, agent_hint=plan.agent_hint)
+        routed_agent = AgentFactory.create_agent(
+            plan.specialist, agent_hint=plan.specialist_hint
+        )
         routed_agent_memory = MEMORY()
         routed_agent_memory.add_msg("user", prompt)
         routed_agent_memory = routed_agent(routed_agent_memory)
         routed_agent_result = self._sub_agent_result_text(routed_agent_memory)
         routed_agent_result_json = json.dumps(
-            {"specialist": plan.agent, "result": routed_agent_result}
+            {"specialist": plan.specialist, "result": routed_agent_result}
         )
         context_prompt = (
             f"<SPECIALIST_OUTPUT>{routed_agent_result_json}</SPECIALIST_OUTPUT>"
@@ -84,7 +86,7 @@ class OrchestratorAgent(AGENT):
         logger.info(
             "OrchestratorAgent Synthesis Input",
             user_prompt=prompt,
-            specialist=plan.agent,
+            specialist=plan.specialist,
             context_prompt_chars=len(context_prompt),
         )
 

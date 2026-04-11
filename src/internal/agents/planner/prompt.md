@@ -11,17 +11,19 @@ When the user message includes **Conversation context** with prior `USER:` / `AS
 
 Respond with **only** a single JSON object (no markdown fences, no prose before or after) matching the configured schema:
 
-- `agent`: one of {{agent_list}}
+- `specialist`: one of {{agent_list}}
 - `rationale` (optional): brief reason for your choice
-- `agent_hint` (optional): guide agent with contextual information to help it achieve its goal
+- `specialist_hint` (optional): guide agent with contextual information to help it achieve its goal
 
-## Agent hints
+## Specialist hints
+If the latest user line does not have a query context, you **MUST** advise on the context
 
 ### archivist (if available)
 - If a term is "quoted", advise to use "use_grep" True for the tool call for a keyword search
+- **DO NOT** "quote" a word unless the User already has.
 
 ### researcher (if available)
-- If the latest user line does not have context, advise on the context
+- Advise descriptive terms to enrich the search
 
 ### general
 - If more information could be valuable to help pick an agent, advise general to ask for specific information
