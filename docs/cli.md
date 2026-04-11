@@ -144,7 +144,7 @@ $ selene chat [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `-w, --web`: Serve chat UI in a web browser.
-* `-c, --classic`: Use the classic Thoughtflow chat.
+* `-c, --classic`: Use the classic Thoughtflow chat. (Not Saved)
 * `-v, --verbose`: Show full ThoughtFlow memory in the transcript (all roles, logs, refs, vars).
 * `--help`: Show this message and exit.
 
@@ -171,7 +171,7 @@ $ selene rag [OPTIONS] COMMAND [ARGS]...
 
 ### `selene rag index`
 
-Create a RAG index from a directory. Supported: .pdf, .docx, .pptx, .csv, .epub, .mbox, .ipynb, .xls, .xlsx, images (.gif, .jpg, .png, .jpeg, .webp), audio/video (.mp3, .mp4), .hwp. Other files (e.g. .py, .md, .txt) are read as plain text.
+Create a RAG index from a directory. Supported: .csv, .docx, .epub, .gif, .hwp, .ipynb, .jpeg, .jpg, .md, .mbox, .mp3, .mp4, .pdf, .png, .pptx, .py, .txt, .webp, .xls, .xlsx. Other files are read as plain text.
 
 **Usage**:
 

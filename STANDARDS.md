@@ -4,17 +4,16 @@ An evolving document around best practices to achieve reliable results.
 
 ## Input Standards
 ### File Content
-
 ```
-Filename: [filename]
-File contents:
------ BEGIN FILE CONTENTS -----
-[actual file content]
------ END FILE CONTENTS -----
+<file name="file_name"><content>...</content></file>
 ```
 
-### SubAgent Results
-To be decided upon...
+### Specialist Results
+```
+<SPECIALIST_OUTPUT>
+{"specialist": "<specialist name>", "result": "<specialist data results>"}
+</SPECIALIST_OUTPUT>
+```
 
 ## Prompt Notes
 
@@ -81,7 +80,4 @@ Possible Routed Specialist Agents:
 Specialist Agents return **JSON** strings (validated by Pydantic schemas in each agent’s `schema.py`).
 
 ### RAG
-LLM APIs do not have a `context` role, so providing information to the orchestrator needs to happen in the `user` or `system` message. Pivoting to try the `user` message approach. This requires:
-- An injection into the user prompt
-- A system prompt for the orchestrator to NOT mention the injected data to the user
-- A function to trim out the injected data in the UI
+LLM APIs do not have a `context` role, so providing information to the orchestrator needs to happen in the `user` or `system` message. Right now `system` message works fine and doesn't conflict with Thoughtflow design.
