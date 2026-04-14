@@ -106,6 +106,30 @@ CommandPrompt {
     link-style: underline;
 }
 
+/*
+ * Inline `code` in Markdown: default Textual uses bright $text-warning on dark.
+ * ``bubble_body`` is a class on the Markdown widget itself (not a wrapper), so the
+ * selector must be ``Markdown.bubble_body MarkdownBlock``, not ``.bubble_body Markdown …``.
+ */
+Markdown.bubble_body MarkdownBlock {
+    &:dark > .code_inline {
+        background: $surface;
+        color: $text-muted;
+        text-style: none;
+    }
+    &:light > .code_inline {
+        background: $surface;
+        color: $text-muted;
+        text-style: none;
+    }
+    /* Fallback when :dark / :light do not match (some terminal color_system modes). */
+    & > .code_inline {
+        background: $surface;
+        color: $text-muted;
+        text-style: none;
+    }
+}
+
 .bubble.user {
     border: round $primary;
 }
