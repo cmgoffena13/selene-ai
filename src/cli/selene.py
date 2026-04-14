@@ -16,7 +16,9 @@ from src.utils import get_selene_ai_config_dir, get_version
 
 logger = structlog.getLogger("src.cli.selene")
 
-app = Typer(help="Selene AI - Death Dealer, Elder Slayer, Silent Watcher")
+app = Typer(
+    help="Selene AI - Death Dealer, Elder Slayer, Silent Watcher", add_completion=False
+)
 app.add_typer(model_app, name="model")
 app.add_typer(chat_app, name="chat")
 app.add_typer(rag_app, name="rag")
