@@ -20,6 +20,11 @@ upgrade:
 docs:
 	PYTHONPATH=. uv run -- typer src.cli.selene utils docs --name selene --output docs/cli.md
 
+publish:
+	@test -n "$(version)" || (echo >&2 "usage: make publish version=v1.2.3"; exit 1)
+	git tag -a "v$(version)" -m "Release v$(version)"
+	git push origin "v$(version)"
+
 compile:
 	uv run -- nuitka src/cli/selene.py \
 		--lto=yes \

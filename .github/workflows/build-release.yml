@@ -44,12 +44,11 @@ jobs:
           uv run -- nuitka \
             --lto=yes \
             --assume-yes-for-downloads \
-            src/cli/selene.py \
+            src/app.py \
             --output-filename=selene \
             --python-flag="no_warnings" \
             --include-package=src \
-            --include-data-dir=src/internal/agents=src/internal/agents \
-            --include-data-dir=src/internal/app=src/internal/app \
+            --include-data-dir=src/internal=src/internal \
             --include-data-files=pyproject.toml=pyproject.toml \
             --noinclude-data-files=src/tests/* \
             --output-dir=dist/
@@ -60,12 +59,11 @@ jobs:
           uv run -- nuitka \
             --lto=yes \
             --assume-yes-for-downloads \
-            src/cli/selene.py \
+            src/app.py \
             --output-filename=selene \
             --python-flag="no_warnings" \
             --include-package=src \
-            --include-data-dir=src/internal/agents=src/internal/agents \
-            --include-data-dir=src/internal/app=src/internal/app \
+            --include-data-dir=src/internal=src/internal \
             --include-data-files=pyproject.toml=pyproject.toml \
             --noinclude-data-files=src/tests/* \
             --output-dir=dist/
@@ -77,12 +75,11 @@ jobs:
           uv run -- nuitka ^
             --lto=yes ^
             --assume-yes-for-downloads ^
-            src/cli/selene.py ^
+            src/app.py ^
             --output-filename=selene.exe ^
             --python-flag="no_warnings" ^
             --include-package=src ^
-            --include-data-dir=src/internal/agents=src/internal/agents ^
-            --include-data-dir=src/internal/app=src/internal/app ^
+            --include-data-dir=src/internal=src/internal ^
             --include-data-files=pyproject.toml=pyproject.toml ^
             --noinclude-data-files=src/tests/* ^
             --output-dir=dist/
@@ -90,14 +87,14 @@ jobs:
       - name: Zip artifact (Linux/macOS)
         if: matrix.os != 'windows-latest'
         run: |
-          chmod +x dist/selene.dist/selene
-          cd dist && zip -r ${{ matrix.output_name }}.zip selene.dist
+          chmod +x dist/selene
+          cd dist && zip -r ${{ matrix.output_name }}.zip selene selene.sh
 
       - name: Zip artifact (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          Compress-Archive -Path dist/selene.dist -DestinationPath dist/${{ matrix.output_name }}.zip -Force
+          Compress-Archive -Path dist/selene.exe -DestinationPath dist/${{ matrix.output_name }}.zip -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
